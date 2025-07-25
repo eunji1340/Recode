@@ -1,0 +1,4 @@
+# Ignore artifacts:
+# select files to not fotmat
+build
+coverage
