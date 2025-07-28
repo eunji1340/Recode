@@ -6,10 +6,8 @@ interface FeedCardContentProps {
 
 const FeedCardContent: React.FC<FeedCardContentProps> = ({ content }) => {
   return (
-    <div className="text-[#0B0829]">
-      <div className="text-center font-bold text-2xl mb-2 line-clamp-2">
+    <div className="text-center font-bold text-2xl mb-2 line-clamp-2">
         {content}
-      </div>
     </div>
   );
 };
