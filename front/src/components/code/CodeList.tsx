@@ -1,8 +1,44 @@
+import type { SubmissionItem } from '../../types';
 import mockList from '../../data/MockSubmitList';
-import type { List } from '../../types';
 
-export default function CodeList() {
+export default function CodeList({
+  list,
+  onCodeSelect,
+}: {
+  list: SubmissionItem[];
+  onCodeSelect: (item: SubmissionItem) => void;
+}) {
   return (
+    <div className="container">
+      <table>
+        <thead>
+          <tr>
+            <th>선택</th>
+            <th>결과</th>
+            <th>언어</th>
+            <th>길이</th>
+            <th>메모리</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((item) => (
+            <tr key={item.submissionId} className="submission-card">
+              <th>
+                <input
+                  type="radio"
+                  name="selectCode"
+                  id={`code-${item.submissionId}`}
+                  onChange={() => onCodeSelect(item)}
+                />
+              </th>
+              <th>{item.resultText}</th>
+              <th>{item.language}</th>
+              <th>{item.codeLength}</th>
+              <th>{item.memory}</th>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     <div className="submission-container">
       {/* success, failure 필터링 후 가져와보기 */}
       <div className="submission-list">

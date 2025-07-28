@@ -1,8 +1,9 @@
-import type { List } from '../types';
+import type { SubmissionItem } from '../types';
 
 // 제출 내역 테스트
-export const mockList: List[] = [
+export const mockList: SubmissionItem[] = [
   {
+    submissionId: 1,
     language: 'Python3',
     codeLength: '652B',
     submittedAt: '2025-07-22',
@@ -81,6 +82,7 @@ export const mockList: List[] = [
   },
 
   {
+    submissionId: 2,
     language: 'Java11',
     code: `import java.util.*;
 public class Main {
@@ -158,6 +160,7 @@ public class Main {
     submittedAt: '4달 전',
   },
   {
+    submissionId: 3,
     language: 'Java8',
     code: `import java.util.*;
 public class Main {

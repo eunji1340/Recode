@@ -1,5 +1,6 @@
 // 제출 내역 결과 리스트의 인터페이스
-export interface List {
+export interface SubmissionItem {
+  submissionId: number;
   language: string;
   codeLength: string;
   submittedAt: string;
