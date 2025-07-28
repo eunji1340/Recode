@@ -1,4 +1,5 @@
 import CodeList from '../components/code/CodeList';
+<<<<<<< HEAD
 import CodeEditor from '../components/code/CodeEditor';
 import CodePreview from '../components/code/CodePreview';
 import type { SubmissionItem } from '../types';
@@ -79,6 +80,18 @@ export default function NoteGenerate() {
           <button>저장하기</button>
         </div>
       </div>
+=======
+
+export default function SelectCodePage() {
+  return (
+    <div>
+      {/* 전체 코드 리스트 불러오기 */}
+      <CodeList></CodeList>
+
+      {/* Code live fetch */}
+
+      {/* Code 기반 GPT 생성 */}
+>>>>>>> 5921423 (tmp(code): 코드 생성 뷰 테스트)
     </div>
   );
 }
