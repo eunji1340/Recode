@@ -3,12 +3,13 @@ package com.ssafy.record.domain.user.controller;
 import com.ssafy.record.domain.user.dto.request.UserRequestDto;
 import com.ssafy.record.domain.user.dto.response.UserResponseDto;
 import com.ssafy.record.domain.user.service.UserService;
+import com.ssafy.record.global.dto.response.ApiSingleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -16,33 +17,33 @@ public class UserController {
 
     /** 1. 회원가입 */
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDto> register(@RequestBody UserRequestDto dto) {
-        return ResponseEntity.ok(userService.register(dto));
+    public ResponseEntity<ApiSingleResponse<UserResponseDto>> register(@RequestBody UserRequestDto dto) {
+        return ResponseEntity.ok(ApiSingleResponse.from(userService.register(dto)));
     }
 
     /** 2. 로그인 */
     @PostMapping("/login")
-    public ResponseEntity<UserResponseDto> login(@RequestParam String email,
-                                                 @RequestParam String password) {
-        return ResponseEntity.ok(userService.login(email, password));
+    public ResponseEntity<ApiSingleResponse<UserResponseDto>> login(@RequestParam String email,
+                                                                    @RequestParam String password) {
+        return ResponseEntity.ok(ApiSingleResponse.from(userService.login(email, password)));
     }
 
     /** 3. recordId 중복 확인 */
     @GetMapping("/check/recordId")
-    public ResponseEntity<Boolean> checkRecordId(@RequestParam String recordId) {
-        return ResponseEntity.ok(userService.isRecordIdDuplicated(recordId));
+    public ResponseEntity<ApiSingleResponse<Boolean>> checkRecordId(@RequestParam String recordId) {
+        return ResponseEntity.ok(ApiSingleResponse.from(userService.isRecordIdDuplicated(recordId)));
     }
 
     /** 4. 닉네임 중복 확인 */
     @GetMapping("/check/nickname")
-    public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
-        return ResponseEntity.ok(userService.isNicknameDuplicated(nickname));
+    public ResponseEntity<ApiSingleResponse<Boolean>> checkNickname(@RequestParam String nickname) {
+        return ResponseEntity.ok(ApiSingleResponse.from(userService.isNicknameDuplicated(nickname)));
     }
 
     /** 5. 이메일 중복 확인 */
     @GetMapping("/check/email")
-    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
-        return ResponseEntity.ok(userService.isEmailDuplicated(email));
+    public ResponseEntity<ApiSingleResponse<Boolean>> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(ApiSingleResponse.from(userService.isEmailDuplicated(email)));
     }
 
     /** 6. 닉네임 변경 */

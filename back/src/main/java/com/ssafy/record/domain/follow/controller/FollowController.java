@@ -1,15 +1,15 @@
-package com.ssafy.record.domain.follow.controller;
-
-import com.ssafy.record.domain.feed.service.FeedService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@RequestMapping("/follow")
-@RequiredArgsConstructor
-public class FollowController {
-
-    private final FollowService followService;
-
-}
+//package com.ssafy.record.domain.follow.controller;
+//
+//import com.ssafy.record.domain.feed.service.FeedService;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RestController;
+//
+//@RestController
+//@RequestMapping("/follow")
+//@RequiredArgsConstructor
+//public class FollowController {
+//
+//    private final FollowService followService;
+//
+//}
