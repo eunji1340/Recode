@@ -1,4 +1,4 @@
-package com.ssafy.record.domain.feed.controller;
+package com.ssafy.record.domain.tag.controller;
 
 import com.ssafy.record.domain.feed.service.FeedService;
 import lombok.RequiredArgsConstructor;
@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/feeds")
+@RequestMapping("/tag")
 @RequiredArgsConstructor
-public class FeedController {
+public class TagController {
 
     private final FeedService feedService;
 

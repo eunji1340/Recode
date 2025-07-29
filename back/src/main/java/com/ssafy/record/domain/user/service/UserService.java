@@ -66,9 +66,9 @@ public class UserService {
     }
 
     /** 8. 비밀번호 변경 */
-    public void updatePassword(Long userId, String newPassword) {
+    public void updatePassword(Long userId, String currPassword, String newPassword) {
         User user = findUserById(userId);
-        user.updatePassword(newPassword);
+        if (user.getPassword().equals(currPassword)) user.updatePassword(newPassword);
     }
 
     /** 🔍 공통 유저 조회 */

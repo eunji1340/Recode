@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -64,8 +64,9 @@ public class UserController {
     /** 8. 비밀번호 변경 */
     @PatchMapping("/{userId}/password")
     public ResponseEntity<Void> updatePassword(@PathVariable Long userId,
+                                               @RequestParam String currPassword,
                                                @RequestParam String newPassword) {
-        userService.updatePassword(userId, newPassword);
+        userService.updatePassword(userId, currPassword, newPassword);
         return ResponseEntity.ok().build();
     }
 }

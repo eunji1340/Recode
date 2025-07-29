@@ -1,15 +1,14 @@
-package com.ssafy.record.domain.feed.controller;
+package com.ssafy.record.domain.note.controller;
 
-import com.ssafy.record.domain.feed.service.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/feeds")
+@RequestMapping("/note")
 @RequiredArgsConstructor
-public class FeedController {
+public class NoteController {
 
-    private final FeedService feedService;
+    private final NoteService noteService;
 
 }
