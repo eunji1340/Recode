@@ -16,7 +16,7 @@ public class UserController {
     private final UserService userService;
 
     /** 1. 회원가입 */
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<ApiSingleResponse<UserResponseDto>> register(@RequestBody UserRequestDto dto) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.register(dto)));
     }
@@ -29,19 +29,19 @@ public class UserController {
     }
 
     /** 3. recordId 중복 확인 */
-    @GetMapping("/check/recordId")
+    @GetMapping("/userId_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkRecordId(@RequestParam String recordId) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isRecordIdDuplicated(recordId)));
     }
 
     /** 4. 닉네임 중복 확인 */
-    @GetMapping("/check/nickname")
+    @GetMapping("/nickname_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkNickname(@RequestParam String nickname) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isNicknameDuplicated(nickname)));
     }
 
     /** 5. 이메일 중복 확인 */
-    @GetMapping("/check/email")
+    @GetMapping("/email_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkEmail(@RequestParam String email) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isEmailDuplicated(email)));
     }
@@ -55,7 +55,7 @@ public class UserController {
     }
 
     /** 7. 프로필 이미지 변경 */
-    @PatchMapping("/{userId}/profile-image")
+    @PatchMapping("/{userId}/image")
     public ResponseEntity<Void> updateProfileImage(@PathVariable Long userId,
                                                    @RequestParam String imageUrl) {
         userService.updateProfileImage(userId, imageUrl);
