@@ -28,7 +28,7 @@ public class NoteService {
     @Transactional
     public Note createNote(NoteRequestDto dto, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found")); // 예외 처리 추가
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Note note = Note.builder()
                 .user(user)
