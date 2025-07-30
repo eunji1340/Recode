@@ -20,5 +20,5 @@ export default {
       },
     },
   },
-  plugins: [lineClamp], // ✅ 꼭 import한 변수로 사용해야 함
+  plugins: [],
 };

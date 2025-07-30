@@ -3,49 +3,49 @@ import { FaHeart } from 'react-icons/fa';
 import { FiHeart, FiMessageSquare, FiHash } from 'react-icons/fi';
 
 interface MainFeedProps {
-  note_id: number;
-  user_id: number;
-  problem_id: number;
-  problem_name: string;
-  tier: number;
-  note_title: string;
+  noteId: number;
+  noteTitle: string;
   content: string;
-  success_code: string;
-  success_code_start: number;
-  success_code_end: number;
-  fail_code: string;
-  fail_code_start: number;
-  fail_code_end: number;
-  is_public: boolean;
-  created_at: string;
-  updated_at: string;
-  view_count: number;
-  like_count: number;
-  comment_count: number;
+  successCode: string;
+  successCodeStart: number;
+  successCodeEnd: number;
+  failCode: string;
+  failCodeStart: number;
+  failCodeEnd: number;
+  createdAt: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  isLiked: boolean;
+  user: {
+    userId: number;
+    nickname: string;
+    image?: string;
+  };
+  problem: {
+    problemId: number;
+    problemName: string;
+    tier: number;
+    language: string;
+  };
   tags: string[];
-  nickname: string;
-  profile_image?: string;
-  liked: boolean;
-  language?: string;
 }
 
 const MainFeed: React.FC<MainFeedProps> = ({
-  problem_name,
-  tier,
-  nickname,
-  created_at,
-  note_title,
+  noteTitle,
   content,
-  fail_code,
-  success_code,
+  successCode,
+  failCode,
+  createdAt,
+  likeCount,
+  commentCount,
+  isLiked,
   tags,
-  language = 'Python',
-  like_count: initialLikes,
-  comment_count,
-  liked: initiallyLiked,
+  user,
+  problem,
 }) => {
-  const [liked, setLiked] = useState(initiallyLiked);
-  const [likes, setLikes] = useState(initialLikes);
+  const [liked, setLiked] = useState(isLiked);
+  const [likes, setLikes] = useState(likeCount);
 
   const handleLikeClick = () => {
     setLiked((prev) => !prev);
@@ -55,9 +55,7 @@ const MainFeed: React.FC<MainFeedProps> = ({
   const getTimeAgo = (dateStr: string): string => {
     const now = new Date();
     const created = new Date(dateStr);
-    const diffMin = Math.floor(
-      (now.getTime() - created.getTime()) / (1000 * 60),
-    );
+    const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
     if (diffMin < 1) return '방금 전';
     if (diffMin < 60) return `${diffMin}분 전`;
     const diffHr = Math.floor(diffMin / 60);
@@ -77,69 +75,80 @@ const MainFeed: React.FC<MainFeedProps> = ({
   const HeartIcon = liked ? FaHeart : FiHeart;
 
   return (
-    <div className="w-full bg-white rounded-xl shadow px-6 py-5 space-y-5 text-[#0B0829]">
+    <div className="w-full bg-white rounded-xl shadow px-5 py-4 space-y-2 text-[#0B0829]">
       {/* Header */}
       <div>
         <div className="flex justify-between items-center">
-          {/* 노트 제목 */}
-          <div className="text-xl font-bold tracking-tight leading-snug">
-            {note_title}
+          <div className="flex flex-col gap-1">
+            <div className="text-xl font-extrabold leading-snug tracking-tight text-[#0B0829]">
+              {noteTitle}
+            </div>
           </div>
           {/* 프로필 & 닉네임 */}
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
-              {nickname[0]}
-            </div>
-            <div className="text-base font-semibold">{nickname}</div>
+            {user.image ? (
+              <img
+                src={user.image}
+                alt="profile"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              ) : (
+              <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
+                {user.nickname[0]}
+              </div>
+            )}
+            <div className="text-base font-semibold">{user.nickname}</div>
           </div>
         </div>
-        {/* 시간 */}
-        <div className="text-xs text-zinc-500">{getTimeAgo(created_at)}</div>
+        {/* 경과 시간 */}
+        <div className="text-sm text-zinc-500">{getTimeAgo(createdAt)}</div>
       </div>
 
       {/* Content */}
-      <div className="bg-[#F8F9FA] p-5 rounded-xl space-y-2">
+      <div className="bg-[#F8F9FA] p-5 rounded-xl space-y-4">
         {/* 문제 정보 */}
-        <div className="flex items-center gap-3 text-sm">
-          <span className="bg-yellow-400 text-white text-xs font-bold px-2 py-[2px] rounded">
-            {tier}
-          </span>
-          <span className="font-medium">{problem_name}</span>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="bg-yellow-400 text-white text-xs font-bold px-2 py-[2px] rounded">
+              {problem.tier}
+            </span>
+            <span className="font-bold">{problem.problemName}</span>
+          </div>
+          <div className="flex items-center gap-1 text-sm">
+            <img
+              src={getLanguageIconUrl(problem.language)}
+              alt={`${problem.language} icon`}
+              className="w-5 h-5"
+            />
+            <span className="font-mono">{problem.language}</span>
+          </div>
         </div>
 
         {/* 코드 비교 */}
         <div className="flex flex-col md:flex-row gap-4 text-sm font-mono">
           <pre className="w-full md:w-1/2 bg-[#FDECEC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#cc1f1a]">
-            {fail_code}
+            {failCode}
           </pre>
           <pre className="w-full md:w-1/2 bg-[#EDF4FC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#1f3bcc]">
-            {success_code}
+            {successCode}
           </pre>
         </div>
 
-        {/* 오답노트 내용 */}
-        <div className="text-sm bg-white rounded-xl p-3">{content}</div>
+        {/* 노트 내용 */}
+        <div className="text-sm bg-white rounded-xl p-3 whitespace-pre-wrap leading-relaxed">
+          {content}
+        </div>
       </div>
+      
+      {/* 구분선 */}
+      <div className="h-px bg-zinc-200" />
 
       {/* Footer */}
-      <div className="text-sm space-y-2">
-        {/* 언어 */}
-        <div className="flex items-center gap-1 text-sm">
-          <img
-            src={getLanguageIconUrl(language)}
-            alt={`${language} icon`}
-            className="w-5 h-5"
-          />
-          <span>{language}</span>
-        </div>
-
-        {/* 구분선 */}
-        <div className="my-2 h-px bg-zinc-200" />
-
-        {/* Tags & 반응 */}
-        <div className="flex justify-between">
+      <div className="text-sm">
+        <div className="flex justify-between items-center flex-wrap gap-2">
+          {/* Tags */}
           <div className="flex gap-2 flex-wrap">
-            {tags.slice(0, 3).map((tag, idx) => (
+            {tags.map((tag, idx) => (
               <span
                 key={idx}
                 className="inline-flex items-center gap-1 border border-[#A0BACC] bg-[#E6EEF4] text-[#13233D] rounded-full px-2 py-[2px] text-xs font-medium"
@@ -148,13 +157,10 @@ const MainFeed: React.FC<MainFeedProps> = ({
                 {tag}
               </span>
             ))}
-            {tags.length > 3 && (
-              <span className="text-xs text-zinc-400 font-medium">
-                +{tags.length - 3}
-              </span>
-            )}
           </div>
-          <div className="flex items-center gap-6 text-xs">
+
+          {/* Like / Comment */}
+          <div className="flex items-center gap-3 text-xs">
             <div className="flex items-center gap-1 text-rose-500">
               <button onClick={handleLikeClick}>
                 <HeartIcon className="w-4 h-4" />
@@ -163,7 +169,7 @@ const MainFeed: React.FC<MainFeedProps> = ({
             </div>
             <div className="flex items-center gap-1 text-[#13233D]">
               <FiMessageSquare className="w-4 h-4" />
-              <span>{comment_count}</span>
+              <span>{commentCount}</span>
             </div>
           </div>
         </div>
