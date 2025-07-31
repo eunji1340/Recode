@@ -9,3 +9,16 @@ export interface SubmissionItem {
   code: string;
   resultText: string;
 }
+
+// submissionData 추가
+export interface SubmissionData {
+  count: number;
+  detail: SubmissionItem[];
+}
+
+export interface SubmissionApiResponse {
+  data: {
+    pass: SubmissionData;
+    fail: SubmissionData;
+  };
+}

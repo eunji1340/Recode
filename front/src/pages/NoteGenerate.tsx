@@ -1,27 +1,26 @@
 import CodeList from '../components/code/CodeList';
 import CodeEditor from '../components/code/CodeEditor';
 import CodePreview from '../components/code/CodePreview';
-import mockList from '../data/MockSubmitList';
 import type { SubmissionItem } from '../types';
 import { useState } from 'react';
+import mockSubmissionApiResponse from '../data/MockSubmissionData';
 
 export default function NoteGenerate() {
   const [successCode, setSuccessCode] = useState<SubmissionItem | null>(null);
-  //   const [failCode, setFailCode] = useState<SubmissionItem | null>(null);
+  const [failCode, setFailCode] = useState<SubmissionItem | null>(null);
 
-  //   TODO: mock 코드 성공 / 실패 따로 변경
   // TODO: fetch 변경 & 비동기 로직 추가
-  const successCodeList: SubmissionItem[] = mockList.filter(
-    (item) => item.resultText === '맞았습니다!!',
-  );
-  const failCodeList: SubmissionItem[] = mockList.filter(
-    (item) => item.resultText !== '맞았습니다!!',
-  );
+  const successList = mockSubmissionApiResponse.data.pass.detail;
+  const failList = mockSubmissionApiResponse.data.fail.detail;
 
-  //   확장성 증가 위해 함수로 감쌈
-  const handleCodeChange = (submission: SubmissionItem) => {
+  const handleSuccessCodeChange = (submission: SubmissionItem) => {
     setSuccessCode(submission);
   };
+
+  const handleFailCodeChange = (submission: SubmissionItem) => {
+    setFailCode(submission);
+  };
+
   return (
     <div className="note-generate-page">
       <div className="header bg-blue-700">문제이름</div>
@@ -35,14 +34,16 @@ export default function NoteGenerate() {
             {/* TODO: mockData success/fail 분해 */}
             <div className="success-code basis-1/2">
               <CodeList
-                list={successCodeList}
-                onCodeSelect={handleCodeChange}
+                list={successList}
+                name="success-code-selection"
+                onCodeSelect={handleSuccessCodeChange}
               ></CodeList>
             </div>
             <div className="fail-code basis-1/2">
               <CodeList
-                list={failCodeList}
-                onCodeSelect={handleCodeChange}
+                list={failList}
+                name="fail-code-selection"
+                onCodeSelect={handleFailCodeChange}
               ></CodeList>
             </div>
           </div>
@@ -51,17 +52,17 @@ export default function NoteGenerate() {
           <div className="code-preview flex">
             <div className="success-code basis-1/2">
               <h2>성공코드</h2>
-              {/* <CodePreview
+              <CodePreview
                 code={successCode?.code}
                 language={successCode?.language}
-              ></CodePreview> */}
+              ></CodePreview>
             </div>
             <div className="fail-code basis-1/2">
               <h2>실패코드</h2>
-              {/* <CodePreview
+              <CodePreview
                 code={failCode?.code}
                 language={failCode?.language}
-              ></CodePreview> */}
+              ></CodePreview>
             </div>
           </div>
           {/* TODO: GPT 생성 API 연결 */}

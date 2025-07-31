@@ -3,9 +3,11 @@ import mockList from '../../data/MockSubmitList';
 
 export default function CodeList({
   list,
+  name,
   onCodeSelect,
 }: {
   list: SubmissionItem[];
+  name: string;
   onCodeSelect: (item: SubmissionItem) => void;
 }) {
   return (
@@ -26,7 +28,7 @@ export default function CodeList({
               <th>
                 <input
                   type="radio"
-                  name="selectCode"
+                  name={name}
                   id={`code-${item.submissionId}`}
                   onChange={() => onCodeSelect(item)}
                 />

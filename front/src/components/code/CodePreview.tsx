@@ -1,8 +1,8 @@
 import { CodeBlock, dracula } from 'react-code-blocks';
 
-interface MyCoolCodeBlockProps {
-  code: string;
-  language: string;
+interface CodeBlockProps {
+  code: string | undefined;
+  language: string | undefined;
   showLineNumbers?: boolean;
   startingLineNumber?: number;
 }
@@ -12,7 +12,7 @@ export default function CodePreview({
   language,
   showLineNumbers,
   startingLineNumber,
-}: MyCoolCodeBlockProps) {
+}: CodeBlockProps) {
   return (
     <CodeBlock
       text={code}
