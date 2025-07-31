@@ -1,6 +1,7 @@
 //package com.ssafy.recode.domain.feed.service;
 //
 //import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
+//import com.ssafy.recode.domain.feed.entity.Comment;
 //import com.ssafy.recode.domain.feed.entity.Like;
 //import com.ssafy.recode.domain.feed.repository.FeedRepository;
 //import com.ssafy.recode.domain.note.entity.Note;

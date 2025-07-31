@@ -12,6 +12,6 @@
 //    // Feed
 //    // Comment
 //    // Like
-//    List<Like> findByNote(Long noteId);
+//    List<Like> findByNoteId(Long noteId);
 //    Optional<Like> findByNoteAndUser(Note note, User user);
 //}
