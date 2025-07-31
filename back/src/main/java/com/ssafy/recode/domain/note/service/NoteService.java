@@ -32,7 +32,7 @@ public class NoteService {
 
         Note note = Note.builder()
                 .user(user)
-                .problemId(Math.toIntExact(dto.getProblemId()))
+                .problemId(dto.getProblemId())
                 .problemName(dto.getProblemName())
                 .problemTier(dto.getProblemTier())
                 .noteTitle(dto.getNoteTitle())

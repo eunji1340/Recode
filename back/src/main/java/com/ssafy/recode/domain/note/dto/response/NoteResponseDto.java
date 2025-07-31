@@ -25,9 +25,6 @@ public class NoteResponseDto {
     private String failCodeEnd;
     private Boolean isPublic;
     private LocalDateTime createdAt;
-    private int viewCount;
-    private Integer likeCount;
-    private Integer commentCount;
 
     public static NoteResponseDto from(Note note) {
         return NoteResponseDto.builder()
@@ -45,11 +42,8 @@ public class NoteResponseDto {
                 .failCode(note.getFailCode())
                 .failCodeStart(String.valueOf(note.getFailCodeStart()))
                 .failCodeEnd(String.valueOf(note.getFailCodeEnd()))
-                .viewCount(note.getViewCount())
                 .isPublic(note.getIsPublic())
                 .createdAt(note.getCreatedAt())
-                .likeCount(note.getLikeCount())
-                .commentCount(note.getCommentCount())
                 .build();
     }
 

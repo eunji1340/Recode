@@ -1,10 +1,12 @@
 package com.ssafy.recode.domain.note.entity;
 
+import com.ssafy.recode.domain.tag.entity.Tag;
 import com.ssafy.recode.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "notes")
@@ -22,7 +24,7 @@ public class Note {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private Integer problemId;
+    private Long problemId;
     private String problemName;
     private Integer problemTier;
     private String noteTitle;
@@ -33,6 +35,7 @@ public class Note {
     private String successCode;
     private Integer successCodeStart;
     private Integer successCodeEnd;
+
     private Integer failCodeStart;
     private Integer failCodeEnd;
     private String failCode;
@@ -54,5 +57,13 @@ public class Note {
     @Builder.Default
     @Column(columnDefinition =  "INT DEFAULT 0")
     private Integer commentCount = 0;
+
+    @ManyToMany
+    @JoinTable(
+            name = "notes_tags",
+            joinColumns = @JoinColumn(name = "note_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags;
 
 }

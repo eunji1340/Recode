@@ -21,7 +21,7 @@ public class NoteController {
     public ResponseEntity<?> createNote(@RequestBody NoteRequestDto dto,
                                         @RequestHeader("userId") Long userId) {
         Note savedNote = noteService.createNote(dto, userId);
-        return ResponseEntity.ok(savedNote);  // 또는 NoteResponseDto로 감싸기
+        return ResponseEntity.ok(savedNote);
     }
 
     @GetMapping
