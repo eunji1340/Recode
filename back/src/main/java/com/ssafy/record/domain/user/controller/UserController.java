@@ -32,19 +32,19 @@ public class UserController {
     }
 
     /** 3. recordId 중복 확인 */
-    @GetMapping("/userId_dupcheck")
+    @PostMapping("/userId_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkRecordId(@RequestParam String recordId) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isRecordIdDuplicated(recordId)));
     }
 
     /** 4. 닉네임 중복 확인 */
-    @GetMapping("/nickname_dupcheck")
+    @PostMapping("/nickname_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkNickname(@RequestParam String nickname) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isNicknameDuplicated(nickname)));
     }
 
     /** 5. 이메일 중복 확인 */
-    @GetMapping("/email_dupcheck")
+    @PostMapping("/email_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkEmail(@RequestParam String email) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isEmailDuplicated(email)));
     }
