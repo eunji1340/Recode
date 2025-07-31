@@ -6892,3 +6892,26 @@ Caused by: java.sql.SQLException: Referencing column 'tag_id' and referenced col
 2025-07-31 16:37:30 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-07-31 16:37:30 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-07-31 16:37:30 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/notes?page=0&size=20", parameters={masked}
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.note.controller.NoteController#getNotes(Long, int, int)
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - select n1_0.note_id,n1_0.comment_count,n1_0.content,n1_0.created_at,n1_0.fail_code,n1_0.fail_code_end,n1_0.fail_code_start,n1_0.is_deleted,n1_0.is_public,n1_0.like_count,n1_0.note_title,n1_0.problem_id,n1_0.problem_name,n1_0.problem_tier,n1_0.success_code,n1_0.success_code_end,n1_0.success_code_start,n1_0.updated_at,n1_0.user_id,n1_0.view_count from notes n1_0 order by n1_0.note_id desc limit ?,?
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{data=com.ssafy.recode.global.wrapper.NoteResponseWrapper@7cc91535}]
+2025-07-31 16:55:58 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/notes?page=0&size=20", parameters={masked}
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.note.controller.NoteController#getNotes(Long, int, int)
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - select n1_0.note_id,n1_0.comment_count,n1_0.content,n1_0.created_at,n1_0.fail_code,n1_0.fail_code_end,n1_0.fail_code_start,n1_0.is_deleted,n1_0.is_public,n1_0.like_count,n1_0.note_title,n1_0.problem_id,n1_0.problem_name,n1_0.problem_tier,n1_0.success_code,n1_0.success_code_end,n1_0.success_code_start,n1_0.updated_at,n1_0.user_id,n1_0.view_count from notes n1_0 order by n1_0.note_id desc limit ?,?
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{data=com.ssafy.recode.global.wrapper.NoteResponseWrapper@3d6fef36}]
+2025-07-31 16:56:26 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-31 17:34:08 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-07-31 17:34:08 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-07-31 17:34:08 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-31 17:34:08 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-07-31 17:34:08 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
