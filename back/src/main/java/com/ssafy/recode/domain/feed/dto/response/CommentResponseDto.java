@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Builder
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class CommentResponseDto {
     private Long commentId;
     private Long userId;
-    private String nickname;
+    private Long noteId;
     private String content;
     private String createdAt;
+
 }
