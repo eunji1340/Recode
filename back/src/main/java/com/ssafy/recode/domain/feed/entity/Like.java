@@ -1,6 +1,5 @@
 //package com.ssafy.recode.domain.feed.entity;
 //
-//import com.ssafy.recode.domain.note.entity.Note;
 //import com.ssafy.recode.domain.user.entity.User;
 //import jakarta.persistence.*;
 //import lombok.Builder;
@@ -31,7 +30,7 @@
 //
 //    @Builder
 //    public Like(Feed feed, User user) {
-//        this.note = note;
+//        this.feed = feed;
 //        this.user = user;
 //        this.createdAt = LocalDateTime.now();
 //    }

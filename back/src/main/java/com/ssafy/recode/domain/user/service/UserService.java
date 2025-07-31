@@ -89,8 +89,8 @@ public class UserService {
     }
 
     /** 2. 로그인 */
-    public UserResponseDto login(String email, String password) {
-        User user = userRepository.findByEmail(email)
+    public UserResponseDto login(String recodeId, String password) {
+        User user = userRepository.findByRecodeId(recodeId)
                 .orElseThrow(EntityNotFoundException::new);
 
         if (user.isDeleted()) {
