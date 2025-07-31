@@ -1,6 +1,5 @@
 package com.ssafy.record.domain.user.entity;
 
-import com.ssafy.record.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
