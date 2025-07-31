@@ -10,9 +10,9 @@ public class UserResponseDto {
 //    private String recordId;    // record_id
     private String bojId;       // boj_id
 //    private String email;       // email
-//    private String nickname;    // nickname
+    private String nickname;    // nickname
 //    private String image;       // image (nullable)
-//    private int userTier;       // user_tier
+    private int userTier;       // user_tier
 //    private String bio;         // bio (nullable)
 //    private boolean isDeleted;  // is_deleted
 
@@ -22,9 +22,9 @@ public class UserResponseDto {
 //        this.recordId = entity.getRecordId();
         this.bojId = entity.getBojId();
 //        this.email = entity.getEmail();
-//        this.nickname = entity.getNickname();
+        this.nickname = entity.getNickname();
 //        this.image = entity.getImage();
-//        this.userTier = entity.getUserTier();
+        this.userTier = entity.getUserTier();
 //        this.bio = entity.getBio();
 //        this.isDeleted = entity.isDeleted();
     }

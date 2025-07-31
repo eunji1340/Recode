@@ -1,12 +1,15 @@
 package com.ssafy.record.domain.user.controller;
 
 import com.ssafy.record.domain.user.dto.request.UserRequestDto;
+import com.ssafy.record.domain.user.dto.response.UserListResponseDto;
 import com.ssafy.record.domain.user.dto.response.UserResponseDto;
 import com.ssafy.record.domain.user.service.UserService;
 import com.ssafy.record.global.dto.response.ApiSingleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -54,12 +57,33 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    /** 8. 비밀번호 변경 */
+    /** 7. 비밀번호 변경 */
     @PatchMapping("/{userId}/password")
     public ResponseEntity<Void> updatePassword(@PathVariable Long userId,
                                                @RequestParam String currPassword,
                                                @RequestParam String newPassword) {
         userService.updatePassword(userId, currPassword, newPassword);
         return ResponseEntity.ok().build();
+    }
+
+    /** 8. 전체 회원 정보 조회 */
+    @GetMapping
+    public ResponseEntity<UserListResponseDto> getAllUsers() {
+        List<UserResponseDto> users = userService.getAllUsers();
+        return ResponseEntity.ok(new UserListResponseDto(users.size(), users));
+    }
+
+
+    /** 9. 특정 회원 정보 조회 */
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+    /** 회원 탈퇴 */
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }

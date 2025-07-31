@@ -8,15 +8,16 @@ import com.ssafy.record.domain.user.entity.User;
 import com.ssafy.record.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -92,6 +93,10 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(EntityNotFoundException::new);
 
+        if (user.isDeleted()) {
+            throw new IllegalStateException("탈퇴한 회원입니다.");
+        }
+
         if (!user.getPassword().equals(password)) {
             throw new IllegalArgumentException("비밀번호 불일치");
         }
@@ -129,9 +134,30 @@ public class UserService {
         user.updatePassword(newPassword);
     }
 
-    /** 공통 유저 조회 */
+    /** 전체 회원 조회 */
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .filter(user -> !user.isDeleted()) // 탈퇴 회원 제외
+                .map(UserResponseDto::new)
+                .toList();
+    }
+
+    /** 특정 회원 조회 */
+    public UserResponseDto getUserById(Long userId) {
+        User user = findUserById(userId);
+        return new UserResponseDto(user);
+    }
+
+    /** 회원 탈퇴 */
+    public void deleteUser(Long userId) {
+        User user = findUserById(userId);
+        user.markAsDeleted();
+        userRepository.save(user);
+    }
+
+    /** 유저 조회 공통 로직 */
     private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자가 존재하지 않습니다."));
+        return userRepository.findByUserIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 탈퇴한 유저입니다."));
     }
 }

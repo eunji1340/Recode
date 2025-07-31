@@ -47,4 +47,8 @@ public class User {
         this.password = password;
     }
 
+    public void markAsDeleted() {
+        this.isDeleted = true;
+    }
+
 }
