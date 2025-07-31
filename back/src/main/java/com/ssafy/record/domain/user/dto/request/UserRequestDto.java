@@ -15,20 +15,23 @@ public class UserRequestDto {
     private String email;
     private String nickname;
     private String password;
-    private String profileUrl;
     private String bio;
+    private Integer userTier;
 
     @Builder
     public UserRequestDto(String recordId, String bojId, String email,
                           String nickname, String password,
-                          String profileUrl, String bio) {
+                          String bio) {
         this.recordId = recordId;
         this.bojId = bojId;
         this.email = email;
         this.nickname = nickname;
         this.password = password;
-        this.profileUrl = profileUrl;
         this.bio = bio;
+    }
+
+    public void setTier(Integer tier) {
+        this.userTier = tier;
     }
 
     public User toEntity() {
@@ -38,9 +41,8 @@ public class UserRequestDto {
                 .email(email)
                 .nickname(nickname)
                 .password(password)
-                .image(profileUrl)
-                .userTier(0)
                 .bio(bio)
+                .userTier(userTier)
                 .isDeleted(false)
                 .build();
     }

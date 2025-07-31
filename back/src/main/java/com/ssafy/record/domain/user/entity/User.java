@@ -28,9 +28,6 @@ public class User {
     @Column(nullable = false, unique = true, length = 20)
     private String nickname;
 
-    @Column(length = 255)
-    private String image;
-
     @Column(nullable = false, length = 20)
     private String password;
 
@@ -51,7 +48,4 @@ public class User {
         this.password = password;
     }
 
-    public void updateProfileImg(String imageUrl) {
-        this.image = imageUrl;
-    }
 }

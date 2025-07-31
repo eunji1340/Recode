@@ -54,14 +54,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    /** 7. 프로필 이미지 변경 */
-    @PatchMapping("/{userId}/image")
-    public ResponseEntity<Void> updateProfileImage(@PathVariable Long userId,
-                                                   @RequestParam String imageUrl) {
-        userService.updateProfileImage(userId, imageUrl);
-        return ResponseEntity.ok().build();
-    }
-
     /** 8. 비밀번호 변경 */
     @PatchMapping("/{userId}/password")
     public ResponseEntity<Void> updatePassword(@PathVariable Long userId,
