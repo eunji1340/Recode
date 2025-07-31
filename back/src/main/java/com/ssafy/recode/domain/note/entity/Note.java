@@ -35,13 +35,17 @@ public class Note {
     private Integer successCodeEnd;
     private Integer failCodeStart;
     private Integer failCodeEnd;
-
     private String failCode;
-    private Integer viewCount;
+
     private Boolean isPublic;
     private Boolean isDeleted;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @Column(columnDefinition = "INT DEFAULT 0")
+    private Integer viewCount;
+    @Column(columnDefinition = "INT DEFAULT 0")
+    private Integer likedCount;
 
 }

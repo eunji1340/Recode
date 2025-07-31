@@ -26,6 +26,7 @@ public class NoteResponseDto {
     private int viewCount;
     private Boolean isPublic;
     private LocalDateTime createdAt;
+    private Integer likedCount;
 
     public static NoteResponseDto from(Note note) {
         return NoteResponseDto.builder()
@@ -46,6 +47,7 @@ public class NoteResponseDto {
                 .viewCount(note.getViewCount())
                 .isPublic(note.getIsPublic())
                 .createdAt(note.getCreatedAt())
+                .likedCount(note.getLikedCount())
                 .build();
     }
 

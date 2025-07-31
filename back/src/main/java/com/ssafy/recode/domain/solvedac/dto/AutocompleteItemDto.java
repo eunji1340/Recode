@@ -1,4 +1,4 @@
-package com.ssafy.record.domain.solvedac.dto;
+package com.ssafy.recode.domain.solvedac.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
