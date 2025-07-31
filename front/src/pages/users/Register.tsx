@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import logo from "../../assets/images/logo_black.png"; 
 
 
@@ -13,15 +14,51 @@ export default function Register() {
     bio: "",
   });
 
-  const checkDuplicate = (field: string, value: string) => {
+  const API_URL = "http://localhost:8080"; // 백엔드 서버의 기본 URL
+
+  // 중복 체크 상태
+  const [isDuplicate, setIsDuplicate] = useState({
+    recodeId: true,
+    email: true,
+    nickname: true,
+  });
+
+    // API 경로 매핑
+  const apiEndpoints: Record<string, string> = {
+    recodeId: "users/userId_dupcheck",  // recodeId에 대한 경로
+    email: "users/email_dupcheck",      // email에 대한 경로
+    nickname: "users/nickname_dupcheck",// nickname에 대한 경로
+  };
+
+  // 중복 체크 함수
+  const checkDuplicate = async (field: string, value: string) => {
     if (!value) {
       alert("값을 입력해주세요.");
       return;
     }
+    console.log("보내는 값:", { [field]: value }); // 동적으로 필드명에 맞춰 전송
+    const apiEndpoint = apiEndpoints[field];
 
-    // 중복 확인 API 요청
-    console.log(`중복체크 요청: ${field} = ${value}`);
+    if (!apiEndpoint) {
+      alert("잘못된 필드입니다.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${API_URL}/${apiEndpoint}?${field}=${value}`);
+      if (response.data.isDuplicate) {
+        setIsDuplicate((prev) => ({ ...prev, [field]: true }));
+        alert(`${field}이(가) 이미 존재합니다.`);
+      } else {
+        setIsDuplicate((prev) => ({ ...prev, [field]: false }));
+        alert(`${field} 사용 가능합니다.`);
+      }
+    } catch (error) {
+      console.error("중복 체크 중 오류 발생:", error);
+      alert("중복 체크 중 오류가 발생했습니다.");
+    }
   };
+
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
