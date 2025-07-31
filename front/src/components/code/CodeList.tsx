@@ -1,15 +1,19 @@
 import type { SubmissionItem } from '../../types';
 import mockList from '../../data/MockSubmitList';
 
-export default function CodeList({
-  list,
-  name,
-  onCodeSelect,
-}: {
+interface CodeListProps {
   list: SubmissionItem[];
   name: string;
   onCodeSelect: (item: SubmissionItem) => void;
-}) {
+}
+
+/**
+ * 코드 제출 목록 표시 컴포넌트
+ * @param list - 출력할 코드 리스트
+ * @param name - 성공/실패 코드 구분 파라미터
+ * @param onCodeSelect - 코드 변경 prop 전달받을 인수
+ */
+export default function CodeList({ list, name, onCodeSelect }: CodeListProps) {
   return (
     <div className="container">
       <table>

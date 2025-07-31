@@ -13,6 +13,7 @@ export default function NoteGenerate() {
   const successList = mockSubmissionApiResponse.data.pass.detail;
   const failList = mockSubmissionApiResponse.data.fail.detail;
 
+  //   TODO: 중복 로직 통합
   const handleSuccessCodeChange = (submission: SubmissionItem) => {
     setSuccessCode(submission);
   };
