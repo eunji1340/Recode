@@ -123,12 +123,15 @@ public class UserService {
     /** 8. 비밀번호 변경 */
     public void updatePassword(Long userId, String currPassword, String newPassword) {
         User user = findUserById(userId);
-        if (user.getPassword().equals(currPassword)) user.updatePassword(newPassword);
+        if (!user.getPassword().equals(currPassword)) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+        user.updatePassword(newPassword);
     }
 
-    /** 🔍 공통 유저 조회 */
+    /** 공통 유저 조회 */
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자가 존재하지 않습니다."));
     }
 }
