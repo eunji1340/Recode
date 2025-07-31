@@ -23,10 +23,11 @@ public class NoteResponseDto {
     private String failCode;
     private String failCodeStart;
     private String failCodeEnd;
-    private int viewCount;
     private Boolean isPublic;
     private LocalDateTime createdAt;
-    private Integer likedCount;
+    private int viewCount;
+    private Integer likeCount;
+    private Integer commentCount;
 
     public static NoteResponseDto from(Note note) {
         return NoteResponseDto.builder()
@@ -47,7 +48,8 @@ public class NoteResponseDto {
                 .viewCount(note.getViewCount())
                 .isPublic(note.getIsPublic())
                 .createdAt(note.getCreatedAt())
-                .likedCount(note.getLikedCount())
+                .likeCount(note.getLikeCount())
+                .commentCount(note.getCommentCount())
                 .build();
     }
 

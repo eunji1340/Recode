@@ -43,9 +43,16 @@ public class Note {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @Column(columnDefinition = "INT DEFAULT 0")
-    private Integer viewCount;
+    private Integer viewCount = 0;
+
+    @Builder.Default
     @Column(columnDefinition = "INT DEFAULT 0")
-    private Integer likedCount;
+    private Integer likeCount = 0;
+
+    @Builder.Default
+    @Column(columnDefinition =  "INT DEFAULT 0")
+    private Integer commentCount = 0;
 
 }
