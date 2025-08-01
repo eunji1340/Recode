@@ -876,3 +876,169 @@ org.hibernate.PropertyValueException: not-null property references a null or tra
 2025-08-01 13:34:46 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-08-01 13:34:46 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-08-01 13:34:46 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-08-01 13:34:49 [main] INFO  com.ssafy.recode.RecodeApplication - Starting RecodeApplication using Java 21.0.8 with PID 28408 (C:\Users\SSAFY\S13P11A507\back\build\classes\java\main started by SSAFY in C:\Users\SSAFY\S13P11A507\back)
+2025-08-01 13:34:49 [main] DEBUG com.ssafy.recode.RecodeApplication - Running with Spring Boot v3.5.4, Spring v6.2.9
+2025-08-01 13:34:49 [main] INFO  com.ssafy.recode.RecodeApplication - The following 2 profiles are active: "db", "dev"
+2025-08-01 13:34:50 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-01 13:34:50 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 57 ms. Found 6 JPA repository interfaces.
+2025-08-01 13:34:51 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-08-01 13:34:51 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-01 13:34:51 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-01 13:34:51 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-01 13:34:51 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1277 ms
+2025-08-01 13:34:51 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-08-01 13:34:51 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-01 13:34:51 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@73b0ed03
+2025-08-01 13:34:51 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-01 13:34:51 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-01 13:34:51 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-01 13:34:51 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-01 13:34:52 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-01 13:34:52 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-01 13:34:52 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.4
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-01 13:34:52 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-01 13:34:53 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-01 13:34:53 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-01 13:34:53 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-01 13:34:53 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-08-01 13:34:54 [main] INFO  o.s.v.b.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-08-01 13:34:54 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 32 mappings in 'requestMappingHandlerMapping'
+2025-08-01 13:34:54 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-01 13:34:54 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-01 13:34:54 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-01 13:34:54 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-08-01 13:34:54 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-08-01 13:34:54 [main] INFO  com.ssafy.recode.RecodeApplication - Started RecodeApplication in 5.054 seconds (process running for 5.591)
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@3c7dbf1f
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@49bf6f8c
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-01 13:34:55 [RMI TCP Connection(3)-169.254.178.76] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2025-08-01 13:34:59 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/bojId_check", parameters={}
+2025-08-01 13:34:59 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#validateBojId(BojIdCheckRequest)
+2025-08-01 13:34:59 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.BojIdCheckRequest@43f0db63]
+2025-08-01 13:34:59 [http-nio-8080-exec-1] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 검증] URL 호출: https://solved.ac/api/v3/search/user?query=kelsey6225&page=1
+2025-08-01 13:34:59 [http-nio-8080-exec-1] DEBUG c.s.r.d.user.service.UserService - [BOJ API 응답] Status Code: 200, Body: {"count":1,"items":[{"handle":"kelsey6225","bio":"","verified":false,"badgeId":null,"backgroundId":"hanbyeol_birthday","profileImageUrl":null,"solvedCount":351,"voteCount":0,"class":5,"classDecoration":"none","rivalCount":0,"reverseRivalCount":2,"tier":16,"rating":1619,"ratingByProblemsSum":1289,"ratingByClass":200,"ratingBySolvedCount":130,"ratingByVoteCount":0,"overRating":47850,"overRatingCutoff":1,"arenaTier":0,"arenaRating":0,"arenaMaxTier":0,"arenaMaxRating":0,"arenaCompetedRoundCount":0,"maxStreak":18,"coins":170,"stardusts":6213,"joinedAt":"2022-02-02T13:36:48.000Z","bannedUntil":"1970-01-01T00:00:00.000Z","proUntil":"1970-01-01T00:00:00.000Z","rank":9759}]}
+2025-08-01 13:35:00 [http-nio-8080-exec-1] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 유효] handle: kelsey6225, tier: 16
+2025-08-01 13:35:00 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select u1_0.user_id from users u1_0 where u1_0.boj_id=? limit ?
+2025-08-01 13:35:00 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-01 13:35:00 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@2a43db11]
+2025-08-01 13:35:00 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-01 13:35:06 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/bojId_check", parameters={}
+2025-08-01 13:35:06 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#validateBojId(BojIdCheckRequest)
+2025-08-01 13:35:06 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.BojIdCheckRequest@50410d1c]
+2025-08-01 13:35:06 [http-nio-8080-exec-7] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 검증] URL 호출: https://solved.ac/api/v3/search/user?query=wlsdud5654&page=1
+2025-08-01 13:35:07 [http-nio-8080-exec-7] DEBUG c.s.r.d.user.service.UserService - [BOJ API 응답] Status Code: 200, Body: {"count":1,"items":[{"handle":"wlsdud5654","bio":"2b681889-ffe9-42ee-a5ea-ebc9cc4c0300","verified":false,"badgeId":null,"backgroundId":"balloon_004","profileImageUrl":null,"solvedCount":255,"voteCount":0,"class":4,"classDecoration":"none","rivalCount":1,"reverseRivalCount":7,"tier":15,"rating":1514,"ratingByProblemsSum":1257,"ratingByClass":150,"ratingBySolvedCount":107,"ratingByVoteCount":0,"overRating":34552,"overRatingCutoff":1,"arenaTier":0,"arenaRating":0,"arenaMaxTier":0,"arenaMaxRating":0,"arenaCompetedRoundCount":0,"maxStreak":10,"coins":0,"stardusts":10525,"joinedAt":"2021-10-05T16:50:28.000Z","bannedUntil":"1970-01-01T00:00:00.000Z","proUntil":"1970-01-01T00:00:00.000Z","rank":13892}]}
+2025-08-01 13:35:07 [http-nio-8080-exec-7] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 유효] handle: wlsdud5654, tier: 15
+2025-08-01 13:35:07 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - select u1_0.user_id from users u1_0 where u1_0.boj_id=? limit ?
+2025-08-01 13:35:07 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-01 13:35:07 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@60a11ec9]
+2025-08-01 13:35:07 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/bojId_check", parameters={}
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#validateBojId(BojIdCheckRequest)
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.BojIdCheckRequest@2080b8e0]
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 검증] URL 호출: https://solved.ac/api/v3/search/user?query=kkk0932&page=1
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG c.s.r.d.user.service.UserService - [BOJ API 응답] Status Code: 200, Body: {"count":0,"items":[]}
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - select u1_0.user_id from users u1_0 where u1_0.boj_id=? limit ?
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@5f975ef]
+2025-08-01 13:56:31 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-01 13:56:41 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/bojId_check", parameters={}
+2025-08-01 13:56:41 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#validateBojId(BojIdCheckRequest)
+2025-08-01 13:56:41 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.BojIdCheckRequest@158df5a5]
+2025-08-01 13:56:41 [http-nio-8080-exec-3] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 검증] URL 호출: https://solved.ac/api/v3/search/user?query=kkk0932&page=1
+2025-08-01 13:56:42 [http-nio-8080-exec-3] DEBUG c.s.r.d.user.service.UserService - [BOJ API 응답] Status Code: 200, Body: {"count":0,"items":[]}
+2025-08-01 13:56:42 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select u1_0.user_id from users u1_0 where u1_0.boj_id=? limit ?
+2025-08-01 13:56:42 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-01 13:56:42 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@71e6ac01]
+2025-08-01 13:56:42 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/bojId_check", parameters={}
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#validateBojId(BojIdCheckRequest)
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.BojIdCheckRequest@8d6e205]
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 검증] URL 호출: https://solved.ac/api/v3/search/user?query=kkk0932&page=1
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG c.s.r.d.user.service.UserService - [BOJ API 응답] Status Code: 200, Body: {"count":1,"items":[{"handle":"kkk0932","bio":"","verified":false,"badgeId":null,"backgroundId":"balloon_005","profileImageUrl":null,"solvedCount":0,"voteCount":0,"class":0,"classDecoration":"none","rivalCount":0,"reverseRivalCount":0,"tier":0,"rating":0,"ratingByProblemsSum":0,"ratingByClass":0,"ratingBySolvedCount":0,"ratingByVoteCount":0,"overRating":0,"overRatingCutoff":1,"arenaTier":0,"arenaRating":0,"arenaMaxTier":0,"arenaMaxRating":0,"arenaCompetedRoundCount":0,"maxStreak":0,"coins":0,"stardusts":0,"joinedAt":"2025-08-01T04:57:11.459Z","bannedUntil":"1970-01-01T00:00:00.000Z","proUntil":"1970-01-01T00:00:00.000Z","rank":196417}]}
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 유효] handle: kkk0932, tier: 0
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - select u1_0.user_id from users u1_0 where u1_0.boj_id=? limit ?
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@548bbd59]
+2025-08-01 13:57:12 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-01 13:57:27 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-01 13:57:27 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-08-01 13:57:27 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-01 13:57:27 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-08-01 13:57:27 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-08-01 13:57:30 [main] INFO  com.ssafy.recode.RecodeApplication - Starting RecodeApplication using Java 21.0.8 with PID 14096 (C:\Users\SSAFY\S13P11A507\back\build\classes\java\main started by SSAFY in C:\Users\SSAFY\S13P11A507\back)
+2025-08-01 13:57:30 [main] DEBUG com.ssafy.recode.RecodeApplication - Running with Spring Boot v3.5.4, Spring v6.2.9
+2025-08-01 13:57:30 [main] INFO  com.ssafy.recode.RecodeApplication - The following 2 profiles are active: "db", "dev"
+2025-08-01 13:57:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-01 13:57:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 53 ms. Found 6 JPA repository interfaces.
+2025-08-01 13:57:31 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-08-01 13:57:31 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-01 13:57:31 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-01 13:57:31 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-01 13:57:31 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1212 ms
+2025-08-01 13:57:31 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-08-01 13:57:31 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-01 13:57:31 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@27db45f
+2025-08-01 13:57:31 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-01 13:57:32 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-01 13:57:32 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-01 13:57:32 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-01 13:57:32 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-01 13:57:32 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-01 13:57:32 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.4
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-01 13:57:33 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-01 13:57:33 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-01 13:57:33 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-01 13:57:34 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-01 13:57:34 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-08-01 13:57:34 [main] INFO  o.s.v.b.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-08-01 13:57:34 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 32 mappings in 'requestMappingHandlerMapping'
+2025-08-01 13:57:34 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-01 13:57:34 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-01 13:57:34 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-01 13:57:34 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-08-01 13:57:34 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-08-01 13:57:34 [main] INFO  com.ssafy.recode.RecodeApplication - Started RecodeApplication in 4.665 seconds (process running for 5.104)
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@5c15d1bc
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@bab7179
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-01 13:57:34 [RMI TCP Connection(3)-169.254.178.76] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/bojId_check", parameters={}
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#validateBojId(BojIdCheckRequest)
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.BojIdCheckRequest@e1dadc4]
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 검증] URL 호출: https://solved.ac/api/v3/search/user?query=kkk0932&page=1
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG c.s.r.d.user.service.UserService - [BOJ API 응답] Status Code: 200, Body: {"count":1,"items":[{"handle":"kkk0932","bio":"","verified":false,"badgeId":null,"backgroundId":"balloon_005","profileImageUrl":null,"solvedCount":0,"voteCount":0,"class":0,"classDecoration":"none","rivalCount":0,"reverseRivalCount":0,"tier":0,"rating":0,"ratingByProblemsSum":0,"ratingByClass":0,"ratingBySolvedCount":0,"ratingByVoteCount":0,"overRating":0,"overRatingCutoff":1,"arenaTier":0,"arenaRating":0,"arenaMaxTier":0,"arenaMaxRating":0,"arenaCompetedRoundCount":0,"maxStreak":0,"coins":0,"stardusts":0,"joinedAt":"2025-08-01T04:57:11.459Z","bannedUntil":"1970-01-01T00:00:00.000Z","proUntil":"1970-01-01T00:00:00.000Z","rank":196417}]}
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG c.s.r.d.user.service.UserService - [BOJ ID 유효] handle: kkk0932, tier: 0
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select u1_0.user_id from users u1_0 where u1_0.boj_id=? limit ?
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@27d0e034]
+2025-08-01 13:57:46 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-01 13:58:56 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-01 13:58:56 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-08-01 13:58:56 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-01 13:58:56 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-08-01 13:58:56 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
