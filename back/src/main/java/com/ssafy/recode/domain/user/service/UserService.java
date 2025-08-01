@@ -51,7 +51,7 @@ public class UserService {
     }
 
     /** BOJ ID 유효성 및 티어 조회 */
-    private int fetchBojTier(String bojId) {
+    public int fetchBojTier(String bojId) {
         String url = "https://solved.ac/api/v3/search/user?query=" + bojId + "&page=1";
 
         try {
@@ -159,5 +159,9 @@ public class UserService {
     private User findUserById(Long userId) {
         return userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 탈퇴한 유저입니다."));
+    }
+
+    public boolean existsByBojId(String bojId) {
+        return userRepository.existsByBojId(bojId);
     }
 }

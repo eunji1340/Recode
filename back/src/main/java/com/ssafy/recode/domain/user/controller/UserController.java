@@ -30,6 +30,15 @@ public class UserController {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.login(dto.getRecodeId(), dto.getPassword())));
     }
 
+    /** 백준ID 유효성 확인 */
+    @PostMapping("/bojId_check")
+    public ResponseEntity<ApiSingleResponse<Boolean>> validateBojId(@RequestBody BojIdCheckRequest bojId) {
+        int tier = userService.fetchBojTier(bojId.getBojId());
+        boolean existsInDb = userService.existsByBojId(bojId.getBojId());
+        boolean isValid = tier > 0 && !existsInDb;
+        return ResponseEntity.ok(ApiSingleResponse.from(isValid));
+    }
+
     /** 3. recodeId 중복 확인 */
     @PostMapping("/recodeId_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkRecodeId(@RequestBody RecodeIdDupCheckRequest dto) {
