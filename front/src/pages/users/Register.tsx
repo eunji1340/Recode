@@ -61,8 +61,31 @@ export default function Register() {
       alert("중복 체크 중 오류가 발생했습니다.");
     }
   };
+  // 백준아이디 체크 함수 
+  const checkBojId = async (bojId: string) => {
+    if (!bojId) {
+      alert("백준 아이디를 입력해주세요.");
+      return;
+    }
 
+    try {
+      const payload = { bojId };
+      console.log("백엔드로 보낼 값:", payload); // ✅ 이 줄 추가
 
+      const response = await axios.post(`${API_URL}/users/bojId_check`, { bojId });
+      console.log(response.data)
+      if (response.data.data) {
+        alert("존재하는 백준 아이디입니다.");
+      } else {
+        alert("존재하지 않는 백준 아이디입니다.");
+      }
+    } catch (error) {
+      console.error("백준 아이디 확인 중 오류:", error);
+      alert("백준 아이디 확인 중 오류가 발생했습니다.");
+    }
+  };
+
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -75,6 +98,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     alert("중복 체크를 완료해주세요.");
     return;
   }
+
+  console.log("회원가입 데이터:", form);
+  
   try {
     const response = await axios.post(`${API_URL}/users/register`, form);
     console.log("회원가입 성공:", response.data);
@@ -100,7 +126,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
           {/* 백준 아이디 */}
           <div>
-            <label htmlFor="bojId" className="block mb-1 text-gray-700">백준 아이디(solved.ac 연동된)</label>
+            <label htmlFor="bojId" className="block mb-1 text-gray-700">백준 아이디</label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -111,6 +137,13 @@ const handleSubmit = async (e: React.FormEvent) => {
                 className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
+              <button
+                type="button"
+                onClick={() => checkBojId(form.bojId)} // 중복 체크 함수
+                className="px-4 py-2 bg-primary text-fontsecondary rounded hover:bg-accent"
+              >
+                백준체크
+              </button>
             </div>
           </div>
 
