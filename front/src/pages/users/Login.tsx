@@ -1,15 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axiosInstance"
 import logo from "../../assets/images/logo_black.png";
+
 
 export default function Login() {
   const [recodeId, setId] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("로그인 시도", { recodeId, password });
-    // 여기에 API 호출 등을 추가하세요
+    try {
+      const response = await api.post("/users/login",{recodeId, password,});
+
+      console.log("로그인 성공:", response.data);
+
+      // TODO: 토큰 저장 or 사용자 정보 저장 (필요 시)
+      // 예: localStorage.setItem("token", response.data.token);
+
+      alert("로그인 성공!");
+      navigate("/"); // 메인 페이지로 이동
+    } catch (error: any) {
+      console.error("로그인 실패:", error);
+      alert("로그인에 실패했습니다. 아이디나 비밀번호를 확인하세요.");
+    }
   };
 
   const navigate = useNavigate();
