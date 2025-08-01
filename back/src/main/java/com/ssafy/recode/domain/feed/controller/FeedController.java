@@ -2,10 +2,15 @@ package com.ssafy.recode.domain.feed.controller;
 
 import com.ssafy.recode.domain.feed.dto.request.CommentRequest;
 import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
+import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
 import com.ssafy.recode.domain.feed.service.FeedService;
+import com.ssafy.recode.global.dto.response.ApiListPagingResponse;
 import com.ssafy.recode.global.dto.response.ApiListResponse;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -92,11 +97,25 @@ public class FeedController {
         return ResponseEntity.ok().build();
     }
 
-    // 피드 조회
-//    @GetMapping("/feeds")
-//    public ResponseEntity<ApiSingleResponse<FeedListResponse>> getFollowedFeeds(@RequestHeader("userId") Long userId) {
-//        FeedListResponse response = feedService.getFeedsOfFollowings(userId);
-//        return ResponseEntity.ok(ApiSingleResponse.from(response));
+    // 전체 노트 조회
+//    @GetMapping
+//    public ResponseEntity<ApiListResponse<FeedResponseDto>> getAllFeeds() {
+//        List<FeedResponseDto> feeds = feedService.getAllFeeds();
+//        return ResponseEntity.ok(ApiListResponse.from(feeds));
 //    }
+    @GetMapping
+    public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getAllFeeds(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        Page<FeedResponseDto> feeds = feedService.getAllFeeds(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        return ResponseEntity.ok(ApiListPagingResponse.from(
+                feeds.getContent(),
+                feeds.getTotalElements(),
+                feeds.getTotalPages(),
+                feeds.isLast()
+        ));
+    }
+
 
 }

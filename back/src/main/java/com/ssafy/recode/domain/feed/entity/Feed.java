@@ -1,6 +1,7 @@
 package com.ssafy.recode.domain.feed.entity;
 
 import com.ssafy.recode.domain.user.entity.User;
+import com.ssafy.recode.global.entity.StringArrayConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,9 +40,19 @@ public class Feed {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
     private Long problemId;
     private String problemName;
     private Integer problemTier;
+
+    @Convert(converter = StringArrayConverter.class)
+    private String[] tags;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "problem_id")
+//    private ProblemEntity problem;
+//
+//    public void setProblem(ProblemEntity problem) {
+//        this.problem = problem;
+//    }
 
 }

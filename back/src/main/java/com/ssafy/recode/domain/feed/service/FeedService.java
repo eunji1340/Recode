@@ -1,16 +1,24 @@
 package com.ssafy.recode.domain.feed.service;
 
 import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
+import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
+import com.ssafy.recode.domain.feed.dto.response.ProblemDto;
+import com.ssafy.recode.domain.feed.dto.response.UserDto;
 import com.ssafy.recode.domain.feed.entity.Comment;
 import com.ssafy.recode.domain.feed.entity.Feed;
 import com.ssafy.recode.domain.feed.entity.Like;
+import com.ssafy.recode.domain.feed.entity.ProblemEntity;
 import com.ssafy.recode.domain.feed.repository.CommentRepository;
 import com.ssafy.recode.domain.feed.repository.FeedRepository;
 import com.ssafy.recode.domain.feed.repository.LikeRepository;
 import com.ssafy.recode.domain.follow.repository.FollowRepository;
+import com.ssafy.recode.domain.note.entity.Note;
+import com.ssafy.recode.domain.note.repository.NoteRepository;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +36,7 @@ public class FeedService {
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
+    private final NoteRepository noteRepository;
 
     /** 좋아요 수 조회 */
     public int getLikeCount(Long noteId) {
@@ -130,48 +139,86 @@ public class FeedService {
         commentRepository.delete(comment);
     }
 
-    /** 피드 조회 */
-//    public FeedListResponse getFeedsOfFollowings(Long userId) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
+    /** 전체 피드 조회 */
+//    public List<FeedResponseDto> getAllFeeds() {
+//        List<Note> notes = noteRepository.findAll();
 //
-//        // 1. 팔로우한 유저 목록
-//        List<User> followings = followRepository.findByFollowing(user.getUserId());
+//        return notes.stream()
+//                .map(note -> {
+//                    // 좋아요/댓글 수 가져오기
+//                    int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
+//                    int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
 //
-//        // 2. 해당 유저들의 피드 조회
-//        List<Feed> feeds = feedRepository.findAllByUserIn(followings);
+//                    // 유저, 문제 정보 가져오기
+//                    User user = note.getUser();
+//                    ProblemEntity problem = new ProblemEntity(note.getNoteId(), note.getProblemName(), note.getProblemTier());
 //
-//        List<FeedResponseDto> feedDtos = feeds.stream().map(feed -> {
-//            return FeedResponseDto.builder()
-//                    .noteId(feed.getNoteId())
-//                    .content(feed.getContent())
-//                    .successCodeStart(feed.getSuccessCodeStart())
-//                    .successCodeEnd(feed.getSuccessCodeEnd())
-//                    .failCodeStart(feed.getFailCodeStart())
-//                    .failCodeEnd(feed.getFailCodeEnd())
-//                    .isPublic(feed.getIsPublic())
-//                    .createdAt(feed.getCreatedAt().toString())
-//                    .updatedAt(feed.getUpdatedAt().toString())
-//                    .viewCount(feed.getViewCount())
-//                    .likeCount(likeRepository.countByFeed_NoteId(feed.getNoteId()))
-//                    .commentCount(commentRepository.countByFeed_NoteId(feed.getNoteId()))
-//                    .user(UserDto.builder()
-//                            .userId(feed.getUser().getUserId())
-//                            .bojId(feed.getUser().getBojId())
-//                            .nickname(feed.getUser().getNickname())
-//                            .userTier(feed.getUser().getTier())
-//                            .build())
-//                    .problem(ProblemDto.builder()
-//                            .problemId(feed.getProblem().getProblemId())
-//                            .problemName(feed.getProblem().getProblemName())
-//                            .tier(feed.getProblem().getTier())
-//                            .build())
-//                    .tags(Arrays.asList(feed.getTags().split(",")))
-//                    .isDeleted(feed.getIsDeleted())
-//                    .build();
-//        }).collect(Collectors.toList());
-//
-//        return FeedListResponse.builder().details(feedDtos).build();
+//                    return FeedResponseDto.builder()
+//                            .noteId(note.getNoteId())
+//                            .content(note.getContent())
+//                            .successCodeStart(note.getSuccessCodeStart())
+//                            .successCodeEnd(note.getSuccessCodeEnd())
+//                            .failCodeStart(note.getFailCodeStart())
+//                            .failCodeEnd(note.getFailCodeEnd())
+//                            .isPublic(note.getIsPublic())
+//                            .createdAt(note.getCreatedAt().toString())
+//                            .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
+//                            .viewCount(note.getViewCount())
+//                            .likeCount(likeCount)
+//                            .commentCount(commentCount)
+//                            .user(UserDto.from(user))
+//                            .problem(ProblemDto.from(problem))
+////                            .tags(List.of(1, 2)) // 임시 태그
+////                            .isDeleted(note.getIsDeleted())
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
 //    }
 
+    public Page<FeedResponseDto> getAllFeeds(Pageable pageable) {
+        Page<Note> notes = noteRepository.findAll(pageable);
+
+        return notes.map(note -> {
+            int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
+            int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
+
+            User user = userRepository.findById(note.getUser().getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            ProblemEntity problem = new ProblemEntity(note.getNoteId(), note.getProblemName(), note.getProblemTier());
+
+            return FeedResponseDto.builder()
+                    .noteId(note.getNoteId())
+                    .content(note.getContent())
+                    .successCodeStart(note.getSuccessCodeStart())
+                    .successCodeEnd(note.getSuccessCodeEnd())
+                    .failCodeStart(note.getFailCodeStart())
+                    .failCodeEnd(note.getFailCodeEnd())
+                    .isPublic(note.getIsPublic())
+                    .createdAt(note.getCreatedAt().toString())
+                    .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
+                    .viewCount(note.getViewCount())
+                    .likeCount(likeCount)
+                    .commentCount(commentCount)
+                    .user(UserDto.from(user))
+                    .problem(ProblemDto.from(problem))
+                    .tags(List.of("DP", "이분탐색"))  // 또는 note.getTags()
+//                    .isDeleted(note.getIsDeleted())
+                    .build();
+        });
+    }
+
+
+//    /** 팔로잉 피드 조회 */
+//    public List<Feed> getFeedsOfFollowings(User user) {
+//        // 1. 팔로우한 유저 목록 가져오기
+//        List<Follow> followings = followRepository.findByFollower(user);
+//
+//        // 2. 팔로우한 유저들의 User 객체 추출
+//        List<User> followingUsers = followings.stream()
+//                .map(Follow::getFollowing)
+//                .collect(Collectors.toList());
+//
+//        // 3. 팔로우한 유저들의 피드 모두 가져오기
+//        return feedRepository.findAllByUserIn(followingUsers);
+//    }
 }
