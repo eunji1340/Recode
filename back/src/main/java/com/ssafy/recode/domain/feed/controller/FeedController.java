@@ -92,4 +92,11 @@ public class FeedController {
         return ResponseEntity.ok().build();
     }
 
+    // 피드 조회
+//    @GetMapping("/feeds")
+//    public ResponseEntity<ApiSingleResponse<FeedListResponse>> getFollowedFeeds(@RequestHeader("userId") Long userId) {
+//        FeedListResponse response = feedService.getFeedsOfFollowings(userId);
+//        return ResponseEntity.ok(ApiSingleResponse.from(response));
+//    }
+
 }
