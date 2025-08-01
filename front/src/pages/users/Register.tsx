@@ -1,16 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../../assets/images/logo_black.png"; 
 
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     bojId:"",
     recodeId: "",
     email: "",
     nickname: "",
     password: "",
-    userTier: "",
     bio: "",
   });
 
@@ -25,10 +27,11 @@ export default function Register() {
 
     // API 경로 매핑
   const apiEndpoints: Record<string, string> = {
-    recodeId: "users/userId_dupcheck",  // recodeId에 대한 경로
+    recodeId: "users/recodeId_dupcheck",  // recodeId에 대한 경로
     email: "users/email_dupcheck",      // email에 대한 경로
     nickname: "users/nickname_dupcheck",// nickname에 대한 경로
   };
+
 
   // 중복 체크 함수
   const checkDuplicate = async (field: string, value: string) => {
@@ -36,7 +39,6 @@ export default function Register() {
       alert("값을 입력해주세요.");
       return;
     }
-    console.log("보내는 값:", { [field]: value }); // 동적으로 필드명에 맞춰 전송
     const apiEndpoint = apiEndpoints[field];
 
     if (!apiEndpoint) {
@@ -45,12 +47,13 @@ export default function Register() {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/${apiEndpoint}?${field}=${value}`);
-      if (response.data.isDuplicate) {
+      const response = await axios.post(`${API_URL}/${apiEndpoint}`,{[field]: value});
+      if (response.data.data) {
         setIsDuplicate((prev) => ({ ...prev, [field]: true }));
         alert(`${field}이(가) 이미 존재합니다.`);
       } else {
         setIsDuplicate((prev) => ({ ...prev, [field]: false }));
+        console.log(response.data)
         alert(`${field} 사용 가능합니다.`);
       }
     } catch (error) {
@@ -66,11 +69,23 @@ export default function Register() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("회원가입 정보:", form);
-    // 회원가입 API 연결
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (isDuplicate.recodeId || isDuplicate.email || isDuplicate.nickname) {
+    alert("중복 체크를 완료해주세요.");
+    return;
+  }
+  try {
+    const response = await axios.post(`${API_URL}/users/register`, form);
+    console.log("회원가입 성공:", response.data);
+    // 회원가입 성공 후 처리 (예: 로그인 페이지로 리디렉션)
+    alert("회원가입이 완료되었습니다.");
+    navigate("/users/login");
+  } catch (error) {
+    console.error("회원가입 실패:", error);
+    alert("회원가입에 실패했습니다. 다시 시도해 주세요.");
+  }
+};
 
   return (
     <div className="flex items-center justify-center max-h-full bg-gray-100">
@@ -84,8 +99,8 @@ export default function Register() {
             </span>
           </div>
           {/* 백준 아이디 */}
-          {/* <div>
-            <label htmlFor="bojId" className="block mb-1 text-gray-700">백준 아이디</label>
+          <div>
+            <label htmlFor="bojId" className="block mb-1 text-gray-700">백준 아이디(solved.ac 연동된)</label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -96,15 +111,8 @@ export default function Register() {
                 className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
-              <button
-                type="button"
-                onClick={() => checkDuplicate('bojId', form.bojId)} // 중복 체크 함수
-                className="px-4 py-2 bg-primary text-fontsecondary rounded hover:bg-accent"
-              >
-                중복체크
-              </button>
             </div>
-          </div> */}
+          </div>
 
           {/* 리코드 아이디 */}
           <div>
@@ -133,7 +141,7 @@ export default function Register() {
             <label htmlFor="email" className="block mb-1 text-gray-700">이메일</label>
             <div className="flex gap-2">
               <input
-                type="text"
+                type="email"
                 id="email"
                 name="email"
                 value={form.email}
@@ -186,20 +194,6 @@ export default function Register() {
               required
             />
           </div>
-
-          {/* 티어 */}
-          {/* <div>
-            <label htmlFor="userTier" className="block mb-1 text-gray-700">백준 티어</label>
-            <input
-              type="text"
-              id="userTier"
-              name="userTier"
-              value={form.userTier}
-              onChange={handleChange}
-              placeholder="ex) Gold IV"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div> */}
 
           {/* 한 마디 */}
           <div>
