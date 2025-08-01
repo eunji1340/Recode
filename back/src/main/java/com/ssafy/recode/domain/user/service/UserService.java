@@ -32,7 +32,7 @@ public class UserService {
         log.info("[회원가입 요청] 사용자명: {}, 백준 ID: {}", dto.getRecodeId(), dto.getBojId());
 
         int tier = fetchBojTier(dto.getBojId());
-        if (tier < 0) {
+        if (tier <= 0) {
             log.warn("[백준 ID 확인 실패] 존재하지 않는 ID: {}", dto.getBojId());
             throw new IllegalArgumentException("유효하지 않은 백준 ID입니다.");
         }
@@ -67,25 +67,27 @@ public class UserService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             log.debug("[BOJ API 응답] Status Code: {}, Body: {}", response.statusCode(), response.body());
 
-            if (response.statusCode() != 200) return 0;
+            if (response.statusCode() != 200) return -1;
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode items = objectMapper.readTree(response.body()).get("items");
+            JsonNode root = objectMapper.readTree(response.body());
 
-            if (items != null && items.size() > 0) {
-                JsonNode user = items.get(0);
-                String handle = user.get("handle").asText();
-                if (bojId.equals(handle)) {
-                    int tier = user.get("tier").asInt();
-                    log.debug("[BOJ ID 유효] handle: {}, tier: {}", handle, tier);
-                    return tier;
-                }
+            int count = root.get("count").asInt();
+            if (count == 0) return -1;
+
+            JsonNode user = root.get("items").get(0);
+            String handle = user.get("handle").asText();
+            if (bojId.equals(handle)) {
+                int tier = user.get("tier").asInt(); // 여전히 tier 반환은 유지
+                log.debug("[BOJ ID 유효] handle: {}, tier: {}", handle, tier);
+                return tier;
             }
+
         } catch (Exception e) {
             log.error("[BOJ ID 검증 중 예외 발생]", e);
         }
 
-        return 0;
+        return -1;
     }
 
     /** 2. 로그인 */
