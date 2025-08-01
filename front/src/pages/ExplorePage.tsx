@@ -160,7 +160,7 @@ const dummyFeeds = [
   },
 ];
 
-export default function FeedPage() {
+export default function ExplorePage() {
   const handleSearch = (params: {
     keyword: string;
     tags: string[];
@@ -198,7 +198,18 @@ export default function FeedPage() {
         {/* 피드 카드 목록 (정렬된 배열 사용!) */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-y-6">
           {sortedFeeds.map((feed) => (
-            <FeedCard key={feed.noteId + feed.createdAt} {...feed} />
+            <FeedCard 
+              key={feed.noteId + feed.createdAt}
+              noteTitle={feed.noteTitle}
+              content={feed.content}
+              createdAt={feed.createdAt}
+              user={feed.user}
+              problem={feed.problem}
+              tags={feed.tags}
+              likeCount={feed.likeCount}
+              commentCount={feed.commentCount}
+              isLiked={feed.isLiked}
+              />
           ))}
         </div>
       </div>

@@ -17,7 +17,7 @@ export default function Header() {
   return (
     <div
       className={clsx(
-        "h-screen bg-primary text-fontsecondary flex flex-col transition-all duration-300",
+        "h-screenf bg-primary text-fontsecondary flex flex-col transition-all duration-300",
         collapsed ? "w-20 items-center" : "w-64"
       )}
     >
