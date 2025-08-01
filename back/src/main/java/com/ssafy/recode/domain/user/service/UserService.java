@@ -32,7 +32,7 @@ public class UserService {
         log.info("[회원가입 요청] 사용자명: {}, 백준 ID: {}", dto.getRecodeId(), dto.getBojId());
 
         int tier = fetchBojTier(dto.getBojId());
-        if (tier == 0) {
+        if (tier < 0) {
             log.warn("[백준 ID 확인 실패] 존재하지 않는 ID: {}", dto.getBojId());
             throw new IllegalArgumentException("유효하지 않은 백준 ID입니다.");
         }

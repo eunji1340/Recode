@@ -35,7 +35,7 @@ public class UserController {
     public ResponseEntity<ApiSingleResponse<Boolean>> validateBojId(@RequestBody BojIdCheckRequest bojId) {
         int tier = userService.fetchBojTier(bojId.getBojId());
         boolean existsInDb = userService.existsByBojId(bojId.getBojId());
-        boolean isValid = tier > 0 && !existsInDb;
+        boolean isValid = tier >= 0 && !existsInDb;
         return ResponseEntity.ok(ApiSingleResponse.from(isValid));
     }
 
