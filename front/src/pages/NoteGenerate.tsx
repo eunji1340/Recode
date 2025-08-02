@@ -7,10 +7,19 @@ import CodePreview from '../components/code/CodePreview';
 import type { SubmissionItem } from '../types';
 import { useState } from 'react';
 import mockSubmissionApiResponse from '../data/MockSubmissionData';
+import { fetchMockAiNote } from '../data/MockAiNoteData';
+
+type Visibility = 'private' | 'public';
 
 export default function NoteGenerate() {
   const [successCode, setSuccessCode] = useState<SubmissionItem | null>(null);
   const [failCode, setFailCode] = useState<SubmissionItem | null>(null);
+  const [title, setTitle] = useState('새 노트 제목');
+  const [noteContent, setNoteContent] = useState(
+    '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.'
+  );
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [visibility, setVisibility] = useState<Visibility>('private');
 
   // TODO: fetch 변경 & 비동기 로직 추가
   const successList = mockSubmissionApiResponse.data.pass.detail;
@@ -23,6 +32,28 @@ export default function NoteGenerate() {
 
   const handleFailCodeChange = (submission: SubmissionItem) => {
     setFailCode(submission);
+  };
+
+  const handleGenerateNote = async () => {
+    setIsGenerating(true);
+    try {
+      const aiNote = await fetchMockAiNote();
+      setTitle(aiNote.title);
+      setNoteContent(aiNote.content);
+    } catch (error) {
+      console.error("AI 노트 생성 실패:", error);
+      // TODO: 사용자에게 에러 알림
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSave = () => {
+    // TODO: 실제 저장 API 연결
+    console.log('저장할 제목:', title);
+    console.log('저장할 노트 내용:', noteContent);
+    console.log('공개 범위:', visibility);
+    alert('노트 제목, 내용, 공개 범위가 콘솔에 저장되었습니다.');
   };
 
   return (
@@ -69,17 +100,67 @@ export default function NoteGenerate() {
               ></CodePreview>
             </div>
           </div>
-          {/* TODO: GPT 생성 API 연결 */}
-          <button className="create-btn">코드 생성</button>
+          <button
+            onClick={handleGenerateNote}
+            disabled={isGenerating}
+            className="create-btn px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-400"
+          >
+            {isGenerating ? 'AI 노트 생성 중...' : 'AI 노트 생성'}
+          </button>
         </div>
 
-        {/* Code Editor */}
-        <div className="editor-container basis-1/3">
-          <CodeEditor></CodeEditor>
-          <div>공개 범위 설정</div>
-
-          {/* TODO: 생성 API 연결 */}
-          <button>저장하기</button>
+        {/* Note Editor Section */}
+        <div className="editor-container basis-1/3 flex flex-col p-4">
+          <div className="flex items-center mb-4">
+            <label htmlFor="note-title" className="font-bold mr-2">노트 제목:</label>
+            <input
+              id="note-title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="flex-1 p-2 border rounded-md"
+            />
+          </div>
+          <div className="flex-1">
+            <CodeEditor
+              content={noteContent}
+              onContentChange={setNoteContent}
+            ></CodeEditor>
+          </div>
+          <div className="mt-4">
+            <fieldset>
+              <legend className="font-bold mb-2">공개 범위 설정</legend>
+              <div className="flex items-center gap-4">
+                <div>
+                  <input
+                    type="radio"
+                    id="private"
+                    name="visibility"
+                    value="private"
+                    checked={visibility === 'private'}
+                    onChange={() => setVisibility('private')}
+                    className="mr-1"
+                  />
+                  <label htmlFor="private">나만 공개</label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id="public"
+                    name="visibility"
+                    value="public"
+                    checked={visibility === 'public'}
+                    onChange={() => setVisibility('public')}
+                    className="mr-1"
+                  />
+                  <label htmlFor="public">전체 공개</label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <button onClick={handleSave} className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+            저장하기
+          </button>
         </div>
       </div>
 =======
@@ -173,3 +254,5 @@ export default function NoteGenerate() {
     </div>
   );
 }
+
+

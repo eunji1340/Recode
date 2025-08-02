@@ -24,12 +24,14 @@
     "react-router-dom": "^7.7.1",
 =======
     "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwindcss": "^4.1.11",
 >>>>>>> 26e966e (chore: dependency 추가)
     "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
