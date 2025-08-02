@@ -17,9 +17,15 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.526.0",
     "react": "^19.1.0",
+    "react-code-blocks": "^0.1.6",
     "react-dom": "^19.1.0",
+<<<<<<< HEAD
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.7.1",
+=======
+    "react-markdown": "^10.1.0",
+    "tailwindcss": "^4.1.11",
+>>>>>>> 26e966e (chore: dependency 추가)
     "zustand": "^5.0.6"
   },
   "devDependencies": {
