@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import FeedCard from '../components/feed/FeedCard';
 import SearchBox from '../components/search/SearchBox';
 import SortDropdown from '../components/feed/SortDropdown';
+import { Link } from 'react-router-dom';
 
 const dummyFeeds = [
   {
@@ -169,16 +170,18 @@ export default function FeedPage() {
     console.log('검색 조건:', params);
   };
 
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState('latest');
 
   const sortedFeeds = [...dummyFeeds].sort((a, b) => {
     switch (sortBy) {
-      case "likes":
+      case 'likes':
         return b.likeCount - a.likeCount;
-      case "comments":
+      case 'comments':
         return b.commentCount - a.commentCount;
       default: // 최신순
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
     }
   });
 
@@ -198,7 +201,9 @@ export default function FeedPage() {
         {/* 피드 카드 목록 (정렬된 배열 사용!) */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-y-6">
           {sortedFeeds.map((feed) => (
-            <FeedCard key={feed.noteId + feed.createdAt} {...feed} />
+            <Link to={`/notes/${feed.noteId}`}>
+              <FeedCard key={feed.noteId + feed.createdAt} {...feed} />
+            </Link>
           ))}
         </div>
       </div>

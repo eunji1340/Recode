@@ -72,20 +72,20 @@ const dummyFeeds = [
 
 const FeedPage = () => {
   const handleSearch = (params: {
-  keyword: string;
-  tags: string[];
-  userScope?: 'all' | 'following';
-}) => {
-  // 여기에서 검색 요청 또는 상태 처리
-  console.log('검색 조건:', params);
+    keyword: string;
+    tags: string[];
+    userScope?: 'all' | 'following';
+  }) => {
+    // 여기에서 검색 요청 또는 상태 처리
+    console.log('검색 조건:', params);
 
-  // 예: navigate(`/explore?keyword=...`)
-  // 또는 Zustand에 저장해도 됨
-};
+    // 예: navigate(`/explore?keyword=...`)
+    // 또는 Zustand에 저장해도 됨
+  };
 
+  //   TODO: detail 페이지로의 router 달기
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
-      
       {dummyFeeds.map((item) => (
         <MainFeed key={`${item.noteId}-${item.user.userId}`} {...item} />
       ))}

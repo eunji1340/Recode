@@ -1,12 +1,26 @@
-import mockNoteData from '../data/MockNoteData';
+import { useParams } from 'react-router-dom';
 import type { NoteData } from '../types';
+import mockNoteData from '../data/MockNoteData';
 import Tag from '../components/tag';
 
 export default function NoteDetailPage() {
-  const data: NoteData = mockNoteData.data;
-  console.log(data);
-  //   TODO: useNavigate로 id와 연결
+  const { id } = useParams<{ id: string }>();
 
+  if (!id) {
+    // TODO: 클라이언트 예외처리 페이지 만들기
+    return <div>Invalid note ID</div>;
+  }
+
+  const noteId = parseInt(id, 10);
+  //   TODO: 실제 API로 대체
+  const noteItem = mockNoteData.find((note) => note.data.noteId === noteId);
+
+  //   noteItem 예외처리
+  if (!noteItem) {
+    throw new Error('noteItem not found');
+  }
+
+  const data: NoteData = noteItem.data;
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
       {/* 검색창 */}

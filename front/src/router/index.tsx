@@ -8,7 +8,7 @@ const AppRouter = () => (
     <Route path="/feed" element={<FeedPage />} />
     <Route path="/" element={<Navigate to="/feed" replace />} />
     <Route path="/explore" element={<ExplorePage />} />
-    <Route path="/detail" element={<NoteDetailPage />} />
+    <Route path="/notes/:id" element={<NoteDetailPage />} />
   </Routes>
 );
 
