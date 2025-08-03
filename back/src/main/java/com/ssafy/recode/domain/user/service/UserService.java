@@ -160,4 +160,10 @@ public class UserService {
         return userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 탈퇴한 유저입니다."));
     }
+
+    /** user_id로 boj_id 조회 */
+    public String getBaekjoonId(Long userId) {
+        User user = findUserById(userId);
+        return user.getBojId();
+    }
 }
