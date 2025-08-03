@@ -55,7 +55,9 @@ const MainFeed: React.FC<MainFeedProps> = ({
   const getTimeAgo = (dateStr: string): string => {
     const now = new Date();
     const created = new Date(dateStr);
-    const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
+    const diffMin = Math.floor(
+      (now.getTime() - created.getTime()) / (1000 * 60),
+    );
     if (diffMin < 1) return '방금 전';
     if (diffMin < 60) return `${diffMin}분 전`;
     const diffHr = Math.floor(diffMin / 60);
@@ -92,7 +94,7 @@ const MainFeed: React.FC<MainFeedProps> = ({
                 alt="profile"
                 className="w-8 h-8 rounded-full object-cover"
               />
-              ) : (
+            ) : (
               <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
                 {user.nickname[0]}
               </div>
@@ -139,7 +141,7 @@ const MainFeed: React.FC<MainFeedProps> = ({
           {content}
         </div>
       </div>
-      
+
       {/* 구분선 */}
       <div className="h-px bg-zinc-200" />
 
