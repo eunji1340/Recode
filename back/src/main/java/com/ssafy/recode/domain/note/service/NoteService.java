@@ -4,6 +4,8 @@ import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
 import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
+import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
+import com.ssafy.recode.domain.tag.service.TagService;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
@@ -24,6 +26,8 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
+    private final SolvedacApiClient solvedacApiClient;
+    private final TagService tagService;
 
     @Transactional
     public Note createNote(NoteRequestDto dto, Long userId) {
@@ -49,7 +53,13 @@ public class NoteService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return noteRepository.save(note);
+        Note savedNote = noteRepository.save(note);
+
+        //solved.ac에서 태그 조회 및 저장
+        List<String> tagList = solvedacApiClient.getTagsByProblemId(dto.getProblemId());
+        tagService.saveTagsForNote(note, tagList);
+
+        return savedNote;
     }
 
     public NoteResponseWrapper getNotes(int page, int size) {

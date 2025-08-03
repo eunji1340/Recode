@@ -1,6 +1,8 @@
 package com.ssafy.recode.domain.note.controller;
 
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
+import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
+import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.service.NoteService;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
@@ -21,7 +23,7 @@ public class NoteController {
     public ResponseEntity<?> createNote(@RequestBody NoteRequestDto dto,
                                         @RequestHeader("userId") Long userId) {
         Note savedNote = noteService.createNote(dto, userId);
-        return ResponseEntity.ok(savedNote);
+        return ResponseEntity.ok(NoteFeedDto.from(savedNote));
     }
 
     @GetMapping

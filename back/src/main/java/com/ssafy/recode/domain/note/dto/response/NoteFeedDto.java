@@ -2,6 +2,7 @@ package com.ssafy.recode.domain.note.dto.response;
 
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.solvedac.dto.ProblemDto;
+import com.ssafy.recode.domain.tag.entity.Tag;
 import com.ssafy.recode.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -85,9 +86,12 @@ public class NoteFeedDto {
                         .nickname(note.getUser().getNickname())
                         .userTier(note.getUser().getUserTier())
                         .build())
-                .tags(note.getTags().stream()
-                        .map(tag -> tag.getTagName()) // Tag 객체에서 이름만 추출
-                        .toList())
+                .tags(note.getTags() != null ?
+                        note.getTags().stream()
+                                .map(Tag::getTagName)
+                                .toList()
+                        : List.of()
+                )
                 .build();
     }
 
