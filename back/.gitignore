@@ -36,3 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 logs/recode.log
+
+# 환경 변수 파일
+.env

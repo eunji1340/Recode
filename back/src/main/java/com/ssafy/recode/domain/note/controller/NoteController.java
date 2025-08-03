@@ -1,6 +1,8 @@
 package com.ssafy.recode.domain.note.controller;
 
+import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
+import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
 import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
 import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
 import com.ssafy.recode.domain.note.entity.Note;
@@ -35,6 +37,14 @@ public class NoteController {
         NoteResponseWrapper response = noteService.getNotes(page, size);
         Map<String, Object> body = Map.of("data", response);
         return ResponseEntity.ok(body);
+    }
+
+    @PostMapping("/ai-generate")
+    public ResponseEntity<AiNoteResponseDto> generateAiNote(
+            @RequestBody AiNoteRequestDto dto) {
+
+        AiNoteResponseDto response = noteService.generateAiNote(dto);
+        return ResponseEntity.ok(response);
     }
 
 }
