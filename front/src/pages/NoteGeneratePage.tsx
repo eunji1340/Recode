@@ -6,22 +6,26 @@ import CodePreview from '../components/code/CodePreview';
 <<<<<<< HEAD
 import type { SubmissionItem } from '../types';
 import { useState } from 'react';
+// import { useParams } from 'react-router-dom';
 import mockSubmissionApiResponse from '../data/MockSubmissionData';
 import { fetchMockAiNote } from '../data/MockAiNoteData';
 
 type Visibility = 'private' | 'public';
 
-export default function NoteGenerate() {
+export default function NoteGeneratePage() {
+  //   // const { problemId } = useParams<{ problemId: string }>();
+  const problemId = 'TEST-12345'; // 임시 ID
+
   const [successCode, setSuccessCode] = useState<SubmissionItem | null>(null);
   const [failCode, setFailCode] = useState<SubmissionItem | null>(null);
   const [title, setTitle] = useState('새 노트 제목');
   const [noteContent, setNoteContent] = useState(
-    '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.'
+    '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.',
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [visibility, setVisibility] = useState<Visibility>('private');
 
-  // TODO: fetch 변경 & 비동기 로직 추가
+  // TODO: fetch 변경 & 비동기 ��직 추가
   const successList = mockSubmissionApiResponse.data.pass.detail;
   const failList = mockSubmissionApiResponse.data.fail.detail;
 
@@ -41,7 +45,7 @@ export default function NoteGenerate() {
       setTitle(aiNote.title);
       setNoteContent(aiNote.content);
     } catch (error) {
-      console.error("AI 노트 생성 실패:", error);
+      console.error('AI 노트 생성 실패:', error);
       // TODO: 사용자에게 에러 알림
     } finally {
       setIsGenerating(false);
@@ -50,6 +54,7 @@ export default function NoteGenerate() {
 
   const handleSave = () => {
     // TODO: 실제 저장 API 연결
+    // console.log('문제 ID:', problemId);
     console.log('저장할 제목:', title);
     console.log('저장할 노트 내용:', noteContent);
     console.log('공개 범위:', visibility);
@@ -58,11 +63,13 @@ export default function NoteGenerate() {
 
   return (
     <div className="note-generate-page">
-      <div className="header bg-blue-700">문제이름</div>
+      <div className="header bg-blue-700 p-4 text-white font-bold text-xl">
+        {/* 문제: {problemId} */}
+      </div>
 
       {/* body */}
-      <div>언어 선택</div>
-      <div className="container flex flex-row">
+      <div className="p-4">언어 선택</div>
+      <div className="container flex flex-row p-4">
         <div className="code-container basis-2/3">
           {/* 제출내역 list */}
           <div className="code-list flex">
@@ -84,16 +91,16 @@ export default function NoteGenerate() {
           </div>
 
           {/* Code preview */}
-          <div className="code-preview flex">
+          <div className="code-preview flex mt-4">
             <div className="success-code basis-1/2">
-              <h2>성공코드</h2>
+              <h2 className="font-bold mb-2">성공코드</h2>
               <CodePreview
                 code={successCode?.code}
                 language={successCode?.language}
               ></CodePreview>
             </div>
             <div className="fail-code basis-1/2">
-              <h2>실패코드</h2>
+              <h2 className="font-bold mb-2">실패코드</h2>
               <CodePreview
                 code={failCode?.code}
                 language={failCode?.language}
@@ -103,7 +110,7 @@ export default function NoteGenerate() {
           <button
             onClick={handleGenerateNote}
             disabled={isGenerating}
-            className="create-btn px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-400"
+            className="create-btn mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-400"
           >
             {isGenerating ? 'AI 노트 생성 중...' : 'AI 노트 생성'}
           </button>
@@ -112,7 +119,9 @@ export default function NoteGenerate() {
         {/* Note Editor Section */}
         <div className="editor-container basis-1/3 flex flex-col p-4">
           <div className="flex items-center mb-4">
-            <label htmlFor="note-title" className="font-bold mr-2">노트 제목:</label>
+            <label htmlFor="note-title" className="font-bold mr-2">
+              노트 제목:
+            </label>
             <input
               id="note-title"
               type="text"
@@ -158,7 +167,10 @@ export default function NoteGenerate() {
               </div>
             </fieldset>
           </div>
-          <button onClick={handleSave} className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+          <button
+            onClick={handleSave}
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
             저장하기
           </button>
         </div>
@@ -254,5 +266,3 @@ export default function NoteGenerate() {
     </div>
   );
 }
-
-

@@ -12,7 +12,10 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/line-clamp": "^0.4.4",
+<<<<<<< HEAD
     "@tailwindcss/vite": "^4.1.11",
+=======
+>>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.526.0",
@@ -20,13 +23,21 @@
     "react-code-blocks": "^0.1.6",
     "react-dom": "^19.1.0",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.7.1",
 =======
+=======
+    "react-icons": "^5.5.0",
+>>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
     "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.7.1",
     "remark-gfm": "^4.0.1",
+<<<<<<< HEAD
     "tailwindcss": "^4.1.11",
 >>>>>>> 26e966e (chore: dependency 추가)
+=======
+>>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
     "zustand": "^5.0.6"
   },
   "devDependencies": {
@@ -42,6 +53,10 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "postcss": "^8.5.6",
+<<<<<<< HEAD
+=======
+    "postcss-nesting": "^13.0.2",
+>>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
     "prettier": "3.6.2",
     "tailwindcss": "^3.4.1",
     "typescript": "~5.8.3",
