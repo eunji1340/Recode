@@ -30,6 +30,7 @@ public class NoteService {
     private final UserRepository userRepository;
     private final SolvedacApiClient solvedacApiClient;
     private final TagService tagService;
+    private final AiNoteGeneratorService aiNoteGeneratorService;
 
     @Transactional
     public Note createNote(NoteRequestDto dto, Long userId) {
@@ -91,17 +92,12 @@ public class NoteService {
 
     @Transactional(readOnly = true)
     public AiNoteResponseDto generateAiNote(AiNoteRequestDto dto) {
-        // TODO: 여기에 GPT 호출 로직 들어갈 예정 (우선 content mock 생성)
-        String content = """
-        ### 실패 원인 분석
-        입력 조건을 잘못 처리하여 발생한 오류입니다.
-
-        ### 성공 코드 설명
-        입력 범위에 대한 조건을 적절히 처리하여 정상 출력이 이루어졌습니다.
-
-        ### 비교 요약
-        성공 코드에서는 반복문의 경계 조건을 명확히 설정하였으나, 실패 코드에서는 누락되었습니다.
-        """;
+        String content = aiNoteGeneratorService.generateNoteContent(
+                dto.getSuccessCode(),
+                dto.getFailCode(),
+                dto.getProblemName(),
+                dto.getProblemTier()
+        );
 
         return AiNoteResponseDto.builder()
                 .content(content)
