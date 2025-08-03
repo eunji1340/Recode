@@ -63,13 +63,36 @@ export default function NoteGeneratePage() {
 
   return (
     <div className="note-generate-page">
-      <div className="header bg-blue-700 p-4 text-white font-bold text-xl">
-        {/* 문제: {problemId} */}
+      <div className="header bg-primary p-4 text-white font-bold text-xl flex items-center gap-2">
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            window.history.back();
+          }}
+          className="p-1 hover:bg-white/20 rounded-full"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+            />
+          </svg>
+        </a>
+        문제: {problemId}
       </div>
 
       {/* body */}
       <div className="p-4">언어 선택</div>
-      <div className="container flex flex-row p-4">
+      <div className="flex flex-row p-4">
         <div className="code-container basis-2/3">
           {/* 제출내역 list */}
           <div className="code-list flex">
@@ -91,20 +114,36 @@ export default function NoteGeneratePage() {
           </div>
 
           {/* Code preview */}
-          <div className="code-preview flex mt-4">
+          <div className="code-preview flex mt-4 space-x-4">
             <div className="success-code basis-1/2">
               <h2 className="font-bold mb-2">성공코드</h2>
-              <CodePreview
-                code={successCode?.code}
-                language={successCode?.language}
-              ></CodePreview>
+              <div className="border rounded-lg p-2 min-h-[200px] overflow-auto bg-gray-50">
+                {successCode ? (
+                  <CodePreview
+                    code={successCode.code}
+                    language={successCode.language}
+                  />
+                ) : (
+                  <div className="flex justify-center items-center h-full text-gray-500">
+                    성공 코드를 선택하세요.
+                  </div>
+                )}
+              </div>
             </div>
             <div className="fail-code basis-1/2">
               <h2 className="font-bold mb-2">실패코드</h2>
-              <CodePreview
-                code={failCode?.code}
-                language={failCode?.language}
-              ></CodePreview>
+              <div className="border rounded-lg p-2 min-h-[200px] overflow-auto bg-gray-50">
+                {failCode ? (
+                  <CodePreview
+                    code={failCode.code}
+                    language={failCode.language}
+                  />
+                ) : (
+                  <div className="flex justify-center items-center h-full text-gray-500">
+                    실패 코드를 선택하세요.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <button

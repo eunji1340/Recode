@@ -14,21 +14,21 @@ interface CodeListProps {
  */
 export default function CodeList({ list, name, onCodeSelect }: CodeListProps) {
   return (
-    <div className="container">
-      <table>
+    <div className="container w-full">
+      <table className="w-full table-fixed border-collapse">
         <thead>
-          <tr>
-            <th>선택</th>
-            <th>결과</th>
-            <th>언어</th>
-            <th>길이</th>
-            <th>메모리</th>
+          <tr className="border-b border-gray-200">
+            <th className="w-[15%] py-2 px-4 text-center">선택</th>
+            <th className="w-[35%] py-2 px-4 text-center">결과</th>
+            <th className="w-[20%] py-2 px-4 text-center">언어</th>
+            <th className="w-[15%] py-2 px-4 text-center">길이</th>
+            <th className="w-[15%] py-2 px-4 text-center">메모리</th>
           </tr>
         </thead>
         <tbody>
           {list.map((item) => (
             <tr key={item.submissionId} className="submission-card">
-              <th>
+              <th className="py-2 px-4 text-center">
                 <input
                   type="radio"
                   name={name}
@@ -36,10 +36,12 @@ export default function CodeList({ list, name, onCodeSelect }: CodeListProps) {
                   onChange={() => onCodeSelect(item)}
                 />
               </th>
-              <th>{item.resultText}</th>
-              <th>{item.language}</th>
-              <th>{item.codeLength}</th>
-              <th>{item.memory}</th>
+              <th className="py-2 px-4 text-center overflow-hidden text-ellipsis whitespace-nowrap">
+                {item.resultText}
+              </th>
+              <th className="py-2 px-4 text-center">{item.language}</th>
+              <th className="py-2 px-4 text-center">{item.codeLength}</th>
+              <th className="py-2 px-4 text-center">{item.memory}</th>
             </tr>
           ))}
         </tbody>
