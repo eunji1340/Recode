@@ -1,5 +1,6 @@
 // src/components/Header.tsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   LayoutGrid,
   Search,
@@ -33,11 +34,11 @@ export default function Header() {
             )}
           /> */}
           {!collapsed && (
-            <h1 className="text-xl font-bold">
+            <Link to="/" className="text-xl font-bold">
               Re
               <span className="text-accent">:c</span>
               ode
-            </h1>
+            </Link>
           )}
         </div>
         <button
