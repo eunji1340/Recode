@@ -5,6 +5,7 @@ import Tag from '../components/tag';
 export default function NoteDetailPage() {
   const data: NoteData = mockNoteData.data;
   console.log(data);
+  //   TODO: useNavigate로 id와 연결
 
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
@@ -14,38 +15,66 @@ export default function NoteDetailPage() {
       <div className="w-full bg-white rounded-xl shadow px-5 py-4 space-y-2 text-[#0B0829]">
         {/* 노트 정보 */}
         <div className="note-container">
-          <div>노트 제목: {data.noteTitle}</div>
-          <div>사용자명: {data.userId}</div>
-          <div>팔로우 버튼</div>
-          <hr className="my-6 border-t-2 border-gray-300" />{' '}
-          <div>문제 정보: {data.problemName}</div>
+          {/* 노트 제목 & 사용자명 */}
+          <div className="container flex flex-row justify-between">
+            {/* 노트 제목 */}
+            <div className="text-2xl font-bold">{data.noteTitle}</div>
+            {/* 사용자 */}
+            {/* TODO: 사용자 id 기반으로 사용자명 받아오기 */}
+            <div className="user-container">
+              사용자명 받아오기: {data.userId}
+              <button>팔로우 버튼</button>
+            </div>
+          </div>
+          <hr className="my-3 border-t-2 border-gray-300" />{' '}
+          <div className="text-xl font-bold">
+            {data.problemId + ' ' + data.problemName}
+          </div>
           {/* 노트 본문 */}
           <div>
-            <h2>코드</h2>
+            <div className="text-lg font-bold my-3">코드</div>
+            <hr className="my-3 border-t-2 border-gray-300" />{' '}
             {/* TODO: front merge 후 라이브러리 작성 */}
-            <div className="flex flex-row">
-              <div>성공 코드: {data.successCode}</div>
-              <div>실패 코드: {data.failCode}</div>
+            <div className="flex flex-row justify-around">
+              <div>
+                <div className="text-sm font-bold">성공 코드</div>
+                {data.successCode}
+              </div>
+              <div>
+                <div className="text-sm font-bold">실패 코드</div>
+                {data.failCode}
+              </div>
             </div>
-            <div>
-              여기 마크다운 콘텔츠 들어올꺼올 문제 해석 풀이 전략 한줄 회고
+            <div className="content">
+              <div className="text-lg font-bold my-3">본문</div>
+              <hr className="my-3 border-t-2 border-gray-300" />
               <div>{data.content}</div>
             </div>
             <div>
-              <div>
-                태그 목록
-                <Tag name="test1"></Tag>
-                <Tag name="test2"></Tag>
-              </div>
+              <hr className="my-3 border-t-2 border-gray-300" />
               {/* TODO: 하트 & 댓글 공통 컴포넌트 분리 */}
-              <div>좋아요 댓글 갯수</div>
-              {/* TODO: 본인 아니면 숨기기 */}
-              <div>
-                <button>수정</button>
-                <button>삭제</button>
+              <div className="flex flex-row justify-between">
+                <div className="tags">
+                  <Tag name="test1"></Tag>
+                  <Tag name="test2"></Tag>
+                </div>
+                <div className="likes-and-comments flex flex-row">
+                  <div>좋아요</div>
+                  <div>댓글</div>
+                </div>
+              </div>
+              {/* TODO: 작성자 본인 아니면 숨기기 */}
+              <div className="flex gap-2 mt-4">
+                <button className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                  수정
+                </button>
+                <button className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                  삭제
+                </button>
               </div>
             </div>
           </div>
+          <hr className="my-3 border-t-2 border-gray-300" />
           {/* 댓글 */}
           <div>댓글 보기</div>
         </div>
