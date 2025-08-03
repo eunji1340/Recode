@@ -24,6 +24,7 @@ public class ExternalSubmissionApiClient {
 //    https://www.acmicpc.net/status?problem_id=2667&user_id=777xyz&language_id=-1&result_id=-1
         String url = "https://www.acmicpc.net/status?problem_id=" + problemId + "&user_id=" + bojId;
 
+        List<SubmissionDetailDto> submissionList = new ArrayList<>();
         List<SubmissionDetailDto> passList = new ArrayList<>();
         List<SubmissionDetailDto> failList = new ArrayList<>();
 
@@ -42,35 +43,38 @@ public class ExternalSubmissionApiClient {
                 String language = safeGetText(tds, 6);
                 String submittedAt = safeGetText(tds, 9);
 
-                // codeLength가 없는 경우: 임의 설정
-                String codeLength = "알 수 없음";
-
-                // 제출 코드 추출
-                String code = fetchCode(driver, solutionId);
-
                 SubmissionDetailDto dto = new SubmissionDetailDto(
                         Long.parseLong(solutionId),
                         language,
-                        codeLength,
+                        "알 수 없음",
                         submittedAt,
                         parseOrNull(runtime),
                         parseOrNull(memory),
-                        code,
+                        null, // 코드는 나중에
                         resultText
                 );
 
-                if (resultText.contains("맞았습니다")) {
+                submissionList.add(dto);
+
+            } catch (Exception e) {
+                System.out.println("메타데이터 파싱 오류: " + e.getMessage());
+            }
+        }
+
+            // 3. 각 제출의 코드 추출
+            for (SubmissionDetailDto dto : submissionList) {
+                String code = fetchCode(driver, String.valueOf(dto.getSubmissionId()));
+                dto.setCode(code); // setter 필요
+            }
+
+            // 4. pass/fail 분류
+            for (SubmissionDetailDto dto : submissionList) {
+                if (dto.getResultText().contains("맞았습니다")) {
                     passList.add(dto);
                 } else {
                     failList.add(dto);
                 }
-
-            } catch (Exception e) {
-                System.out.println("❗ 오류 발생 in row. solutionId 처리 실패: " + e.getMessage());
-                e.printStackTrace();
             }
-        }
-
 
         return new SubmissionResultDto(
                     new SubmissionGroupDto(passList),
@@ -78,7 +82,7 @@ public class ExternalSubmissionApiClient {
             );
         }
         finally {
-//        driver.quit();
+        driver.quit();
     }
     }
 
@@ -90,14 +94,12 @@ public class ExternalSubmissionApiClient {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("pre.CodeMirror-line")));
 
             List<WebElement> lineElements = driver.findElements(By.cssSelector("pre.CodeMirror-line"));
-
             StringBuilder code = new StringBuilder();
             for (WebElement line : lineElements) {
                 code.append(line.getText()).append("\n");
             }
 
             return code.toString().trim();
-
         } catch (Exception e) {
             e.printStackTrace();
             return "코드 추출 실패";

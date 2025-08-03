@@ -25,4 +25,8 @@ public class SubmissionDetailDto {
         this.code = code;
         this.resultText = resultText;
     }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 }
