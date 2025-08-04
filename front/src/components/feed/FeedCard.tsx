@@ -18,6 +18,7 @@ interface FeedCardProps {
   likeCount: number;
   commentCount: number;
   isLiked: boolean;
+  isFollowing: boolean;
 }
 
 const FeedCard: React.FC<FeedCardProps> = ({
@@ -30,8 +31,9 @@ const FeedCard: React.FC<FeedCardProps> = ({
   likeCount,
   commentCount,
   isLiked,
+  isFollowing: initialFollowing,
 }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(initialFollowing);
   const [liked, setLiked] = useState(isLiked);
   const [likes, setLikes] = useState(likeCount);
 
