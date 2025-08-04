@@ -11,7 +11,7 @@ import lombok.*;
 public class ProblemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long problemId;
+    private Integer problemId;
     private String problemName;
     private Integer problemTier;
 }

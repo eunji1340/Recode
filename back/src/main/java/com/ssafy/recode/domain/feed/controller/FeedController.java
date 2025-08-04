@@ -97,12 +97,6 @@ public class FeedController {
         return ResponseEntity.ok().build();
     }
 
-    // 전체 노트 조회
-//    @GetMapping
-//    public ResponseEntity<ApiListResponse<FeedResponseDto>> getAllFeeds() {
-//        List<FeedResponseDto> feeds = feedService.getAllFeeds();
-//        return ResponseEntity.ok(ApiListResponse.from(feeds));
-//    }
     @GetMapping
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getAllFeeds(
             @RequestParam(defaultValue = "0") int page,
@@ -116,4 +110,21 @@ public class FeedController {
                 feeds.isLast()
         ));
     }
+
+    @GetMapping("/followings")
+    public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getFeedsOfFollowings(
+            @RequestParam Long userId, // 내가 팔로잉하는 사람의 userId
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        Page<FeedResponseDto> feeds = feedService.getFeedsOfFollowings(userId, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+
+        return ResponseEntity.ok(ApiListPagingResponse.from(
+                feeds.getContent(),
+                feeds.getTotalElements(),
+                feeds.getTotalPages(),
+                feeds.isLast()
+        ));
+    }
+
 }

@@ -11,6 +11,7 @@ import com.ssafy.recode.domain.feed.entity.ProblemEntity;
 import com.ssafy.recode.domain.feed.repository.CommentRepository;
 import com.ssafy.recode.domain.feed.repository.FeedRepository;
 import com.ssafy.recode.domain.feed.repository.LikeRepository;
+import com.ssafy.recode.domain.follow.entity.Follow;
 import com.ssafy.recode.domain.follow.repository.FollowRepository;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
@@ -18,6 +19,7 @@ import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -184,7 +186,7 @@ public class FeedService {
 
             User user = userRepository.findById(note.getUser().getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            ProblemEntity problem = new ProblemEntity(note.getNoteId(), note.getProblemName(), note.getProblemTier());
+            ProblemEntity problem = new ProblemEntity(note.getProblemId(), note.getProblemName(), note.getProblemTier());
 
             return FeedResponseDto.builder()
                     .noteId(note.getNoteId())
@@ -207,18 +209,57 @@ public class FeedService {
         });
     }
 
+    /** 팔로잉 피드 조회 */
+    public Page<FeedResponseDto> getFeedsOfFollowings(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-//    /** 팔로잉 피드 조회 */
-//    public List<Feed> getFeedsOfFollowings(User user) {
-//        // 1. 팔로우한 유저 목록 가져오기
-//        List<Follow> followings = followRepository.findByFollower(user);
-//
-//        // 2. 팔로우한 유저들의 User 객체 추출
-//        List<User> followingUsers = followings.stream()
-//                .map(Follow::getFollowing)
-//                .collect(Collectors.toList());
-//
-//        // 3. 팔로우한 유저들의 피드 모두 가져오기
-//        return feedRepository.findAllByUserIn(followingUsers);
-//    }
+        // 1. 내가 팔로우하는 사람들 찾기
+        List<Follow> followings = followRepository.findByFollowing(user);
+        List<User> followingUsers = followings.stream()
+                .map(Follow::getFollowing)
+                .toList();
+
+        if (followingUsers.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        // 2. 해당 유저들의 Note 목록 가져오기
+        Page<Note> notesPage = noteRepository.findByUserIn(followingUsers, pageable);
+
+        // 3. Dto 변환
+        List<FeedResponseDto> dtoList = notesPage.stream()
+                .map(note -> {
+                    int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
+                    int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
+
+                    ProblemEntity problem = new ProblemEntity(
+                            note.getProblemId(),
+                            note.getProblemName(),
+                            note.getProblemTier()
+                    );
+
+                    return FeedResponseDto.builder()
+                            .noteId(note.getNoteId())
+                            .content(note.getContent())
+                            .successCodeStart(note.getSuccessCodeStart())
+                            .successCodeEnd(note.getSuccessCodeEnd())
+                            .failCodeStart(note.getFailCodeStart())
+                            .failCodeEnd(note.getFailCodeEnd())
+                            .isPublic(note.getIsPublic())
+                            .createdAt(note.getCreatedAt().toString())
+                            .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
+                            .viewCount(note.getViewCount())
+                            .likeCount(likeCount)
+                            .commentCount(commentCount)
+                            .user(UserDto.from(note.getUser()))
+                            .problem(ProblemDto.from(problem))
+                            .tags(List.of("DP", "이분탐색"))
+//                            .isDeleted(note.getIsDeleted())
+                            .build();
+                })
+                .toList();
+
+        return new PageImpl<>(dtoList, pageable, notesPage.getTotalElements());
+    }
 }

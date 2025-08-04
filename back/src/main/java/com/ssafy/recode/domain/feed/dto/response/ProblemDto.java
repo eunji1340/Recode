@@ -8,11 +8,11 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ProblemDto {
-    private Long problemId;
+    private Integer problemId;
     private String problemName;
     private Integer problemTier;
     @Builder
-    public ProblemDto(Long problemId, String problemName, Integer problemTier) {
+    public ProblemDto(Integer problemId, String problemName, Integer problemTier) {
         this.problemId = problemId;
         this.problemName = problemName;
         this.problemTier = problemTier;
