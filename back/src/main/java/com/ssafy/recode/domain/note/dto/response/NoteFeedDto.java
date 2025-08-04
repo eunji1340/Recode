@@ -23,10 +23,12 @@ public class NoteFeedDto {
     private String successCode;
     private String successCodeStart;
     private String successCodeEnd;
+    private String successLanguage;
 
     private String failCode;
     private String failCodeStart;
     private String failCodeEnd;
+    private String failLanguage;
 
     private Boolean isPublic;
     private Boolean isdeleted;
@@ -65,9 +67,11 @@ public class NoteFeedDto {
                 .successCode(note.getSuccessCode())
                 .successCodeStart(String.valueOf(note.getSuccessCodeStart()))
                 .successCodeEnd(String.valueOf(note.getSuccessCodeEnd()))
+                .successLanguage(note.getSuccessLanguage())
                 .failCode(note.getFailCode())
                 .failCodeStart(String.valueOf(note.getFailCodeStart()))
                 .failCodeEnd(String.valueOf(note.getFailCodeEnd()))
+                .failLanguage(note.getFailLanguage())
                 .isPublic(note.getIsPublic())
                 .isdeleted(note.getIsDeleted())
                 .createdAt(note.getCreatedAt())

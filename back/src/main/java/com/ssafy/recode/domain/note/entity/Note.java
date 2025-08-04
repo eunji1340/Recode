@@ -37,9 +37,15 @@ public class Note {
     private Integer successCodeStart;
     private Integer successCodeEnd;
 
+    @Column(name = "success_language", length = 20)
+    private String successLanguage;
+
     private Integer failCodeStart;
     private Integer failCodeEnd;
     private String failCode;
+
+    @Column(name = "fail_language", length = 20)
+    private String failLanguage;
 
     private Boolean isPublic;
     private Boolean isDeleted;
@@ -80,9 +86,11 @@ public class Note {
         this.successCode = dto.getSuccessCode();
         this.successCodeStart = dto.getSuccessCodeStart();
         this.successCodeEnd = dto.getSuccessCodeEnd();
+        this.successLanguage = dto.getSuccessLanguage();
         this.failCode = dto.getFailCode();
         this.failCodeStart = dto.getFailCodeStart();
         this.failCodeEnd = dto.getFailCodeEnd();
+        this.failLanguage = dto.getFailLanguage();
         this.isPublic = dto.getIsPublic();
         this.updatedAt = LocalDateTime.now();
     }

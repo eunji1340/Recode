@@ -15,4 +15,5 @@ public class AiNoteRequestDto {
     private String failCode;
     private Integer failCodeStart;
     private Integer failCodeEnd;
+
 }
