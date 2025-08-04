@@ -1,5 +1,7 @@
 package com.ssafy.recode.domain.note.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,49 +24,48 @@ public class AiNoteGeneratorService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String generateNoteContent(String successCode, String failCode, String problemName, int problemTier) {
-        String json = """
-{
-  "model": "gpt-4.1-nano",
-  "messages": [
-    {
-      "role": "system",
-      "content": "You are a helpful assistant."
-    },
-    {
-      "role": "user",
-      "content": "Compare the following two Java codes:\\n\\n[Fail Code]\\nSystem.out.println(\\"hi\\");\\n\\n[Success Code]\\nSystem.out.println(\\"hello world\\");"
-    }
-  ]
-}
-""";
+        String prompt = buildPrompt(successCode, failCode, problemName, problemTier);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(gmsApiKey);
-        headers.set("x-target-url", "https://api.openai.com/v1/chat/completions");
 
+        String json = String.format("""
+    {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": %s
+        }
+      ]
+    }
+    """, toJsonString(prompt));
 
         HttpEntity<String> request = new HttpEntity<>(json, headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.exchange(
+            ResponseEntity<String> response = restTemplate.exchange(
                     "https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions",
                     HttpMethod.POST,
                     request,
-                    Map.class
+                    String.class
             );
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
-                if (choices != null && !choices.isEmpty()) {
-                    Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-                    if (message != null && message.containsKey("content")) {
-                        return (String) message.get("content");
-                    }
-                }
-            }
+            ObjectMapper mapper = new ObjectMapper();
 
-            return "⚠️ 응답 형식이 예상과 다릅니다.";
+            JsonNode root = mapper.readTree(response.getBody());
+            JsonNode choices = root.path("choices");
+
+            if (choices.isArray() && choices.size() > 0) {
+                return choices.get(0).path("message").path("content").asText();
+            } else {
+                return "⚠️ GPT 응답에서 결과를 찾을 수 없습니다.";
+            }
 
         } catch (HttpClientErrorException e) {
             System.err.println("❌ HTTP 오류 발생: " + e.getStatusCode());
@@ -74,6 +75,14 @@ public class AiNoteGeneratorService {
             System.err.println("❌ 예외 발생: " + e.getMessage());
             return "❌ 예외 발생: " + e.getMessage();
         }
+    }
+
+    private String toJsonString(String text) {
+        return "\"" + text
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r") + "\"";
     }
 
 
