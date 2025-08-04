@@ -1,4 +1,4 @@
-type TagProps = {
+export type TagProps = {
   name: string;
   url?: string; // 추후 확장 위함
 };

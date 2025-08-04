@@ -2,9 +2,10 @@ import { useParams } from 'react-router-dom';
 import type { NoteData } from '../types';
 import mockNoteData from '../data/MockNoteData';
 import Tag from '../components/tag';
-import HeartIcon from '../components/heartIcon';
-import CommentIcon from '../components/commentIcon';
+import HeartIcon from '../components/HeartIcon';
+import CommentIcon from '../components/CommentIcon';
 import { useState } from 'react';
+import type { TagProps } from '../components/tag';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -41,6 +42,19 @@ export default function NoteDetailPage() {
     setLikes((prev) => prev + (nextLiked ? 1 : -1));
     // TODO: 좋아요 API 호출
   };
+
+  //   TODO: Tag API 호출
+  const TagData: TagProps[] = [
+    {
+      name: 'BFS',
+    },
+    {
+      name: 'DFS',
+    },
+    {
+      name: '백트래킹',
+    },
+  ];
 
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
@@ -89,8 +103,9 @@ export default function NoteDetailPage() {
               <hr className="my-3 border-t-2 border-gray-300" />
               <div className="flex flex-row justify-between">
                 <div className="tags">
-                  <Tag name="test1"></Tag>
-                  <Tag name="test2"></Tag>
+                  {TagData.map((tag, index) => (
+                    <Tag key={index} name={tag.name}></Tag>
+                  ))}
                 </div>
                 <div className="likes-and-comments flex flex-row">
                   <div>
