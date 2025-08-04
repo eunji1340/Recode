@@ -1,5 +1,6 @@
 package com.ssafy.recode.domain.note.entity;
 
+import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
 import com.ssafy.recode.domain.tag.entity.Tag;
 import com.ssafy.recode.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -66,4 +67,23 @@ public class Note {
     )
     private List<Tag> tags;
 
+    public void markAsDeleted() {
+        this.isDeleted = true;
+    }
+
+    public void updateNote(NoteRequestDto dto) {
+        this.problemId = dto.getProblemId();
+        this.problemName = dto.getProblemName();
+        this.problemTier = dto.getProblemTier();
+        this.noteTitle = dto.getNoteTitle();
+        this.content = dto.getContent();
+        this.successCode = dto.getSuccessCode();
+        this.successCodeStart = dto.getSuccessCodeStart();
+        this.successCodeEnd = dto.getSuccessCodeEnd();
+        this.failCode = dto.getFailCode();
+        this.failCodeStart = dto.getFailCodeStart();
+        this.failCodeEnd = dto.getFailCodeEnd();
+        this.isPublic = dto.getIsPublic();
+        this.updatedAt = LocalDateTime.now();
+    }
 }

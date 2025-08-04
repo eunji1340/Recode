@@ -11,6 +11,7 @@ import com.ssafy.recode.domain.tag.service.TagService;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -102,5 +103,26 @@ public class NoteService {
         return AiNoteResponseDto.builder()
                 .content(content)
                 .build();
+    }
+
+    /** 노트 삭제 **/
+    @Transactional
+    public void deleteNote(Long noteId) {
+        Note note = findNoteById(noteId);
+        note.markAsDeleted();
+        noteRepository.save(note);
+    }
+
+    /** 노트 조회 공통 로직 **/
+    private Note findNoteById(Long noteId){
+        return noteRepository.findByNoteIdAndIsDeletedFalse(noteId)
+                .orElseThrow(()-> new EntityNotFoundException("존재하지 않거나 삭제된 노트입니다."));
+    }
+
+    /** 노트 수정 **/
+    @Transactional
+    public void updateNote(Long noteId, NoteRequestDto dto) {
+        Note note = findNoteById(noteId);
+        note.updateNote(dto);
     }
 }
