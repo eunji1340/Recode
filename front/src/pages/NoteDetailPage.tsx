@@ -2,6 +2,9 @@ import { useParams } from 'react-router-dom';
 import type { NoteData } from '../types';
 import mockNoteData from '../data/MockNoteData';
 import Tag from '../components/tag';
+import HeartIcon from '../components/heartIcon';
+import CommentIcon from '../components/commentIcon';
+import { useState } from 'react';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +24,24 @@ export default function NoteDetailPage() {
   }
 
   const data: NoteData = noteItem.data;
+
+  // 좋아요 & 댓글 상태 관리 / TODO: 좋아요 mock data와 연결
+  const mockLikeandCount = {
+    liked: false,
+    likes: 6,
+    comments: 8,
+  };
+
+  const [liked, setLiked] = useState(mockLikeandCount.liked);
+  const [likes, setLikes] = useState(mockLikeandCount.likes);
+
+  const handleHeartClick = function () {
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+    setLikes((prev) => prev + (nextLiked ? 1 : -1));
+    // TODO: 좋아요 API 호출
+  };
+
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
       {/* 검색창 */}
@@ -66,15 +87,24 @@ export default function NoteDetailPage() {
             </div>
             <div>
               <hr className="my-3 border-t-2 border-gray-300" />
-              {/* TODO: 하트 & 댓글 공통 컴포넌트 분리 */}
               <div className="flex flex-row justify-between">
                 <div className="tags">
                   <Tag name="test1"></Tag>
                   <Tag name="test2"></Tag>
                 </div>
                 <div className="likes-and-comments flex flex-row">
-                  <div>좋아요</div>
-                  <div>댓글</div>
+                  <div>
+                    <HeartIcon
+                      liked={liked}
+                      likes={likes}
+                      onClick={handleHeartClick}
+                    ></HeartIcon>
+                  </div>
+                  <div>
+                    <CommentIcon
+                      commentCount={mockLikeandCount.comments}
+                    ></CommentIcon>
+                  </div>
                 </div>
               </div>
               {/* TODO: 작성자 본인 아니면 숨기기 */}
