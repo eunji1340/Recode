@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/axiosInstance"
 import axios from "axios";
 import logo from "../../assets/images/logo_black.png"; 
 
@@ -115,7 +114,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 };
 
   return (
-    <div className="flex items-center justify-center max-h-full bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-lg p-8 bg-white rounded shadow-md space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* 로고 + Re:code */}

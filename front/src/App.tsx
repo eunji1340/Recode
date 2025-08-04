@@ -5,7 +5,7 @@ import AppRouter from "./router";
 
 function App() {
   const location = useLocation();
-  const hideHeaderRoutes = ["/users/login", "/users/register"];
+  const hideHeaderRoutes = ["/users/login", "/users/register", "/about"];
   const shouldHideHeader = hideHeaderRoutes.includes(location.pathname);
 
   return (

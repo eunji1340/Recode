@@ -18,10 +18,11 @@ export default function Header() {
   return (
     <div
       className={clsx(
-        "h-screen bg-primary text-fontsecondary flex flex-col transition-all duration-300",
+        "fixed top-0 left-0 h-screen bg-primary text-fontsecondary flex flex-col transition-all duration-300 z-50",
         collapsed ? "w-20" : "w-64"
       )}
     >
+
       {/* 상단 로고 영역 */}
       <div className="relative flex items-center px-4 py-4 w-full mt-6 h-10">
         <img src={logo} alt="logo" className="h-8 w-auto object-contain" />
