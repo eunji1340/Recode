@@ -116,6 +116,4 @@ public class FeedController {
                 feeds.isLast()
         ));
     }
-
-
 }
