@@ -6,6 +6,8 @@ import HeartIcon from '../components/HeartIcon';
 import CommentIcon from '../components/CommentIcon';
 import { useState } from 'react';
 import type { TagProps } from '../components/tag';
+import Comment from '../components/Comment';
+import MockCommentData from '../data/MockCommentData';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -55,6 +57,9 @@ export default function NoteDetailPage() {
       name: '백트래킹',
     },
   ];
+
+  //   TOOD: 댓글 API 호출
+  const comment = MockCommentData;
 
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
@@ -135,7 +140,21 @@ export default function NoteDetailPage() {
           </div>
           <hr className="my-3 border-t-2 border-gray-300" />
           {/* 댓글 */}
-          <div>댓글 보기</div>
+          <div className="comment-container">
+            {/* TODO: 댓글 API 연결 */}
+            <div className="text-lg font-bold my-3">댓글 보기</div>
+            <div>
+              {comment.map((item) => (
+                <Comment
+                  key={item.commentId}
+                  noteId={item.noteId}
+                  content={item.content}
+                  createdAt={item.createdAt}
+                  userId={item.userId}
+                ></Comment>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

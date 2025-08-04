@@ -18,3 +18,13 @@ export interface NoteData {
   isPublic: boolean;
   isDeleted: boolean;
 }
+
+//  comment 형식
+export interface CommentData {
+  commentId?: number;
+  userId: number;
+  noteId: number;
+  content: string;
+  createdAt: string;
+  profilePic?: string; // 추후 확인
+}
