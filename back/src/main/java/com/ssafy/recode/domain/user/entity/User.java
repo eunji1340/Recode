@@ -27,6 +27,9 @@ public class User {
     @Column(nullable = false, unique = true, length = 20)
     private String nickname;
 
+//    @Column(name = "image", length = 255)
+//    private String image; // 예: "/uploads/user123.jpg"
+
     @Column(nullable = false, length = 20)
     private String password;
 
@@ -50,5 +53,4 @@ public class User {
     public void markAsDeleted() {
         this.isDeleted = true;
     }
-
 }
