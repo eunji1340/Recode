@@ -10,7 +10,7 @@ import {
   LogIn,
 } from 'lucide-react';
 import clsx from 'clsx';
-// import logo from '../assets/images/logo_white.png';
+import logo from '../assets/images/logo_white.png';
 import useSidebarStore from '../stores/useSidebarStore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +53,7 @@ export default function Header() {
     >
       {/* 상단 로고 영역 */}
       <div className="relative flex items-center px-4 py-4 w-full mt-6 h-10">
-        {/* <img src={logo} alt="logo" className="h-8 w-auto object-contain" /> */}
+        <img src={logo} alt="logo" className="h-8 w-auto object-contain" />
         <span
           className={clsx(
             'absolute left-14 text-xl font-bold transition-all duration-300 whitespace-nowrap',
