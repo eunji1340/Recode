@@ -5,11 +5,9 @@ import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
 import com.ssafy.recode.domain.feed.dto.response.ProblemDto;
 import com.ssafy.recode.domain.feed.dto.response.UserDto;
 import com.ssafy.recode.domain.feed.entity.Comment;
-import com.ssafy.recode.domain.feed.entity.Feed;
 import com.ssafy.recode.domain.feed.entity.Like;
 import com.ssafy.recode.domain.feed.entity.ProblemEntity;
 import com.ssafy.recode.domain.feed.repository.CommentRepository;
-import com.ssafy.recode.domain.feed.repository.FeedRepository;
 import com.ssafy.recode.domain.feed.repository.LikeRepository;
 import com.ssafy.recode.domain.follow.entity.Follow;
 import com.ssafy.recode.domain.follow.repository.FollowRepository;
@@ -34,7 +32,7 @@ import java.util.stream.Collectors;
 public class FeedService {
 
     private final UserRepository userRepository;
-    private final FeedRepository feedRepository;
+//    private final FeedRepository feedRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
@@ -54,7 +52,7 @@ public class FeedService {
     public Long addLike(Long userId, Long noteId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Feed feed = feedRepository.findById(noteId)
+        Note feed = noteRepository.findById(noteId)
                 .orElseThrow(() -> new RuntimeException("Feed not found"));
 
         Like like = Like.builder()
@@ -76,7 +74,7 @@ public class FeedService {
     public CommentResponseDto createComment(Long userId, Long noteId, String content) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Feed feed = feedRepository.findById(noteId)
+        Note feed = noteRepository.findById(noteId)
                 .orElseThrow(() -> new RuntimeException("Feed not found"));
 
         LocalDateTime now = LocalDateTime.now();
@@ -140,42 +138,6 @@ public class FeedService {
         }
         commentRepository.delete(comment);
     }
-
-    /** 전체 피드 조회 */
-//    public List<FeedResponseDto> getAllFeeds() {
-//        List<Note> notes = noteRepository.findAll();
-//
-//        return notes.stream()
-//                .map(note -> {
-//                    // 좋아요/댓글 수 가져오기
-//                    int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
-//                    int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
-//
-//                    // 유저, 문제 정보 가져오기
-//                    User user = note.getUser();
-//                    ProblemEntity problem = new ProblemEntity(note.getNoteId(), note.getProblemName(), note.getProblemTier());
-//
-//                    return FeedResponseDto.builder()
-//                            .noteId(note.getNoteId())
-//                            .content(note.getContent())
-//                            .successCodeStart(note.getSuccessCodeStart())
-//                            .successCodeEnd(note.getSuccessCodeEnd())
-//                            .failCodeStart(note.getFailCodeStart())
-//                            .failCodeEnd(note.getFailCodeEnd())
-//                            .isPublic(note.getIsPublic())
-//                            .createdAt(note.getCreatedAt().toString())
-//                            .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
-//                            .viewCount(note.getViewCount())
-//                            .likeCount(likeCount)
-//                            .commentCount(commentCount)
-//                            .user(UserDto.from(user))
-//                            .problem(ProblemDto.from(problem))
-////                            .tags(List.of(1, 2)) // 임시 태그
-////                            .isDeleted(note.getIsDeleted())
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
-//    }
 
     public Page<FeedResponseDto> getAllFeeds(Pageable pageable) {
         Page<Note> notes = noteRepository.findAll(pageable);
