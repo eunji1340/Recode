@@ -32,7 +32,7 @@ public class Note {
 
     @Lob
     private String content;
-
+    @Column(columnDefinition = "LONGTEXT")
     private String successCode;
     private Integer successCodeStart;
     private Integer successCodeEnd;
@@ -42,6 +42,7 @@ public class Note {
 
     private Integer failCodeStart;
     private Integer failCodeEnd;
+    @Column(columnDefinition = "LONGTEXT")
     private String failCode;
 
     @Column(name = "fail_language", length = 20)
