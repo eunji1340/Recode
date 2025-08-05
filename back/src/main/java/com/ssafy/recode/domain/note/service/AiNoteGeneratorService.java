@@ -18,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AiNoteGeneratorService {
 
-    @Value("${gms.api.key}")
+    @Value("${GMS_API_KEY}")
     private String gmsApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
