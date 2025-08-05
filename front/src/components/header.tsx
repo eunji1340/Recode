@@ -98,6 +98,7 @@ export default function Header() {
           icon={<User size={24} />}
           label="마이페이지"
           collapsed={collapsed}
+          onClick={() => navigate(`/users/${userId}`)}
         />
       </nav>
 
@@ -109,7 +110,7 @@ export default function Header() {
               icon={<User size={24} />}
               label={user.nickname}
               collapsed={collapsed}
-              onClick={() => navigate(`/users/${userId}`)}
+              onClick={() => navigate(`/users/${userId}/setting`)}
             />
             <HeaderItem
               icon={<LogOut size={24} />}
