@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/users/Login';
 import Register from '../pages/users/Register';
-import LandingPage from '@/pages/LandingPage';
+import LandingPage from '../pages/LandingPage';
 import Mypage from '../pages/mypage/MyPage';
 import FeedPage from '../pages/FeedPage';
 import NoteGeneratePage from '../pages/NoteGeneratePage';
