@@ -1,6 +1,6 @@
 // tailwind.config.js
-import lineClamp from '@tailwindcss/line-clamp';
 import { fontFamily } from 'tailwindcss/defaultTheme';
+import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -20,5 +20,5 @@ export default {
       },
     },
   },
-  plugins: [lineClamp], // ✅ 꼭 import한 변수로 사용해야 함
+  plugins: [typography],
 };
