@@ -19,7 +19,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             "LOWER(n.problemName) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "OR LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Note> searchByQuery(@Param("query") String query);
-
     Optional<Note> findByNoteIdAndIsDeletedFalse(Long noteId);
     Page<Note> findByUserIn(List<User> users, Pageable pageable);
 }
