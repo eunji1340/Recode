@@ -34,6 +34,8 @@ public class UserRequestDto {
         this.userTier = tier;
     }
 
+    public void setPassword(String password) { this.password = password; }
+
     public User toEntity() {
         return User.builder()
                 .recodeId(recodeId)
