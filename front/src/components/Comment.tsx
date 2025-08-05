@@ -4,7 +4,7 @@ import type { CommentData } from '../types';
 export default function Comment({
   profilePic,
   content,
-  userId,
+  nickname,
   createdAt,
 }: CommentData) {
   // TODO: 추후 note에 종속되게 연결
@@ -14,8 +14,8 @@ export default function Comment({
     <div className="comment-container flex flex-row justify-between">
       <div>사진{profilePic}</div>
       <div>
-        <div>유저Id: {userId}</div>
-        <div className="text-md font-bold my-3 text-left">내용: {content} </div>
+        <div>{nickname}</div>
+        <div className="text-md font-bold my-3 text-left">{content} </div>
       </div>
       <div>
         {/* TODO: 본인 아니면 숨기기 & 버튼 컴포넌트 분리*/}

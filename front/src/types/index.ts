@@ -13,7 +13,7 @@ export interface NoteData {
   failCodeStart: number;
   failCodeEnd: number;
   viewCount: number;
-  createdAt: string;
+  createdAt: number;
   updatedAt: string;
   isPublic: boolean;
   isDeleted: boolean;
@@ -22,10 +22,11 @@ export interface NoteData {
 //  comment 형식
 export interface CommentData {
   commentId?: number;
-  userId: number;
+  userId?: number;
+  nickname?: string;
   noteId: number;
   content: string;
-  createdAt: string;
+  createdAt: number;
   profilePic?: string; // 추후 확인
 }
 
