@@ -1,5 +1,9 @@
 HELP.md
 .gradle
+.env
+*.env
+*.log
+logs/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -36,3 +40,8 @@ out/
 
 ### VS Code ###
 .vscode/
+logs/recode.log
+
+# 환경 변수 파일
+src/main/resources/.env
+src/main/resources/.env
