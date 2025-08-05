@@ -3,6 +3,7 @@ package com.ssafy.recode.domain.note.service;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
 import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
+import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
 import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
@@ -10,6 +11,7 @@ import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
 import com.ssafy.recode.domain.tag.service.TagService;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
+import com.ssafy.recode.global.exception.UnauthorizedException;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -126,5 +129,17 @@ public class NoteService {
     public void updateNote(Long noteId, NoteRequestDto dto) {
         Note note = findNoteById(noteId);
         note.updateNote(dto);
+    }
+
+    /** 특정 노트 조회 **/
+    public NoteFeedDto getNoteFeedDtoByIdAndUserId(Long noteId, Long userId) {
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 노트를 찾을 수 없습니다."));
+
+        if (!note.getUser().getUserId().equals(userId)) {
+            throw new UnauthorizedException("해당 노트에 접근할 권한이 없습니다.");
+        }
+
+        return NoteFeedDto.fromEntity(note);
     }
 }
