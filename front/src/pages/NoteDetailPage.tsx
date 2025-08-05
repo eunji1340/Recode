@@ -4,7 +4,6 @@ import HeartIcon from '../components/HeartIcon';
 import CommentIcon from '../components/CommentIcon';
 import { useEffect, useState } from 'react';
 import Comment from '../components/Comment';
-// import MockCommentData from '../data/MockCommentData'; // 이제 API를 사용하므로 주석 처리
 import type { NoteDetail, NoteDetailResponse } from '../types/noteDetail';
 import axios from 'axios';
 import type { CommentResponse } from '@/types/comment';
@@ -157,7 +156,7 @@ export default function NoteDetailPage() {
             </div>
           </div>
           <hr className="my-3 border-t-2 border-gray-300" />
-          {/* 댓글 */}
+          {/* 댓글 (API Data) */}
           <div className="comment-container">
             <div className="text-lg font-bold my-3">댓글 </div>
             <div>
