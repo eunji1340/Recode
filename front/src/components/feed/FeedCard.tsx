@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { FaHeart } from "react-icons/fa";
-import { FiHeart, FiMessageSquare, FiHash } from "react-icons/fi";
+import React, { useState } from 'react';
+import { FaHeart } from 'react-icons/fa';
+import { FiHeart, FiMessageSquare, FiHash } from 'react-icons/fi';
 
 interface FeedCardProps {
   noteTitle: string;
@@ -12,7 +12,7 @@ interface FeedCardProps {
   };
   problem: {
     tier: number;
-    language: string;
+    language?: string; // ✅ optional 처리
   };
   tags: string[];
   likeCount: number;
@@ -44,18 +44,21 @@ const FeedCard: React.FC<FeedCardProps> = ({
   const getTimeAgo = (dateStr: string): string => {
     const now = new Date();
     const created = new Date(dateStr);
-    const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
-    if (diffMin < 1) return "방금 전";
+    const diffMin = Math.floor(
+      (now.getTime() - created.getTime()) / (1000 * 60),
+    );
+    if (diffMin < 1) return '방금 전';
     if (diffMin < 60) return `${diffMin}분 전`;
     const diffHr = Math.floor(diffMin / 60);
     if (diffHr < 24) return `${diffHr}시간 전`;
     return `${Math.floor(diffHr / 24)}일 전`;
   };
 
-  const getLanguageIconUrl = (lang: string): string => {
+  const getLanguageIconUrl = (lang?: string): string | null => {
+    if (!lang) return null;
     const exceptions: Record<string, string> = {
-      "C++": "cplusplus",
-      "C#": "csharp",
+      'C++': 'cplusplus',
+      'C#': 'csharp',
     };
     const key = exceptions[lang] ?? lang.toLowerCase();
     return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${key}/${key}-original.svg`;
@@ -64,6 +67,7 @@ const FeedCard: React.FC<FeedCardProps> = ({
   const visibleTags = tags.slice(0, 3);
   const extraTagCount = tags.length - visibleTags.length;
   const HeartIcon = liked ? FaHeart : FiHeart;
+  const languageIconUrl = getLanguageIconUrl(problem.language);
 
   return (
     <div className="w-[320px] h-[300px] bg-white rounded-xl shadow p-6 overflow-hidden flex flex-col justify-between hover:shadow-md transition cursor-pointer text-[#0B0829]">
@@ -77,7 +81,6 @@ const FeedCard: React.FC<FeedCardProps> = ({
           <span className="font-semibold text-sm">{noteTitle}</span>
         </div>
 
-        {/* 구분선 */}
         <div className="my-2 h-px bg-zinc-200" />
 
         {/* 작성자 + 팔로우 */}
@@ -86,22 +89,30 @@ const FeedCard: React.FC<FeedCardProps> = ({
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
               {user.image ? (
-                <img src={user.image} className="w-5 h-5 rounded-full" alt="profile" />
+                <img
+                  src={user.image}
+                  className="w-5 h-5 rounded-full"
+                  alt="profile"
+                />
               ) : (
                 <div className="w-5 h-5 rounded-full bg-[#A0BACC] flex items-center justify-center text-white text-[10px] font-bold">
                   {user.nickname[0]}
                 </div>
               )}
-              <span className="text-[#0B0829] font-medium">{user.nickname}</span>
+              <span className="text-[#0B0829] font-medium">
+                {user.nickname}
+              </span>
             </div>
             <button
               onClick={handleFollowToggle}
               className={`px-2 py-[2px] text-xs font-medium rounded-full transition-colors border
-                ${isFollowing
-                  ? "text-white border-[#13233D] bg-[#13233D]"
-                  : "text-[#13233D] border-[#13233D] hover:bg-[#F0F2F5]"}`}
+                ${
+                  isFollowing
+                    ? 'text-white border-[#13233D] bg-[#13233D]'
+                    : 'text-[#13233D] border-[#13233D] hover:bg-[#F0F2F5]'
+                }`}
             >
-              {isFollowing ? "팔로잉" : "팔로우"}
+              {isFollowing ? '팔로잉' : '팔로우'}
             </button>
           </div>
         </div>
@@ -114,14 +125,16 @@ const FeedCard: React.FC<FeedCardProps> = ({
 
       {/* Footer */}
       <div className="text-sm space-y-2">
-        <div className="flex items-center gap-1 text-sm">
-          <img
-            src={getLanguageIconUrl(problem.language)}
-            alt={`${problem.language} icon`}
-            className="w-5 h-5"
-          />
-          <span className="text-xs">{problem.language}</span>
-        </div>
+        {languageIconUrl && (
+          <div className="flex items-center gap-1 text-sm">
+            <img
+              src={languageIconUrl}
+              alt={`${problem.language} icon`}
+              className="w-5 h-5"
+            />
+            <span className="text-xs">{problem.language}</span>
+          </div>
+        )}
         <div className="border-t border-zinc-200" />
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2 overflow-hidden max-w-[200px]">

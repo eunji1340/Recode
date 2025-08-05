@@ -16,3 +16,9 @@ dist
 dist-ssr
 coverage
 *.local
+.gradle/
+.idea/
+logs/
+
+.env
+.env.*

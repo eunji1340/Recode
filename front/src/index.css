@@ -1,3 +1,8 @@
+/* index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @font-face {
   font-family: 'Pretendard';
   src: url('./assets/fonts/Pretendard-Thin.woff2') format('woff2');
@@ -53,7 +58,21 @@
   font-style: normal;
 }
 
-/* index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+body {
+  font-family: 'Pretendard', sans-serif;
+}
+
+.submission-card {
+  /* 모든 행에 일관된 하단 테두리 적용 */
+  @apply border-b border-gray-200;
+}
+
+.submission-card th {
+  /* 모든 th에 일관된 패딩과 수직 정렬 적용 */
+  @apply py-2 px-4 align-middle;
+}
+
+.submission-card:has(input[type='radio']:checked) {
+  /* 선택된 행에는 배경색만 변경 */
+  @apply bg-blue-100;
+}

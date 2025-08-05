@@ -1,209 +1,144 @@
-import React, { useState } from 'react';
-import FeedCard from '../components/feed/FeedCard';
+import React, { useEffect, useState } from 'react';
 import SearchBox from '../components/search/SearchBox';
-import SortDropdown from '../components/feed/SortDropdown';
-import { Link } from 'react-router-dom';
+import SearchUserScopeTabs from '../components/search/SearchUserScopeTabs';
+import type { SortOption } from '@/types/feed';
+import FeedCard from '../components/feed/FeedCard';
 
-const dummyFeeds = [
-  {
-    noteId: 101,
-    noteTitle: '4485 녹색 옷 입은 애가 젤다지?',
-    content: '점화식 설계의 중요성!',
-    createdAt: '2025-07-29T14:00:00Z',
-    likeCount: 15,
-    commentCount: 9,
-    isLiked: true,
-    isFollowing: true,
-    user: {
-      userId: 1,
-      nickname: '김싸피',
-      image: '',
-    },
-    problem: {
-      problemId: 4485,
-      problemName: '4485번 젤다',
-      tier: 5,
-      language: 'Java',
-    },
-    tags: ['DP', 'dfs', '백트래킹', '최단거리', '우선순위큐'],
-  },
-  {
-    noteId: 102,
-    noteTitle: '1991 DFS와 BFS는 언제 나누는가?',
-    content: '이 문제는 큐와 스택을 동시에 떠올려야 풀 수 있다.',
-    createdAt: '2025-07-30T08:00:00Z',
-    likeCount: 8,
-    commentCount: 3,
-    isLiked: false,
-    isFollowing: false,
-    user: {
-      userId: 2,
-      nickname: '한싸피',
-      image: '',
-    },
-    problem: {
-      problemId: 1991,
-      problemName: '1991번 트리 순회',
-      tier: 3,
-      language: 'Python',
-    },
-    tags: ['BFS', 'DFS', '트리'],
-  },
-  {
-    noteId: 103,
-    noteTitle: '9012 괄호는 여는 게 먼저야',
-    content: '스택 자료구조의 기본을 다지는 문제!',
-    createdAt: '2025-07-28T17:30:00Z',
-    likeCount: 27,
-    commentCount: 5,
-    isLiked: false,
-    isFollowing: false,
-    user: {
-      userId: 3,
-      nickname: '바',
-      image: '',
-    },
-    problem: {
-      problemId: 9012,
-      problemName: '9012번 괄호',
-      tier: 2,
-      language: 'C++',
-    },
-    tags: ['스택', '자료구조', '시뮬레이션'],
-  },
-  {
-    noteId: 103,
-    noteTitle: '9012 괄호는 여는 게 먼저야',
-    content: '스택 자료구조의 기본을 다지는 문제!',
-    createdAt: '2025-07-28T17:30:00Z',
-    likeCount: 27,
-    commentCount: 5,
-    isLiked: false,
-    isFollowing: false,
-    user: {
-      userId: 3,
-      nickname: '바',
-      image: '',
-    },
-    problem: {
-      problemId: 9012,
-      problemName: '9012번 괄호',
-      tier: 2,
-      language: 'C++',
-    },
-    tags: ['스택', '자료구조', '시뮬레이션'],
-  },
-  {
-    noteId: 103,
-    noteTitle: '9012 괄호는 여는 게 먼저야',
-    content: '스택 자료구조의 기본을 다지는 문제!',
-    createdAt: '2025-07-28T17:30:00Z',
-    likeCount: 27,
-    commentCount: 5,
-    isLiked: false,
-    isFollowing: false,
-    user: {
-      userId: 3,
-      nickname: '바',
-      image: '',
-    },
-    problem: {
-      problemId: 9012,
-      problemName: '9012번 괄호',
-      tier: 2,
-      language: 'C++',
-    },
-    tags: ['스택', '자료구조', '시뮬레이션'],
-  },
-  {
-    noteId: 103,
-    noteTitle: '9012 괄호는 여는 게 먼저야',
-    content: '스택 자료구조의 기본을 다지는 문제!',
-    createdAt: '2025-07-28T17:30:00Z',
-    likeCount: 27,
-    commentCount: 5,
-    isLiked: false,
-    isFollowing: false,
-    user: {
-      userId: 3,
-      nickname: '바',
-      image: '',
-    },
-    problem: {
-      problemId: 9012,
-      problemName: '9012번 괄호',
-      tier: 2,
-      language: 'C++',
-    },
-    tags: ['스택', '자료구조', '시뮬레이션'],
-  },
-  {
-    noteId: 103,
-    noteTitle: '9012 괄호는 여는 게 먼저야',
-    content: '스택 자료구조의 기본을 다지는 문제!',
-    createdAt: '2025-07-28T17:30:00Z',
-    likeCount: 27,
-    commentCount: 5,
-    isLiked: false,
-    isFollowing: false,
-    user: {
-      userId: 3,
-      nickname: '바',
-      image: '',
-    },
-    problem: {
-      problemId: 9012,
-      problemName: '9012번 괄호',
-      tier: 2,
-      language: 'C++',
-    },
-    tags: ['스택', '자료구조', '시뮬레이션'],
-  },
-];
+interface ApiFeed {
+  noteId: number;
+  content: string;
+  createdAt: string;
+  likeCount: number;
+  commentCount: number;
+  liked: boolean;
+  following: boolean;
+  user: {
+    userId: number;
+    nickname: string;
+    bojId: string;
+    userTier: number;
+  };
+  problem: {
+    problemId: number;
+    problemName: string;
+    problemTier: number;
+  };
+  tags: string[];
+}
 
-export default function FeedPage() {
-  const handleSearch = (params: {
-    keyword: string;
-    tags: string[];
-    userScope?: 'all' | 'following';
-  }) => {
-    console.log('검색 조건:', params);
+interface FeedCardData {
+  noteId: number;
+  noteTitle: string;
+  content: string;
+  createdAt: string;
+  likeCount: number;
+  commentCount: number;
+  isLiked: boolean;
+  isFollowing: boolean;
+  user: {
+    userId: number;
+    nickname: string;
+    image?: string;
+  };
+  problem: {
+    problemId: number;
+    problemName: string;
+    tier: number;
+    language?: string;
+  };
+  tags: string[];
+}
+
+function mapApiFeedToFeedCardData(apiFeed: ApiFeed): FeedCardData {
+  return {
+    noteId: apiFeed.noteId,
+    noteTitle: apiFeed.problem.problemName ?? '문제 이름 없음',
+    content: apiFeed.content,
+    createdAt: apiFeed.createdAt,
+    likeCount: apiFeed.likeCount,
+    commentCount: apiFeed.commentCount,
+    isLiked: apiFeed.liked,
+    isFollowing: apiFeed.following,
+    user: {
+      userId: apiFeed.user.userId,
+      nickname: apiFeed.user.nickname,
+      image: '',
+    },
+    problem: {
+      problemId: apiFeed.problem.problemId,
+      problemName: apiFeed.problem.problemName,
+      tier: apiFeed.problem.problemTier,
+    },
+    tags: apiFeed.tags ?? [],
+  };
+}
+
+export default function ExplorePage() {
+  const [feeds, setFeeds] = useState<FeedCardData[]>([]);
+  const [sortBy, setSortBy] = useState<SortOption>('latest');
+  const [userScope, setUserScope] = useState<'all' | 'following'>('all');
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchTags, setSearchTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/feeds?userId=1')
+      .then((res) => res.json())
+      .then((json) => {
+        const apiFeeds: ApiFeed[] = json.data.details;
+        const mappedFeeds = apiFeeds.map(mapApiFeedToFeedCardData);
+        setFeeds(mappedFeeds);
+      })
+      .catch((err) => {
+        console.error('🚨 피드 로딩 실패:', err);
+      });
+  }, []);
+
+  const handleSearch = (params: { keyword: string; tags: string[] }) => {
+    setSearchKeyword(params.keyword);
+    setSearchTags(params.tags);
   };
 
-  const [sortBy, setSortBy] = useState('latest');
-
-  const sortedFeeds = [...dummyFeeds].sort((a, b) => {
+  const sortedFeeds = [...feeds].sort((a, b) => {
     switch (sortBy) {
       case 'likes':
         return b.likeCount - a.likeCount;
       case 'comments':
         return b.commentCount - a.commentCount;
-      default: // 최신순
+      default:
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
     }
   });
 
+  const visibleFeeds = sortedFeeds.filter((feed) => {
+    const inScope = userScope === 'all' || feed.isFollowing;
+    const matchesKeyword =
+      searchKeyword === '' ||
+      feed.noteTitle.includes(searchKeyword) ||
+      feed.content.includes(searchKeyword);
+    const matchesTags =
+      searchTags.length === 0 ||
+      searchTags.every((tag) => feed.tags.includes(tag));
+    return inScope && matchesKeyword && matchesTags;
+  });
+
   return (
     <main className="flex-1 px-18 py-5 bg-[#F8F9FA]">
       <div className="max-w-[1100px] mx-auto space-y-6">
-        {/* 검색 박스 */}
+        <SearchUserScopeTabs
+          value={userScope}
+          onChange={(val) => setUserScope(val)}
+        />
         <SearchBox
-          showUserScopeTabs
-          defaultUserScope="all"
           onSearch={handleSearch}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
         />
 
-        {/* 정렬 드롭다운 */}
-        <SortDropdown selected={sortBy} onChange={setSortBy} />
-
-        {/* 피드 카드 목록 (정렬된 배열 사용!) */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-y-6">
-          {sortedFeeds.map((feed) => (
-            <Link to={`/notes/${feed.noteId}`}>
-              <FeedCard key={feed.noteId + feed.createdAt} {...feed} />
-            </Link>
+          {visibleFeeds.map((feed) => (
+            <FeedCard key={feed.noteId + feed.createdAt} {...feed} />
           ))}
         </div>
       </div>

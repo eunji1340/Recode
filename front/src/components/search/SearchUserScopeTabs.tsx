@@ -5,20 +5,20 @@ type ScopeType = 'all' | 'following';
 const labelMap: Record<ScopeType, string> = {
   all: '전체',
   following: '팔로잉',
-}
+};
 
 interface Props {
   value: ScopeType;
-  onChange: (val:ScopeType) => void;
+  onChange: (val: ScopeType) => void;
 }
 
 const UserScopeTabs: React.FC<Props> = ({ value, onChange }) => {
   const tabs: ScopeType[] = ['all', 'following'];
-  
+
   return (
     <div className="flex border-b border-gray-200">
       {tabs.map((tab) => (
-        <button 
+        <button
           key={tab}
           role="tab"
           onClick={() => onChange(tab)}
@@ -31,11 +31,10 @@ const UserScopeTabs: React.FC<Props> = ({ value, onChange }) => {
         >
           {labelMap[tab]}
         </button>
-      ))
-      }
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export type { ScopeType }
+export type { ScopeType };
 export default UserScopeTabs;

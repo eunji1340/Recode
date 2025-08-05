@@ -110,7 +110,7 @@ const MainFeed: React.FC<MainFeedProps> = ({
       <div className="bg-[#F8F9FA] p-5 rounded-xl space-y-4">
         {/* 문제 정보 */}
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-3 text-md">
             <span className="bg-yellow-400 text-white text-xs font-bold px-2 py-[2px] rounded">
               {problem.tier}
             </span>
@@ -128,12 +128,25 @@ const MainFeed: React.FC<MainFeedProps> = ({
 
         {/* 코드 비교 */}
         <div className="flex flex-col md:flex-row gap-4 text-sm font-mono">
-          <pre className="w-full md:w-1/2 bg-[#FDECEC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#cc1f1a]">
-            {failCode}
-          </pre>
-          <pre className="w-full md:w-1/2 bg-[#EDF4FC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#1f3bcc]">
-            {successCode}
-          </pre>
+          {/* 실패 코드 */}
+          <div className="w-full md:w-1/2 flex flex-col">
+            <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">
+              실패코드
+            </p>
+            <pre className="flex-1 bg-[#FDECEC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#cc1f1a] h-full min-h-[200px]">
+              {failCode}
+            </pre>
+          </div>
+
+          {/* 성공 코드 */}
+          <div className="w-full md:w-1/2 flex flex-col">
+            <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">
+              성공코드
+            </p>
+            <pre className="flex-1 bg-[#EDF4FC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#1f3bcc] h-full min-h-[200px]">
+              {successCode}
+            </pre>
+          </div>
         </div>
 
         {/* 노트 내용 */}
