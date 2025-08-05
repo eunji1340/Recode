@@ -14,10 +14,14 @@ export default function Login() {
       const response = await api.post("/users/login",{recodeId, password,});
 
       console.log("로그인 성공:", response.data);
-
+      
+      // ✅ userId, 닉네임 저장 (토큰 방식 도입 전까지 임시 로그인 유지용)
+      localStorage.setItem("userId", response.data.data.userId); 
+      localStorage.setItem("nickname", response.data.data.nickname); 
+      
       // TODO: 토큰 저장 or 사용자 정보 저장 (필요 시)
       // 예: localStorage.setItem("token", response.data.token);
-
+      // 로그인 할 때마다 solved.ac 조회 사용자 정보 가져와서 티어 갱신 
       alert("로그인 성공!");
       navigate("/"); // 메인 페이지로 이동
     } catch (error: any) {
