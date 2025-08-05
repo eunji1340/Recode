@@ -1,41 +1,30 @@
-<<<<<<< HEAD
-import { BrowserRouter } from 'react-router-dom';
-import Header from './components/header';
-import AppRouter from './router';
-=======
-import { BrowserRouter, useLocation } from 'react-router-dom';
-import Header from './components/header';
-import AppRouter from './router';
+import { useLocation } from 'react-router-dom';
 
-function AppContent() {
+import Header from './components/header';
+import AppRouter from './router';
+import clsx from 'clsx';
+import useSidebarStore from './stores/useSidebarStore';
+
+function App() {
   const location = useLocation();
-  const showHeader = !location.pathname.startsWith('/note/generate');
+  const hideHeaderRoutes = new Set([
+    '/users/login',
+    '/users/register',
+    '/about',
+  ]);
+  const shouldHideHeader = hideHeaderRoutes.has(location.pathname);
+
+  const { collapsed } = useSidebarStore();
+
+  const marginClass = shouldHideHeader ? 'ml-0' : collapsed ? 'ml-20' : 'ml-64';
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FA] w-full">
-      {showHeader && <Header />}
-      <div className="flex-1">
+    <div className="flex min-h-screen bg-[#F8F9FA]">
+      {!shouldHideHeader && <Header />}
+      <div className={clsx('transition-all duration-300 flex-1', marginClass)}>
         <AppRouter />
       </div>
     </div>
-  );
-}
->>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
-
-function App() {
-  return (
-    <BrowserRouter>
-<<<<<<< HEAD
-      <div className="flex min-h-screen bg-[#F8F9FA] w-full">
-        <Header />
-        <div className="flex-1">
-          <AppRouter />
-        </div>
-      </div>
-=======
-      <AppContent />
->>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
-    </BrowserRouter>
   );
 }
 

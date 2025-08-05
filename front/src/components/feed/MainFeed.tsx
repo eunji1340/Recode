@@ -55,7 +55,9 @@ const MainFeed: React.FC<MainFeedProps> = ({
   const getTimeAgo = (dateStr: string): string => {
     const now = new Date();
     const created = new Date(dateStr);
-    const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
+    const diffMin = Math.floor(
+      (now.getTime() - created.getTime()) / (1000 * 60),
+    );
     if (diffMin < 1) return '방금 전';
     if (diffMin < 60) return `${diffMin}분 전`;
     const diffHr = Math.floor(diffMin / 60);
@@ -92,7 +94,7 @@ const MainFeed: React.FC<MainFeedProps> = ({
                 alt="profile"
                 className="w-8 h-8 rounded-full object-cover"
               />
-              ) : (
+            ) : (
               <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
                 {user.nickname[0]}
               </div>
@@ -108,11 +110,7 @@ const MainFeed: React.FC<MainFeedProps> = ({
       <div className="bg-[#F8F9FA] p-5 rounded-xl space-y-4">
         {/* 문제 정보 */}
         <div className="flex justify-between items-center">
-<<<<<<< HEAD
           <div className="flex items-center gap-3 text-md">
-=======
-          <div className="flex items-center gap-3 text-sm">
->>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
             <span className="bg-yellow-400 text-white text-xs font-bold px-2 py-[2px] rounded">
               {problem.tier}
             </span>
@@ -130,40 +128,33 @@ const MainFeed: React.FC<MainFeedProps> = ({
 
         {/* 코드 비교 */}
         <div className="flex flex-col md:flex-row gap-4 text-sm font-mono">
-<<<<<<< HEAD
-  {/* 실패 코드 */}
-  <div className="w-full md:w-1/2 flex flex-col">
-    <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">실패코드</p>
-    <pre className="flex-1 bg-[#FDECEC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#cc1f1a] h-full min-h-[200px]">
-      {failCode}
-    </pre>
-  </div>
+          {/* 실패 코드 */}
+          <div className="w-full md:w-1/2 flex flex-col">
+            <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">
+              실패코드
+            </p>
+            <pre className="flex-1 bg-[#FDECEC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#cc1f1a] h-full min-h-[200px]">
+              {failCode}
+            </pre>
+          </div>
 
-  {/* 성공 코드 */}
-  <div className="w-full md:w-1/2 flex flex-col">
-    <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">성공코드</p>
-    <pre className="flex-1 bg-[#EDF4FC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#1f3bcc] h-full min-h-[200px]">
-      {successCode}
-    </pre>
-  </div>
-</div>
-
-=======
-          <pre className="w-full md:w-1/2 bg-[#FDECEC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#cc1f1a]">
-            {failCode}
-          </pre>
-          <pre className="w-full md:w-1/2 bg-[#EDF4FC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#1f3bcc]">
-            {successCode}
-          </pre>
+          {/* 성공 코드 */}
+          <div className="w-full md:w-1/2 flex flex-col">
+            <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">
+              성공코드
+            </p>
+            <pre className="flex-1 bg-[#EDF4FC] p-3 rounded-md whitespace-pre-wrap overflow-x-auto text-[#1f3bcc] h-full min-h-[200px]">
+              {successCode}
+            </pre>
+          </div>
         </div>
->>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
 
         {/* 노트 내용 */}
         <div className="text-sm bg-white rounded-xl p-3 whitespace-pre-wrap leading-relaxed">
           {content}
         </div>
       </div>
-      
+
       {/* 구분선 */}
       <div className="h-px bg-zinc-200" />
 
