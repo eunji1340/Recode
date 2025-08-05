@@ -9894,3 +9894,210 @@ java.lang.IllegalArgumentException: 이미 존재하는 이메일입니다.
 2025-08-05 16:49:26 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-08-05 16:49:26 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-08-05 16:49:26 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-08-05 16:49:28 [main] INFO  com.ssafy.recode.RecodeApplication - Starting RecodeApplication using Java 21.0.7 with PID 12864 (C:\S13P11A507\back\build\classes\java\main started by SSAFY in C:\S13P11A507\back)
+2025-08-05 16:49:28 [main] DEBUG com.ssafy.recode.RecodeApplication - Running with Spring Boot v3.5.4, Spring v6.2.9
+2025-08-05 16:49:28 [main] INFO  com.ssafy.recode.RecodeApplication - The following 2 profiles are active: "db", "dev"
+2025-08-05 16:49:29 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-05 16:49:29 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 62 ms. Found 6 JPA repository interfaces.
+2025-08-05 16:49:30 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-08-05 16:49:30 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-05 16:49:30 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-05 16:49:30 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-05 16:49:30 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1327 ms
+2025-08-05 16:49:30 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-05 16:49:30 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@299fc582
+2025-08-05 16:49:30 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-05 16:49:30 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-05 16:49:30 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-05 16:49:30 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-05 16:49:30 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-05 16:49:30 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-05 16:49:30 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.4
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-05 16:49:31 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-05 16:49:31 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-05 16:49:32 [main] DEBUG c.s.r.auth.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-08-05 16:49:32 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-08-05 16:49:32 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-05 16:49:32 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-08-05 16:49:32 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-05 16:49:32 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-08-05 16:49:32 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 40 mappings in 'requestMappingHandlerMapping'
+2025-08-05 16:49:33 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-05 16:49:33 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-08-05 16:49:33 [main] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-08-05 16:49:33 [main] INFO  o.s.v.b.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-08-05 16:49:33 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-05 16:49:33 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-05 16:49:33 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-08-05 16:49:33 [main] INFO  com.ssafy.recode.RecodeApplication - Started RecodeApplication in 4.961 seconds (process running for 5.442)
+2025-08-05 16:49:43 [http-nio-8080-exec-2] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-05 16:49:43 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@4abfdad1
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@6d548d27
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-05 16:49:43 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing POST /users/login
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured POST /users/login
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/login", parameters={}
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#login(LoginRequestDto, HttpServletResponse)
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.LoginRequestDto@42efee6b]
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.recode_id=?
+2025-08-05 16:49:43 [http-nio-8080-exec-2] DEBUG o.s.s.a.d.DaoAuthenticationProvider - Authenticated user
+2025-08-05 16:49:44 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-05 16:49:44 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@222a3456]
+2025-08-05 16:49:44 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /notes
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.recode_id=?
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /notes
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/notes", parameters={}
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.note.controller.NoteController#getNotes(int, int)
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select n1_0.note_id,n1_0.comment_count,n1_0.content,n1_0.created_at,n1_0.fail_code,n1_0.fail_code_end,n1_0.fail_code_start,n1_0.fail_language,n1_0.is_deleted,n1_0.is_public,n1_0.like_count,n1_0.note_title,n1_0.problem_id,n1_0.problem_name,n1_0.problem_tier,n1_0.success_code,n1_0.success_code_end,n1_0.success_code_start,n1_0.success_language,n1_0.updated_at,n1_0.user_id,n1_0.view_count from notes n1_0 order by n1_0.note_id desc limit ?,?
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select count(n1_0.note_id) from notes n1_0
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{data=com.ssafy.recode.global.wrapper.NoteResponseWrapper@3cf383dd}]
+2025-08-05 16:49:56 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing POST /users/login
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Secured POST /users/login
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/login", parameters={}
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#login(LoginRequestDto, HttpServletResponse)
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.LoginRequestDto@5eaedcb5]
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.recode_id=?
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.s.a.d.DaoAuthenticationProvider - Authenticated user
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@141e105b]
+2025-08-05 17:07:49 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing POST /users/login
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Secured POST /users/login
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - POST "/users/login", parameters={}
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.user.controller.UserController#login(LoginRequestDto, HttpServletResponse)
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.user.dto.request.LoginRequestDto@7ae5c24e]
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.recode_id=?
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.s.a.d.DaoAuthenticationProvider - Authenticated user
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.global.dto.response.ApiSingleResponse@1ba34ca1]
+2025-08-05 17:09:18 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing POST /notes
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.recode_id=?
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Secured POST /notes
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - POST "/notes", parameters={}
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.note.controller.NoteController#createNote(NoteRequestDto, Long)
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.note.dto.request.NoteRequestDto@3d554ae0]
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.web.method.HandlerMethod - Could not resolve parameter [1] in public org.springframework.http.ResponseEntity<?> com.ssafy.recode.domain.note.controller.NoteController.createNote(com.ssafy.recode.domain.note.dto.request.NoteRequestDto,java.lang.Long): Required request header 'userId' for method parameter type Long is not present
+2025-08-05 17:09:33 [http-nio-8080-exec-10] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.bind.MissingRequestHeaderException: Required request header 'userId' for method parameter type Long is not present]
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 400 BAD_REQUEST
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing POST /error
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-08-05 17:09:33 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing POST /notes
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.recode_id=?
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured POST /notes
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - POST "/notes", parameters={}
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.note.controller.NoteController#createNote(NoteRequestDto, Long)
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.note.dto.request.NoteRequestDto@205d7f98]
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.web.method.HandlerMethod - Could not resolve parameter [1] in public org.springframework.http.ResponseEntity<?> com.ssafy.recode.domain.note.controller.NoteController.createNote(com.ssafy.recode.domain.note.dto.request.NoteRequestDto,java.lang.Long): Required request header 'userId' for method parameter type Long is not present
+2025-08-05 17:09:44 [http-nio-8080-exec-1] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.bind.MissingRequestHeaderException: Required request header 'userId' for method parameter type Long is not present]
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 400 BAD_REQUEST
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing POST /error
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-08-05 17:09:44 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-08-05 17:09:58 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-05 17:09:58 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-08-05 17:09:58 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-05 17:09:58 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-08-05 17:09:58 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-08-05 17:10:02 [main] INFO  com.ssafy.recode.RecodeApplication - Starting RecodeApplication using Java 21.0.7 with PID 27732 (C:\S13P11A507\back\build\classes\java\main started by SSAFY in C:\S13P11A507\back)
+2025-08-05 17:10:02 [main] DEBUG com.ssafy.recode.RecodeApplication - Running with Spring Boot v3.5.4, Spring v6.2.9
+2025-08-05 17:10:02 [main] INFO  com.ssafy.recode.RecodeApplication - The following 2 profiles are active: "db", "dev"
+2025-08-05 17:10:02 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-05 17:10:03 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 55 ms. Found 6 JPA repository interfaces.
+2025-08-05 17:10:03 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-08-05 17:10:03 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-05 17:10:03 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-05 17:10:03 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-05 17:10:03 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1227 ms
+2025-08-05 17:10:03 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-05 17:10:03 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@347123dc
+2025-08-05 17:10:03 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-05 17:10:03 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-05 17:10:03 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-05 17:10:03 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-05 17:10:04 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-05 17:10:04 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-05 17:10:04 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.4
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-05 17:10:04 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-05 17:10:04 [main] DEBUG org.hibernate.SQL - alter table users modify column nickname varchar(255) not null
+2025-08-05 17:10:05 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-05 17:10:05 [main] DEBUG c.s.r.auth.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-08-05 17:10:05 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-08-05 17:10:05 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-05 17:10:05 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-08-05 17:10:06 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-05 17:10:06 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-08-05 17:10:06 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 40 mappings in 'requestMappingHandlerMapping'
+2025-08-05 17:10:06 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-08-05 17:10:06 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-08-05 17:10:06 [main] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-08-05 17:10:06 [main] INFO  o.s.v.b.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-08-05 17:10:06 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-05 17:10:06 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-05 17:10:06 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-08-05 17:10:06 [main] INFO  com.ssafy.recode.RecodeApplication - Started RecodeApplication in 4.679 seconds (process running for 5.075)
+2025-08-05 17:10:12 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-05 17:10:12 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@3af64136
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@7f09b3aa
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-05 17:10:12 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 16 ms
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing POST /notes
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.recode_id=?
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured POST /notes
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - POST "/notes", parameters={}
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.ssafy.recode.domain.note.controller.NoteController#createNote(NoteRequestDto, CustomUserDetails)
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.ssafy.recode.domain.note.dto.request.NoteRequestDto@235aac39]
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select u1_0.user_id,u1_0.bio,u1_0.boj_id,u1_0.email,u1_0.is_deleted,u1_0.nickname,u1_0.password,u1_0.recode_id,u1_0.user_tier from users u1_0 where u1_0.user_id=?
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - insert into notes (comment_count,content,created_at,fail_code,fail_code_end,fail_code_start,fail_language,is_deleted,is_public,like_count,note_title,problem_id,problem_name,problem_tier,success_code,success_code_end,success_code_start,success_language,updated_at,user_id,view_count) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.client.RestTemplate - HTTP GET https://solved.ac/api/v3/problem/show?problemId=1000
+2025-08-05 17:10:12 [http-nio-8080-exec-1] DEBUG o.s.web.client.RestTemplate - Accept=[application/json, application/yaml, application/*+json]
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG o.s.web.client.RestTemplate - Response 200 OK
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG o.s.web.client.RestTemplate - Reading to [java.util.Map<?, ?>]
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select t1_0.tag_id,t1_0.tag_name from tags t1_0 where t1_0.tag_name=?
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select t1_0.tag_id,t1_0.tag_name from tags t1_0 where t1_0.tag_name=?
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - select t1_0.tag_id,t1_0.tag_name from tags t1_0 where t1_0.tag_name=?
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - insert into notes_tags (note_id,tag_id) values (?,?)
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - insert into notes_tags (note_id,tag_id) values (?,?)
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - insert into notes_tags (note_id,tag_id) values (?,?)
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.ssafy.recode.domain.note.dto.response.NoteFeedDto@8093979]
+2025-08-05 17:10:13 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-05 17:10:42 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-05 17:10:42 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-08-05 17:10:42 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-05 17:10:42 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-08-05 17:10:42 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
