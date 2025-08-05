@@ -30,7 +30,7 @@ public class User {
 //    @Column(name = "image", length = 255)
 //    private String image; // 예: "/uploads/user123.jpg"
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Column(nullable = false)

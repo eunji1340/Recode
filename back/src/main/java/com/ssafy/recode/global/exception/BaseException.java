@@ -16,7 +16,7 @@ public class BaseException extends RuntimeException{
         this.message = message;
     }
 
-    protected BaseException(ErrorCode errorCode) {
+    public BaseException(ErrorCode errorCode) {
         this(
                 errorCode.getStatus(),
                 errorCode.getFullCode(),
