@@ -80,16 +80,19 @@ export default function Header() {
           icon={<LayoutGrid size={24} />}
           label="피드 보기"
           collapsed={collapsed}
+          onClick={() => navigate(`/feed`)}
         />
         <HeaderItem
           icon={<Search size={24} />}
           label="탐색"
           collapsed={collapsed}
+          onClick={() => navigate(`/explore`)}
         />
         <HeaderItem
           icon={<FilePlus size={24} />}
           label="노트 생성"
           collapsed={collapsed}
+          onClick={() => navigate(`/note/generate`)}
         />
         <HeaderItem
           icon={<User size={24} />}

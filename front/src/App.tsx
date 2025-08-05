@@ -11,6 +11,7 @@ function App() {
     '/users/login',
     '/users/register',
     '/about',
+    '/note/generate',
   ]);
   const shouldHideHeader = hideHeaderRoutes.has(location.pathname);
 
