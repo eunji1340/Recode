@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
+@Table(name = "comments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -26,9 +28,9 @@ public class Comment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Setter
     private String content;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }

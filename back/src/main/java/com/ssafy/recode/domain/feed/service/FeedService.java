@@ -87,25 +87,13 @@ public class FeedService {
                 .build();
 
         Comment saved = commentRepository.save(comment);
-
-        return CommentResponseDto.builder()
-                .commentId(saved.getCommentId())
-                .userId(user.getUserId())
-                .noteId(feed.getNoteId())
-                .content(saved.getContent())
-                .createdAt(saved.getCreatedAt().toString())
-                .build();
+        return CommentResponseDto.from(saved);
     }
 
     /** 댓글 전체 조회 */
     public List<CommentResponseDto> getComments(Long noteId) {
         return commentRepository.findAllByFeed_NoteId(noteId).stream()
-                .map(comment -> CommentResponseDto.builder()
-                        .commentId(comment.getCommentId())
-                        .userId(comment.getUser().getUserId())
-                        .content(comment.getContent())
-                        .createdAt(comment.getCreatedAt().toString())
-                        .build())
+                .map(CommentResponseDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -119,13 +107,9 @@ public class FeedService {
             throw new AccessDeniedException("권한 없음");
         }
         comment.setContent(content);
-        return CommentResponseDto.builder()
-                .commentId(comment.getCommentId())
-                .userId(comment.getUser().getUserId())
-                .noteId(comment.getFeed().getNoteId())
-                .content(comment.getContent())
-                .createdAt(comment.getCreatedAt().toString())
-                .build();
+        comment.setUpdatedAt(LocalDateTime.now());
+
+        return CommentResponseDto.from(comment);
     }
 
 
