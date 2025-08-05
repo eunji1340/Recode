@@ -18,7 +18,10 @@ interface FeedCardProps {
   likeCount: number;
   commentCount: number;
   isLiked: boolean;
+<<<<<<< HEAD
   isFollowing: boolean;
+=======
+>>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
 }
 
 const FeedCard: React.FC<FeedCardProps> = ({
@@ -31,9 +34,14 @@ const FeedCard: React.FC<FeedCardProps> = ({
   likeCount,
   commentCount,
   isLiked,
+<<<<<<< HEAD
   isFollowing: initialFollowing,
 }) => {
   const [isFollowing, setIsFollowing] = useState(initialFollowing);
+=======
+}) => {
+  const [isFollowing, setIsFollowing] = useState(false);
+>>>>>>> a795b15 (feat(code): 노트 생성 페이지 라우터에 연동 & header 제거)
   const [liked, setLiked] = useState(isLiked);
   const [likes, setLikes] = useState(likeCount);
 

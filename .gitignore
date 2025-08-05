@@ -19,3 +19,6 @@ coverage
 .gradle/
 .idea/
 logs/
+
+.env
+.env.*

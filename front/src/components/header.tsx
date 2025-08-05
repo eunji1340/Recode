@@ -1,14 +1,15 @@
 // src/components/Header.tsx
-import { useState } from "react";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   LayoutGrid,
   Search,
   FilePlus,
   User,
   ChevronLeft,
-  ChevronRight
-} from "lucide-react";
-import clsx from "clsx";
+  ChevronRight,
+} from 'lucide-react';
+import clsx from 'clsx';
 
 export default function Header() {
   const [collapsed, setCollapsed] = useState(false);
@@ -17,8 +18,8 @@ export default function Header() {
   return (
     <div
       className={clsx(
-        "h-screenf bg-primary text-fontsecondary flex flex-col transition-all duration-300",
-        collapsed ? "w-20 items-center" : "w-64"
+        'h-screenf bg-primary text-fontsecondary flex flex-col transition-all duration-300',
+        collapsed ? 'w-20 items-center' : 'w-64',
       )}
     >
       {/* 상단 로고 영역 */}
@@ -33,11 +34,11 @@ export default function Header() {
             )}
           /> */}
           {!collapsed && (
-            <h1 className="text-xl font-bold">
+            <Link to="/" className="text-xl font-bold">
               Re
               <span className="text-accent">:c</span>
               ode
-            </h1>
+            </Link>
           )}
         </div>
         <button
@@ -50,10 +51,26 @@ export default function Header() {
 
       {/* 메뉴 */}
       <nav className="flex flex-col gap-6 mt-8 px-4 w-full">
-        <HeaderItem icon={<LayoutGrid size={24} />} label="피드 보기" collapsed={collapsed} />
-        <HeaderItem icon={<Search size={24} />} label="탐색" collapsed={collapsed} />
-        <HeaderItem icon={<FilePlus size={24} />} label="노트 생성" collapsed={collapsed} />
-        <HeaderItem icon={<User size={24} />} label="마이페이지" collapsed={collapsed} />
+        <HeaderItem
+          icon={<LayoutGrid size={24} />}
+          label="피드 보기"
+          collapsed={collapsed}
+        />
+        <HeaderItem
+          icon={<Search size={24} />}
+          label="탐색"
+          collapsed={collapsed}
+        />
+        <HeaderItem
+          icon={<FilePlus size={24} />}
+          label="노트 생성"
+          collapsed={collapsed}
+        />
+        <HeaderItem
+          icon={<User size={24} />}
+          label="마이페이지"
+          collapsed={collapsed}
+        />
       </nav>
     </div>
   );
@@ -69,13 +86,11 @@ function HeaderItem({ icon, label, collapsed }: HeaderItemProps) {
   return (
     <div className="flex items-center gap-4 hover:text-accent cursor-pointer transition-colors">
       {/* flex-shrink-0 클래스 추가 */}
-      <div className="flex-shrink-0">
-        {icon}
-      </div>
+      <div className="flex-shrink-0">{icon}</div>
       <span
         className={clsx(
-          "transition-opacity duration-300 ease-in-out",
-          collapsed ? "opacity-0" : "opacity-100"
+          'transition-opacity duration-300 ease-in-out',
+          collapsed ? 'opacity-0' : 'opacity-100',
         )}
       >
         {label}
