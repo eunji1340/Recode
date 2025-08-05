@@ -68,9 +68,9 @@ public class NoteController {
     }
 
     @GetMapping("/{noteId}")
-    public ResponseEntity<?>  getNote(@RequestHeader("userId") Long userId,
-                                                       @PathVariable Long noteId){
-        NoteFeedDto noteFeedDto = noteService.getNoteFeedDtoByIdAndUserId(noteId, userId);
+    public ResponseEntity<?> getNote(@PathVariable Long noteId){
+        NoteFeedDto noteFeedDto = noteService.getNoteFeedDtoById(noteId);
+
         return ResponseEntity.ok(noteFeedDto);
     }
 

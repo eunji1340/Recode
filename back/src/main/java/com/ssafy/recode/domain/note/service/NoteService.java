@@ -11,7 +11,7 @@ import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
 import com.ssafy.recode.domain.tag.service.TagService;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
-import com.ssafy.recode.global.exception.UnauthorizedException;
+import com.ssafy.recode.global.exception.NoteNotFoundException;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -132,14 +132,10 @@ public class NoteService {
     }
 
     /** 특정 노트 조회 **/
-    public NoteFeedDto getNoteFeedDtoByIdAndUserId(Long noteId, Long userId) {
+    public NoteFeedDto getNoteFeedDtoById(Long noteId) {
         Note note = noteRepository.findById(noteId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 노트를 찾을 수 없습니다."));
-
-        if (!note.getUser().getUserId().equals(userId)) {
-            throw new UnauthorizedException("해당 노트에 접근할 권한이 없습니다.");
-        }
-
-        return NoteFeedDto.fromEntity(note);
+                .orElseThrow(() -> new NoteNotFoundException(noteId));
+        return NoteFeedDto.from(note);
     }
+
 }
