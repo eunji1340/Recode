@@ -25,7 +25,7 @@ public class CommentResponseDto {
         return CommentResponseDto.builder()
                 .commentId(comment.getCommentId())
                 .user(UserDto.from(comment.getUser()))
-                .noteId(comment.getFeed().getNoteId()) // ✅ Note 엔티티 통째로 넘기지 말고 ID만 사용
+                .noteId(comment.getFeed().getNoteId())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt().toString())
                 .updatedAt(comment.getUpdatedAt() != null ? comment.getUpdatedAt().toString() : null)
