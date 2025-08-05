@@ -4,7 +4,7 @@ import HeartIcon from '../components/HeartIcon';
 import CommentIcon from '../components/CommentIcon';
 import { useEffect, useState } from 'react';
 import Comment from '../components/Comment';
-import type { NoteDetail, NoteDetailResponse } from '../types/noteDetail';
+import type { NoteDetail, NoteDetailResponse } from '../types/NoteDetail';
 import axios from 'axios';
 import type { CommentResponse } from '@/types/comment';
 
@@ -21,7 +21,7 @@ export default function NoteDetailPage() {
     return <div>Invalid note ID</div>;
   }
 
-  const noteId = parseInt(id, 10);
+  const noteId = parseInt(id, 10); // 10진수 정수로 parse
 
   useEffect(() => {
     const fetchAllData = async () => {

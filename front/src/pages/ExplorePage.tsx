@@ -3,6 +3,7 @@ import SearchBox from '../components/search/SearchBox';
 import SearchUserScopeTabs from '../components/search/SearchUserScopeTabs';
 import type { SortOption } from '@/types/feed';
 import FeedCard from '../components/feed/FeedCard';
+import { Link } from 'react-router-dom';
 
 interface ApiFeed {
   noteId: number;
@@ -138,7 +139,13 @@ export default function ExplorePage() {
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-y-6">
           {visibleFeeds.map((feed) => (
-            <FeedCard key={feed.noteId + feed.createdAt} {...feed} />
+            // 클릭 시 상세 페이지로 라우팅 추가
+            <Link
+              key={feed.noteId + feed.createdAt}
+              to={`/note/${feed.noteId}`}
+            >
+              <FeedCard {...feed} />
+            </Link>
           ))}
         </div>
       </div>
