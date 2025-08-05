@@ -1,6 +1,9 @@
 package com.ssafy.recode.domain.note.repository;
 
 import com.ssafy.recode.domain.note.entity.Note;
+import com.ssafy.recode.domain.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +21,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> searchByQuery(@Param("query") String query);
 
     Optional<Note> findByNoteIdAndIsDeletedFalse(Long noteId);
+    Page<Note> findByUserIn(List<User> users, Pageable pageable);
 }
 

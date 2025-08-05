@@ -28,20 +28,5 @@ public class FeedResponseDto {
     private ProblemDto problem;
     private List<String> tags;
 
-    @Getter
-    @Builder
-    public static class UserDto {
-        private Long userId;
-        private String bojId;
-        private String nickname;
-        private int userTier;
-    }
-
-    @Getter
-    @Builder
-    public static class ProblemDto {
-        private Integer problemId;
-        private String problemName;
-        private Integer problemTier;
-    }
 }
+
