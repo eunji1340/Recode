@@ -9,6 +9,7 @@
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
+back/logs/record.log
 
 node_modules
 .DS_Store

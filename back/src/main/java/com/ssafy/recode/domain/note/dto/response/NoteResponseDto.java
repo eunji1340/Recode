@@ -23,7 +23,6 @@ public class NoteResponseDto {
     private String failCode;
     private String failCodeStart;
     private String failCodeEnd;
-    private int viewCount;
     private Boolean isPublic;
     private LocalDateTime createdAt;
 
@@ -43,7 +42,6 @@ public class NoteResponseDto {
                 .failCode(note.getFailCode())
                 .failCodeStart(String.valueOf(note.getFailCodeStart()))
                 .failCodeEnd(String.valueOf(note.getFailCodeEnd()))
-                .viewCount(note.getViewCount())
                 .isPublic(note.getIsPublic())
                 .createdAt(note.getCreatedAt())
                 .build();
