@@ -26,6 +26,7 @@ public class NoteController {
 
     private final NoteService noteService;
 
+    @Operation(summary = "노트 생성", description = "사용자가 새로운 노트를 생성합니다.")
     @PostMapping
     public ResponseEntity<?> createNote(@RequestBody NoteRequestDto dto,
                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -34,6 +35,7 @@ public class NoteController {
         return ResponseEntity.ok(NoteFeedDto.from(savedNote));
     }
 
+    @Operation(summary = "노트 목록 조회", description = "전체 노트를 페이지네이션을 통해 조회합니다.")
     @GetMapping
     public ResponseEntity<Map<String, Object>> getNotes(
             @RequestParam(defaultValue = "0") int page,
@@ -44,6 +46,7 @@ public class NoteController {
         return ResponseEntity.ok(body);
     }
 
+    @Operation(summary = "AI 노트 생성", description = "AI를 이용해 자동으로 노트를 생성합니다.")
     @PostMapping("/ai-generate")
     public ResponseEntity<AiNoteResponseDto> generateAiNote(
             @RequestBody AiNoteRequestDto dto) {
@@ -52,6 +55,7 @@ public class NoteController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "노트 삭제", description = "노트를 논리적으로 삭제합니다.")
     @DeleteMapping("/{noteId}")
     public ResponseEntity<Map<String, Object>> deleteNote(@PathVariable Long noteId){
         noteService.deleteNote(noteId);
@@ -62,6 +66,7 @@ public class NoteController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "노트 수정", description = "기존 노트를 수정합니다.")
     @PutMapping("/{noteId}")
     public ResponseEntity<Map<String, Object>> updateNote(@PathVariable Long noteId,
                                                           @RequestBody NoteRequestDto dto){
@@ -73,6 +78,7 @@ public class NoteController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "노트 상세 조회", description = "노트 ID를 통해 특정 노트의 상세 정보를 조회합니다.")
     @GetMapping("/{noteId}")
     public ResponseEntity<?> getNote(@PathVariable Long noteId){
         NoteFeedDto noteFeedDto = noteService.getNoteFeedDtoById(noteId);
@@ -80,6 +86,7 @@ public class NoteController {
         return ResponseEntity.ok(noteFeedDto);
     }
 
+    @Operation(summary = "내 노트 개수 조회", description = "로그인한 사용자가 작성한 전체 노트의 개수를 반환합니다.")
     @GetMapping("/note-count")
     public ResponseEntity<Long> getNotesByUserId(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -89,6 +96,7 @@ public class NoteController {
         return ResponseEntity.ok().body(count);
     }
 
+    @Operation(summary = "태그별 노트 개수 조회", description = "로그인한 사용자가 작성한 노트를 태그 이름 기준으로 그룹화하여 개수를 반환합니다.")
     @GetMapping("/note-count-tag")
     public ResponseEntity<List<NoteTagDto>> getNotesByTag(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
