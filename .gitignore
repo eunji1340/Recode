@@ -1,32 +1,14 @@
-/.metadata/
-
-### VisualStudioCode ###
-.vscode/
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-
-back/logs/record.log
-
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
-*.local
-.gradle/
-.idea/
-logs/
 HELP.md
 .gradle
+.env
+*.env
+*.log
+logs/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-src/main/resources/application-key.properties
+
 ### STS ###
 .apt_generated
 .classpath
@@ -58,3 +40,9 @@ out/
 
 ### VS Code ###
 .vscode/
+logs/recode.log
+
+# 환경 변수 파일
+src/main/resources/.env
+
+src/main/resources/application-key.properties

@@ -1,5 +1,6 @@
 package com.ssafy.recode.domain.feed.controller;
 
+import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.feed.dto.request.CommentRequest;
 import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
 import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -38,8 +40,9 @@ public class FeedController {
 
     // 좋아요 추가
     @PostMapping("/{noteId}/hearts")
-    public ResponseEntity<Long> addLike(@RequestHeader("userId") Long userId,
+    public ResponseEntity<Long> addLike(@AuthenticationPrincipal CustomUserDetails userDetails,
                                         @PathVariable Long noteId) {
+        Long userId = userDetails.getUser().getUserId();
         Long likeId = feedService.addLike(userId, noteId);
         return ResponseEntity.ok(likeId);
     }
@@ -56,9 +59,10 @@ public class FeedController {
     @PostMapping("/{noteId}/comments")
     public ResponseEntity<ApiSingleResponse<CommentResponseDto>> createComment(
             @PathVariable Long noteId,
-            @RequestHeader("userId") Long userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CommentRequest request) {
 
+        Long userId = userDetails.getUser().getUserId();
         CommentResponseDto comment = feedService.createComment(userId, noteId, request.getContent());
         return ResponseEntity.ok(ApiSingleResponse.from(comment));
     }
@@ -79,21 +83,23 @@ public class FeedController {
         return ResponseEntity.ok(ApiListResponse.from(comments));
     }
 
-    // 댓글 수정
+    // 댓글 수정 -> 200 ok는 나오는데 content 이상하게 null로 나와요!!
     @PatchMapping("/{noteId}/comments/{commentId}")
-    public ResponseEntity<ApiSingleResponse<CommentResponseDto>> updateComment(@RequestHeader("userId") Long userId,
+    public ResponseEntity<ApiSingleResponse<CommentResponseDto>> updateComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                @PathVariable Long noteId,
                                                                                @PathVariable Long commentId,
                                                                                @RequestBody CommentRequest request) throws AccessDeniedException {
+        Long userId = userDetails.getUser().getUserId();
         CommentResponseDto response = feedService.updateComment(userId, commentId, request.getContent());
         return ResponseEntity.ok(ApiSingleResponse.from(response));
     }
 
     // 댓글 삭제
     @DeleteMapping("/{noteId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@RequestHeader("userId") Long userId,
+    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                               @PathVariable Long noteId,
                                               @PathVariable Long commentId) throws AccessDeniedException {
+        Long userId = userDetails.getUser().getUserId();
         feedService.deleteComment(userId, commentId);
         return ResponseEntity.ok().build();
     }

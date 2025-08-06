@@ -9,16 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Service
 @RequiredArgsConstructor
 public class AiNoteGeneratorService {
 
-    @Value("${gms.api.key}")
+    @Value("${GMS_API_KEY}")
     private String gmsApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
