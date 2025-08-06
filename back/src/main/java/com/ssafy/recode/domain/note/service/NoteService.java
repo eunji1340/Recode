@@ -11,6 +11,8 @@ import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
 import com.ssafy.recode.domain.tag.service.TagService;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
+import com.ssafy.recode.global.exception.BaseException;
+import com.ssafy.recode.global.exception.CommonErrorCode;
 import com.ssafy.recode.global.exception.NoteNotFoundException;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +24,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -138,4 +139,17 @@ public class NoteService {
         return NoteFeedDto.from(note);
     }
 
+    public Long getNotesByUserId(Long userId){
+        if (userId == null) {
+            throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        if (!userRepository.existsById(userId)) {
+            throw BaseException.of(CommonErrorCode.USER_NOT_FOUND);
+        }
+
+        List<Note> notes = noteRepository.findByUser_UserId(userId);
+        long result = notes.size();
+        return result;
+    }
 }

@@ -103,5 +103,6 @@ AND n.user IN :users AND t.tagName = :tag
     // 아무 조건 없음 (기존)
     Page<Note> findByUserInAndIsPublicTrueAndIsDeletedFalse(List<User> users, Pageable pageable);
 
+    List<Note> findByUser_UserId(Long userId);
 }
 

@@ -81,4 +81,12 @@ public class NoteController {
         return ResponseEntity.ok(noteFeedDto);
     }
 
+    @GetMapping("/note-count")
+    public ResponseEntity<Long> getNotesByUserId(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUser().getUserId();
+        Long count = noteService.getNotesByUserId(userId);
+        return ResponseEntity.ok().body(count);
+    }
 }
