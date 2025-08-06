@@ -199,7 +199,7 @@ export default function NoteDetailPage() {
           {/* 댓글 */}
           <div className="comment-container mt-6">
             <div className="w-full mb-4">
-              {/* TODO: 댓글 생성 및 등록 API 연동 */}
+              {/* TODO: 댓글 삭제 및 수정 API 연동 */}
               <textarea
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-150 ease-in-out resize-none"
                 name="comment-create"
@@ -227,6 +227,8 @@ export default function NoteDetailPage() {
                     content={item.content}
                     createdAt={item.createdAt}
                     nickname={item.user.nickname}
+                    commentId={item.commentId}
+                    onCommentDeleted={fetchComments}
                   ></Comment>
                 ))
               ) : (

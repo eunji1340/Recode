@@ -28,6 +28,7 @@ export interface CommentData {
   content: string;
   createdAt: number;
   profilePic?: string; // 추후 확인
+  onCommentDeleted?: () => void;
 }
 
 // 제출 내역 결과 리스트의 인터페이스
