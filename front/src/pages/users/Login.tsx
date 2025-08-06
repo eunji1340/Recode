@@ -8,17 +8,19 @@ export default function Login() {
   const [recodeId, setId] = useState("");
   const [password, setPassword] = useState("");
   const setToken = useUserStore((state) => state.setToken); // userStore의 setToken 함수 가져오기
-
+  const setUserInfo = useUserStore((s) => s.setUserInfo);
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await api.post("/users/login", { recodeId, password });
+      console.log("API 응답 전체:", response.data);
 
       console.log("로그인 성공:", response.data);
 
-      const { accessToken } = response.data.data;
+      const { accessToken, userId, nickname } = response.data.data;
       if (accessToken) {
         setToken(accessToken); // Zustand store에 토큰 저장
+        setUserInfo(userId, nickname);
       }
 
       // ✅ userId, 닉네임 저장 (토큰 방식 도입 전까지 임시 로그인 유지용) -> 토큰 방식으로 변경되어 주석 처리

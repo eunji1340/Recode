@@ -12,35 +12,25 @@ import {
 import clsx from 'clsx';
 import logo from '../assets/images/logo_white.png';
 import useSidebarStore from '../stores/useSidebarStore';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../stores/userStore';
 
 export default function Header() {
   const { collapsed, toggle } = useSidebarStore(); // ✅ 상태 사용
   const navigate = useNavigate();
 
-  // 로그인 상태 유저 정보
-  const [user, setUser] = useState<{
-    nickname: string;
-  } | null>(null);
+  // Zustand store에서 인증 상태 가져오기
+  const { isAuthenticated, userId, nickname, clearToken, checkAuth } = useUserStore();
 
-  const userId = localStorage.getItem('userId');
-  // 로그인 상태 확인
+  // 마운트 시 토큰 유효성 검사
   useEffect(() => {
-    const nickname = localStorage.getItem('nickname');
-
-    if (userId && nickname) {
-      setUser({
-        nickname,
-      });
-    } else {
-      setUser(null);
-    }
-  }, []);
+    checkAuth();
+  }, []);  
+  
 
   const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
+    clearToken();
     navigate('/users/login');
   };
 
@@ -104,11 +94,11 @@ export default function Header() {
 
       {/* 사용자 메뉴 (사이드바 하단) */}
       <nav className="flex flex-col gap-4 mt-auto mb-4 w-full border-t border-white/20 pt-4">
-        {user ? (
+        {isAuthenticated ? (
           <>
             <HeaderItem
               icon={<User size={24} />}
-              label={user.nickname}
+              label={nickname || 'User'}
               collapsed={collapsed}
               onClick={() => navigate(`/users/${userId}/setting`)}
             />
