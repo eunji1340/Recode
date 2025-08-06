@@ -21,5 +21,9 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> searchByQuery(@Param("query") String query);
     Optional<Note> findByNoteIdAndIsDeletedFalse(Long noteId);
     Page<Note> findByUserIn(List<User> users, Pageable pageable);
+    Page<Note> findAllByIsPublicTrueAndIsDeletedFalse(Pageable pageable);
+    Page<Note> findByUserInAndIsPublicTrue(List<User> users, Pageable pageable);
+    Page<Note> findByUserInAndIsPublicTrueAndIsDeletedFalse(List<User> users, Pageable pageable);
+
 }
 

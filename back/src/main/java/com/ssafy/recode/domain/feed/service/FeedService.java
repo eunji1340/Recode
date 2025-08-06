@@ -1,9 +1,6 @@
 package com.ssafy.recode.domain.feed.service;
 
-import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
-import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
-import com.ssafy.recode.domain.feed.dto.response.ProblemDto;
-import com.ssafy.recode.domain.feed.dto.response.UserDto;
+import com.ssafy.recode.domain.feed.dto.response.*;
 import com.ssafy.recode.domain.feed.entity.Comment;
 import com.ssafy.recode.domain.feed.entity.Like;
 import com.ssafy.recode.domain.feed.entity.ProblemEntity;
@@ -124,7 +121,7 @@ public class FeedService {
     }
 
     public Page<FeedResponseDto> getAllFeeds(Pageable pageable) {
-        Page<Note> notes = noteRepository.findAll(pageable);
+        Page<Note> notes = noteRepository.findAllByIsPublicTrueAndIsDeletedFalse(pageable);
 
         return notes.map(note -> {
             int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
@@ -136,11 +133,7 @@ public class FeedService {
 
             return FeedResponseDto.builder()
                     .noteId(note.getNoteId())
-                    .content(note.getContent())
-                    .successCodeStart(note.getSuccessCodeStart())
-                    .successCodeEnd(note.getSuccessCodeEnd())
-                    .failCodeStart(note.getFailCodeStart())
-                    .failCodeEnd(note.getFailCodeEnd())
+                    .noteTitle(note.getNoteTitle())
                     .isPublic(note.getIsPublic())
                     .createdAt(note.getCreatedAt().toString())
                     .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
@@ -149,8 +142,10 @@ public class FeedService {
                     .commentCount(commentCount)
                     .user(UserDto.from(user))
                     .problem(ProblemDto.from(problem))
-                    .tags(List.of("DP", "이분탐색"))  // 또는 note.getTags()
-//                    .isDeleted(note.getIsDeleted())
+                    .tags(note.getTags().stream()
+                            .map(TagDto::from)
+                            .collect(Collectors.toList()))
+                    .isDeleted(note.getIsDeleted())
                     .build();
         });
     }
@@ -171,7 +166,7 @@ public class FeedService {
         }
 
         // 2. 해당 유저들의 Note 목록 가져오기
-        Page<Note> notesPage = noteRepository.findByUserIn(followingUsers, pageable);
+        Page<Note> notesPage = noteRepository.findByUserInAndIsPublicTrue(followingUsers, pageable);
 
         // 3. Dto 변환
         List<FeedResponseDto> dtoList = notesPage.stream()
@@ -200,8 +195,10 @@ public class FeedService {
                             .commentCount(commentCount)
                             .user(UserDto.from(note.getUser()))
                             .problem(ProblemDto.from(problem))
-                            .tags(List.of("DP", "이분탐색"))
-//                            .isDeleted(note.getIsDeleted())
+                            .tags(note.getTags().stream()
+                                    .map(TagDto::from)
+                                    .collect(Collectors.toList()))
+                            .isDeleted(note.getIsDeleted())
                             .build();
                 })
                 .toList();
