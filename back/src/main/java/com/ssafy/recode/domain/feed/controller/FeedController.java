@@ -97,7 +97,7 @@ public class FeedController {
         feedService.deleteComment(userId, commentId);
         return ResponseEntity.ok().build();
     }
-    
+
     @GetMapping
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getAllFeeds(
             @RequestParam(defaultValue = "0") int page,
