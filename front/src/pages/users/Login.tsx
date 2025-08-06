@@ -1,29 +1,33 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/axiosInstance"
+import api from "../../api/axiosInstance";
 import logo from "../../assets/images/logo_black.png";
-
+import { useUserStore } from "../../stores/userStore";
 
 export default function Login() {
   const [recodeId, setId] = useState("");
   const [password, setPassword] = useState("");
+  const setToken = useUserStore((state) => state.setToken); // userStore의 setToken 함수 가져오기
 
-   const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.post("/users/login",{recodeId, password,});
+      const response = await api.post("/users/login", { recodeId, password });
 
       console.log("로그인 성공:", response.data);
-      
-      // ✅ userId, 닉네임 저장 (토큰 방식 도입 전까지 임시 로그인 유지용)
-      localStorage.setItem("userId", response.data.data.userId); 
-      localStorage.setItem("nickname", response.data.data.nickname); 
-      
-      // TODO: 토큰 저장 or 사용자 정보 저장 (필요 시)
-      // 예: localStorage.setItem("token", response.data.token);
-      // 로그인 할 때마다 solved.ac 조회 사용자 정보 가져와서 티어 갱신 
+
+      const { accessToken } = response.data.data;
+      if (accessToken) {
+        setToken(accessToken); // Zustand store에 토큰 저장
+      }
+
+      // ✅ userId, 닉네임 저장 (토큰 방식 도입 전까지 임시 로그인 유지용) -> 토큰 방식으로 변경되어 주석 처리
+      // localStorage.setItem("userId", response.data.data.userId);
+      // localStorage.setItem("nickname", response.data.data.nickname);
+
+      // 로그인 할 때마다 solved.ac 조회 사용자 정보 가져와서 티어 갱신
       alert("로그인 성공!");
-      navigate("/"); // 메인 페이지로 이동
+      navigate("/"); // 메�� 페이지로 이동
     } catch (error: any) {
       console.error("로그인 실패:", error);
       alert("로그인에 실패했습니다. 아이디나 비밀번호를 확인하세요.");

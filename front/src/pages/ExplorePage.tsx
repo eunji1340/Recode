@@ -4,6 +4,7 @@ import SearchUserScopeTabs from '../components/search/SearchUserScopeTabs';
 import type { SortOption } from '@/types/feed';
 import FeedCard from '../components/feed/FeedCard';
 import { Link } from 'react-router-dom';
+import api from '../api/axiosInstance';
 
 interface ApiFeed {
   noteId: number;
@@ -82,10 +83,13 @@ export default function ExplorePage() {
   const [searchTags, setSearchTags] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/feeds?userId=1')
-      .then((res) => res.json())
-      .then((json) => {
-        const apiFeeds: ApiFeed[] = json.data.details;
+    // fetch('http://localhost:8080/feeds?userId=1')
+    // axiosInstance로 대체
+    api
+      .get(`/feeds?page=0&size=15`)
+      .then((response) => {
+        const apiFeeds: ApiFeed[] = response.data.data.details;
+        console.log(apiFeeds);
         const mappedFeeds = apiFeeds.map(mapApiFeedToFeedCardData);
         setFeeds(mappedFeeds);
       })

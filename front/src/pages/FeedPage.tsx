@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MainFeed from '../components/feed/MainFeed';
 import SearchBox from '../components/search/SearchBox';
+import { Link } from 'react-router-dom';
 
 /**
  * FeedPage - 메인 피드 페이지
@@ -175,7 +176,9 @@ const FeedPage = () => {
       {/* 🔹 피드 목록 */}
       <div className="w-full max-w-[1100px] flex flex-col gap-6">
         {sortedFeeds.map((item) => (
-          <MainFeed key={`${item.noteId}-${item.user.userId}`} {...item} />
+          <Link to={`/note/${item.noteId}`}>
+            <MainFeed key={`${item.noteId}-${item.user.userId}`} {...item} />
+          </Link>
         ))}
       </div>
     </main>

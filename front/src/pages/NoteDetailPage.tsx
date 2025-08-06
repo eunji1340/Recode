@@ -5,10 +5,8 @@ import CommentIcon from '../components/CommentIcon';
 import { useEffect, useState } from 'react';
 import Comment from '../components/Comment';
 import type { NoteDetail, NoteDetailResponse } from '../types/NoteDetail';
-import axios from 'axios';
 import type { CommentResponse } from '@/types/comment';
-
-const baseURL = import.meta.env.VITE_REST_API_URL;
+import api from '../api/axiosInstance';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -30,8 +28,8 @@ export default function NoteDetailPage() {
 
         // 노트와 댓글 정보 동시에 요청
         const [noteResponse, commentResponse] = await Promise.all([
-          axios.get<NoteDetailResponse>(`${baseURL}/notes/${noteId}`),
-          axios.get<CommentResponse>(`${baseURL}/feeds/${noteId}/comments`),
+          api.get<NoteDetailResponse>(`/notes/${noteId}`),
+          api.get<CommentResponse>(`/feeds/${noteId}/comments`),
         ]);
 
         setNote(noteResponse.data);
@@ -84,7 +82,7 @@ export default function NoteDetailPage() {
           <div className="container flex flex-row justify-between">
             <div className="text-2xl font-bold">{note.noteTitle}</div>
             <div className="user-container">
-              사용자: {note.user.nickname}
+              <div>{note.user.nickname}</div>
               {/* TODO: 팔로우 버튼 컴포넌트 분리 */}
               <button>팔로우</button>
             </div>
