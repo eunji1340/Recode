@@ -128,10 +128,13 @@ public class FeedController {
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getFeedsOfFollowings(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size) {
+            @RequestParam(defaultValue = "15") int size,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String search) {
 
         Long userId = userDetails.getUser().getUserId();
-        Page<FeedResponseDto> feeds = feedService.getFeedsOfFollowings(userId, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<FeedResponseDto> feeds = feedService.getFeedsOfFollowings(userId,tag, search, pageable);
 
         return ResponseEntity.ok(ApiListPagingResponse.from(
                 feeds.getContent(),

@@ -55,5 +55,53 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     )
 """)
     Page<Note> searchNotesByTagAndKeyword(@Param("tag") String tag, @Param("search") String search, Pageable pageable);
+
+    // 태그 + 검색어 + 작성자
+    @Query("""
+SELECT DISTINCT n FROM Note n
+JOIN n.tags t
+WHERE n.isPublic = true AND n.isDeleted = false
+AND n.user IN :users
+AND t.tagName = :tag AND (
+    LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    CAST(n.problemId AS string) LIKE %:search% OR
+    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+)
+""")
+    Page<Note> searchNotesOfUsersByTagAndKeyword(@Param("users") List<User> users,
+                                                 @Param("tag") String tag,
+                                                 @Param("search") String search,
+                                                 Pageable pageable);
+
+    // 검색어만 + 작성자
+    @Query("""
+SELECT n FROM Note n
+WHERE n.isPublic = true AND n.isDeleted = false
+AND n.user IN :users AND (
+    LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    CAST(n.problemId AS string) LIKE %:search% OR
+    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+)
+""")
+    Page<Note> searchNotesOfUsersByKeyword(@Param("users") List<User> users,
+                                           @Param("search") String search,
+                                           Pageable pageable);
+
+    // 태그만 + 작성자
+    @Query("""
+SELECT DISTINCT n FROM Note n
+JOIN n.tags t
+WHERE n.isPublic = true AND n.isDeleted = false
+AND n.user IN :users AND t.tagName = :tag
+""")
+    Page<Note> searchNotesOfUsersByTag(@Param("users") List<User> users,
+                                       @Param("tag") String tag,
+                                       Pageable pageable);
+
+    // 아무 조건 없음 (기존)
+    Page<Note> findByUserInAndIsPublicTrueAndIsDeletedFalse(List<User> users, Pageable pageable);
+
 }
 

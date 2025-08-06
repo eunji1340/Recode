@@ -1,5 +1,6 @@
 package com.ssafy.recode.domain.feed.service;
 
+import ch.qos.logback.classic.Logger;
 import com.ssafy.recode.domain.feed.dto.response.*;
 import com.ssafy.recode.domain.feed.entity.Comment;
 import com.ssafy.recode.domain.feed.entity.Like;
@@ -162,24 +163,34 @@ public class FeedService {
     }
 
     /** 팔로잉 피드 조회 */
-    public Page<FeedResponseDto> getFeedsOfFollowings(Long userId, Pageable pageable) {
+    public Page<FeedResponseDto> getFeedsOfFollowings(Long userId, String tag, String search, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 1. 내가 팔로우하는 사람들 찾기
-        List<Follow> followings = followRepository.findByFollowing(user);
+        List<Follow> followings = followRepository.findByFollower(user);
         List<User> followingUsers = followings.stream()
                 .map(Follow::getFollowing)
                 .toList();
+        System.out.println("팔로우한 유저 수: " + followingUsers.size());
+        followingUsers.forEach(u -> System.out.println("팔로우 유저 닉네임: " + u.getNickname()));
 
         if (followingUsers.isEmpty()) {
             return Page.empty(pageable);
         }
+        Page<Note> notesPage;
 
-        // 2. 해당 유저들의 Note 목록 가져오기
-        Page<Note> notesPage = noteRepository.findByUserInAndIsPublicTrue(followingUsers, pageable);
+        // 조건 분기
+        if (tag != null && !tag.isBlank() && search != null && !search.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByTagAndKeyword(followingUsers, tag, search, pageable);
+        } else if (tag != null && !tag.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByTag(followingUsers, tag, pageable);
+        } else if (search != null && !search.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByKeyword(followingUsers, search, pageable);
+        } else {
+            notesPage = noteRepository.findByUserInAndIsPublicTrueAndIsDeletedFalse(followingUsers, pageable);
+        }
 
-        // 3. Dto 변환
+        // DTO 변환은 그대로 유지
         List<FeedResponseDto> dtoList = notesPage.stream()
                 .map(note -> {
                     int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
@@ -194,10 +205,14 @@ public class FeedService {
                     return FeedResponseDto.builder()
                             .noteId(note.getNoteId())
                             .content(note.getContent())
+                            .successCode(note.getSuccessCode())
                             .successCodeStart(note.getSuccessCodeStart())
                             .successCodeEnd(note.getSuccessCodeEnd())
+                            .successLanguage(note.getSuccessLanguage())
+                            .failCode(note.getFailCode())
                             .failCodeStart(note.getFailCodeStart())
                             .failCodeEnd(note.getFailCodeEnd())
+                            .failLanguage(note.getFailLanguage())
                             .isPublic(note.getIsPublic())
                             .createdAt(note.getCreatedAt().toString())
                             .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
