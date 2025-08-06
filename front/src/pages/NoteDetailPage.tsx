@@ -8,6 +8,7 @@ import type { NoteDetail, NoteDetailResponse } from '../types/NoteDetail';
 import type { CommentResponse } from '@/types/comment';
 import api from '../api/axiosInstance';
 import CodePreview from '../components/code/CodePreview';
+import FollowBtn from '../components/FollowBtn';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -98,7 +99,10 @@ export default function NoteDetailPage() {
 
     try {
       const resp = await api.post(`/feeds/${noteId}/comments`, commentData);
-      console.log('댓글 작성 성공', resp.data);
+      //   const resp = await api.patch(`/users/41/nickname`, {
+      //     nickname: '메롱',
+      //   });
+      console.log('댓글 작성', resp.data);
       setCommentText('');
       fetchComments();
     } catch (err) {
@@ -119,7 +123,7 @@ export default function NoteDetailPage() {
             <div className="user-container">
               <div>{note.user.nickname}</div>
               {/* TODO: 팔로우 버튼 컴포넌트 분리 */}
-              <button>팔로우</button>
+              <FollowBtn></FollowBtn>
             </div>
           </div>
           <hr className="my-3 border-t-2 border-gray-300" />
