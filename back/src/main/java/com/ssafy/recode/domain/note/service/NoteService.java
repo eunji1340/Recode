@@ -5,6 +5,7 @@ import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
 import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
 import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
 import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
+import com.ssafy.recode.domain.note.dto.response.NoteTagDto;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
 import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
@@ -25,7 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -150,6 +154,27 @@ public class NoteService {
 
         List<Note> notes = noteRepository.findByUser_UserId(userId);
         long result = notes.size();
+        return result;
+    }
+
+    public List<NoteTagDto> getNoteCountGroupedByTag(Long userId) {
+        if (userId == null) {
+            throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        List<Note> notes = noteRepository.findAllByUserIdWithTags(userId);
+
+        Map<String, Long> countMap = new HashMap<>();
+        for (Note note : notes) {
+            note.getTags().forEach(tag ->
+                    countMap.put(tag.getTagName(),
+                            countMap.getOrDefault(tag.getTagName(), 0L) + 1)
+            );
+        }
+
+        List<NoteTagDto> result = new ArrayList<>();
+        countMap.forEach((tag, count) -> result.add(new NoteTagDto(tag, count)));
+
         return result;
     }
 }

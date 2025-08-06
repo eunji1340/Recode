@@ -3,13 +3,11 @@ package com.ssafy.recode.domain.note.controller;
 import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
-import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
-import com.ssafy.recode.domain.note.dto.response.NoteDeleteResponseDto;
-import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
-import com.ssafy.recode.domain.note.dto.response.NoteUpdateResponseDto;
+import com.ssafy.recode.domain.note.dto.response.*;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.service.NoteService;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -88,5 +87,14 @@ public class NoteController {
         Long userId = userDetails.getUser().getUserId();
         Long count = noteService.getNotesByUserId(userId);
         return ResponseEntity.ok().body(count);
+    }
+
+    @GetMapping("/note-count-tag")
+    public ResponseEntity<List<NoteTagDto>> getNotesByTag(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUser().getUserId();
+        List<NoteTagDto> result = noteService.getNoteCountGroupedByTag(userId);
+        return ResponseEntity.ok(result);
     }
 }

@@ -104,5 +104,9 @@ AND n.user IN :users AND t.tagName = :tag
     Page<Note> findByUserInAndIsPublicTrueAndIsDeletedFalse(List<User> users, Pageable pageable);
 
     List<Note> findByUser_UserId(Long userId);
+
+    @Query("SELECT n FROM Note n JOIN FETCH n.tags WHERE n.user.userId = :userId AND n.isDeleted = false")
+    List<Note> findAllByUserIdWithTags(@Param("userId") Long userId);
+
 }
 
