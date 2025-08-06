@@ -74,4 +74,11 @@ public class NoteController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{noteId}")
+    public ResponseEntity<?> getNote(@PathVariable Long noteId){
+        NoteFeedDto noteFeedDto = noteService.getNoteFeedDtoById(noteId);
+
+        return ResponseEntity.ok(noteFeedDto);
+    }
+
 }
