@@ -8,6 +8,7 @@ import com.ssafy.recode.domain.user.dto.response.UserListResponseDto;
 import com.ssafy.recode.domain.user.dto.response.UserResponseDto;
 import com.ssafy.recode.domain.user.service.UserService;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
 public class UserController {
 
