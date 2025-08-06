@@ -2,9 +2,9 @@ import { FaHeart } from 'react-icons/fa';
 import { FiHeart } from 'react-icons/fi';
 
 interface HeartIconButtonProps {
-  liked: boolean;
+  liked?: boolean;
   likes: number;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 /**
