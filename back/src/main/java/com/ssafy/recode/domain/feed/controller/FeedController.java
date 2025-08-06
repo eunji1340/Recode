@@ -5,6 +5,7 @@ import com.ssafy.recode.domain.feed.dto.request.CommentRequest;
 import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
 import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
 import com.ssafy.recode.domain.feed.service.FeedService;
+import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.global.dto.response.ApiListPagingResponse;
 import com.ssafy.recode.global.dto.response.ApiListResponse;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
@@ -47,8 +48,8 @@ public class FeedController {
     @Operation(summary = "특정 노트에 좋아요 추가")
     public ResponseEntity<Long> addLike(@AuthenticationPrincipal CustomUserDetails userDetails,
                                         @PathVariable Long noteId) {
-        Long userId = userDetails.getUser().getUserId();
-        Long likeId = feedService.addLike(userId, noteId);
+        User user = userDetails.getUser();
+        Long likeId = feedService.addLike(user, noteId);
         return ResponseEntity.ok(likeId);
     }
 

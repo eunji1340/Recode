@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/login", "/users/register", "/users/reissue",
                                 "users/bojId_check", "/users/recodeId_dupcheck",
                                 "/users/nickname_dupcheck", "/users/email_dupcheck",
-                                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
+                                "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**"
                         ).permitAll()
 
                         // 그 외 모든 요청은 인증 필요

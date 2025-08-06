@@ -1,6 +1,5 @@
 package com.ssafy.recode.domain.feed.service;
 
-import ch.qos.logback.classic.Logger;
 import com.ssafy.recode.domain.feed.dto.response.*;
 import com.ssafy.recode.domain.feed.entity.Comment;
 import com.ssafy.recode.domain.feed.entity.Like;
@@ -17,12 +16,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +40,7 @@ public class FeedService {
 
     /** 좋아요 수 조회 */
     public int getLikeCount(Long noteId) {
-        return likeRepository.countByFeed_NoteId(noteId);
+        return likeRepository.countByNote_NoteId(noteId);
     }
 
     /** 댓글 수 조회 */
@@ -47,15 +49,18 @@ public class FeedService {
     }
 
     /** 좋아요 추가 */
-    public Long addLike(Long userId, Long noteId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Note feed = noteRepository.findById(noteId)
-                .orElseThrow(() -> new RuntimeException("Feed not found"));
+    public Long addLike(User user, Long noteId) {
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Feed not found"));
+
+        Optional<Like> existing = likeRepository.findByUserAndNote(user, note);
+        if (existing.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "이미 좋아요를 눌렀습니다.");
+        }
 
         Like like = Like.builder()
                 .user(user)
-                .feed(feed)
+                .note(note)
                 .build();
 
         return likeRepository.save(like).getLikeId();
@@ -138,7 +143,7 @@ public class FeedService {
         }
 
         return notes.map(note -> {
-            int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
+            int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
             int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
 
             User user = userRepository.findById(note.getUser().getUserId())
@@ -193,7 +198,7 @@ public class FeedService {
         // DTO 변환은 그대로 유지
         List<FeedResponseDto> dtoList = notesPage.stream()
                 .map(note -> {
-                    int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());
+                    int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
                     int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
 
                     ProblemEntity problem = new ProblemEntity(

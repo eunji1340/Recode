@@ -21,7 +21,7 @@ public class Like {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id")
-    private Note feed;
+    private Note note;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -30,8 +30,8 @@ public class Like {
     private LocalDateTime createdAt;
 
     @Builder
-    public Like(Note feed, User user) {
-        this.feed = feed;
+    public Like(Note note, User user) {
+        this.note = note;
         this.user = user;
         this.createdAt = LocalDateTime.now();
     }
