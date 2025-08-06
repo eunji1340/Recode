@@ -1,13 +1,18 @@
 package com.ssafy.recode.domain.note.controller;
 
+import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
-import com.ssafy.recode.domain.note.dto.response.*;
+import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
+import com.ssafy.recode.domain.note.dto.response.NoteDeleteResponseDto;
+import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
+import com.ssafy.recode.domain.note.dto.response.NoteUpdateResponseDto;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.service.NoteService;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,14 +27,14 @@ public class NoteController {
 
     @PostMapping
     public ResponseEntity<?> createNote(@RequestBody NoteRequestDto dto,
-                                        @RequestHeader("userId") Long userId) {
+                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUser().getUserId();
         Note savedNote = noteService.createNote(dto, userId);
         return ResponseEntity.ok(NoteFeedDto.from(savedNote));
     }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getNotes(
-            @RequestHeader("userId") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
