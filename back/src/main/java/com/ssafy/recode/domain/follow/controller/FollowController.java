@@ -53,4 +53,12 @@ public class FollowController {
         List<FollowResponseDto> result = followService.getFollowings(userId);
         return ResponseEntity.ok().body(Map.of("data", Map.of("details", result)));
     }
+
+    // 5. 타인 팔로워 조회
+    @GetMapping("/followers/{userId}")
+    public ResponseEntity<?> getFollowersByUserId(@PathVariable long userId) {
+        List<FollowResponseDto> result = followService.getFollowers(userId);
+        return ResponseEntity.ok().body(Map.of("data", Map.of("details", result)));
+    }
+
 }
