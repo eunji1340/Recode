@@ -51,7 +51,11 @@ public class SecurityConfig {
                 // 요청별 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         // 로그인, 회원가입, 토큰 재발급은 인증 없이 접근 허용
-                        .requestMatchers("/users/login", "/users/register", "/users/reissue").permitAll()
+                        .requestMatchers("/users/login", "/users/register", "/users/reissue",
+                                "users/bojId_check", "/users/recodeId_dupcheck",
+                                "/users/nickname_dupcheck", "/users/email_dupcheck",
+                                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
+                        ).permitAll()
 
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
