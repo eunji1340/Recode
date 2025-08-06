@@ -124,7 +124,7 @@ public class UserController {
     }
 
     /**
-     * 11. 토큰 재발급
+     * 12. 토큰 재발급
      * 기존 refreshToken을 이용해 accessToken + refreshToken 재발급
      * 재발급된 refreshToken을 Secure + HttpOnly + SameSite=None 쿠키로 다시 설정
      */
