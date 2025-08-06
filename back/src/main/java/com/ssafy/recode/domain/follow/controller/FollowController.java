@@ -67,4 +67,21 @@ public class FollowController {
         List<FollowResponseDto> result = followService.getFollowings(userId);
         return ResponseEntity.ok().body(Map.of("data", Map.of("details", result)));
     }
+
+    // 7. userId로 팔로워 카운트 조회
+    @GetMapping("/followers/count/{userId}")
+    public ResponseEntity<?> getFollowersCount(@PathVariable long userId) {
+        List<FollowResponseDto> result = followService.getFollowers(userId);
+        long count = result.size();
+        return ResponseEntity.ok().body(count);
+    }
+
+    // 8. userId로 팔로잉 카운트 조회
+    @GetMapping("/followings/count/{userId}")
+    public ResponseEntity<?> getFollowingsCount(@PathVariable long userId) {
+        List<FollowResponseDto> result = followService.getFollowings(userId);
+        long count = result.size();
+        return ResponseEntity.ok().body(count);
+    }
+
 }
