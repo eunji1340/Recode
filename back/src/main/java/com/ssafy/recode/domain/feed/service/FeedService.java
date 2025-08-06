@@ -120,8 +120,23 @@ public class FeedService {
         commentRepository.delete(comment);
     }
 
-    public Page<FeedResponseDto> getAllFeeds(Pageable pageable) {
-        Page<Note> notes = noteRepository.findAllByIsPublicTrueAndIsDeletedFalse(pageable);
+    public Page<FeedResponseDto> getAllFeeds(String tag, String search, Pageable pageable) {
+        Page<Note> notes;
+
+        if ((tag == null || tag.isBlank()) && (search == null || search.isBlank())) {
+            // 전체 조회
+            notes = noteRepository.findAllByIsPublicTrueAndIsDeletedFalse(pageable);
+        } else if (tag != null && !tag.isBlank() && (search == null || search.isBlank())) {
+            // 태그만
+            notes = noteRepository.findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
+        } else if ((tag == null || tag.isBlank()) && search != null && !search.isBlank()) {
+            // 검색어만
+            notes = noteRepository.findByNoteTitleContainingIgnoreCaseOrNoteIdContainingAndIsPublicTrueAndIsDeletedFalse(search, search, pageable);
+        } else {
+            // 태그 + 검색어 둘 다
+            notes = noteRepository.findByTags_TagNameAndNoteTitleContainingIgnoreCaseOrNoteIdContainingAndIsPublicTrueAndIsDeletedFalse(
+                    tag, search, search, pageable);
+        }
 
         return notes.map(note -> {
             int likeCount = likeRepository.countByFeed_NoteId(note.getNoteId());

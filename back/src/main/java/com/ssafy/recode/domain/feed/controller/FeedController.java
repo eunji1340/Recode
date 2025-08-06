@@ -10,6 +10,7 @@ import com.ssafy.recode.global.dto.response.ApiSingleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,9 +101,13 @@ public class FeedController {
     @GetMapping
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getAllFeeds(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size) {
+            @RequestParam(defaultValue = "15") int size,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String search) {
 
-        Page<FeedResponseDto> feeds = feedService.getAllFeeds(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<FeedResponseDto> feeds = feedService.getAllFeeds(tag, search, pageable);
+
         return ResponseEntity.ok(ApiListPagingResponse.from(
                 feeds.getContent(),
                 feeds.getTotalElements(),
@@ -110,6 +115,7 @@ public class FeedController {
                 feeds.isLast()
         ));
     }
+
 
     @GetMapping("/followings")
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getFeedsOfFollowings(
