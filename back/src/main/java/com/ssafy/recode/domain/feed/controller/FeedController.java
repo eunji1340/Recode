@@ -8,6 +8,7 @@ import com.ssafy.recode.domain.feed.service.FeedService;
 import com.ssafy.recode.global.dto.response.ApiListPagingResponse;
 import com.ssafy.recode.global.dto.response.ApiListResponse;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/feeds")
+@SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
 public class FeedController {
 
@@ -124,10 +126,11 @@ public class FeedController {
 
     @GetMapping("/followings")
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getFeedsOfFollowings(
-            @RequestParam Long userId, // 내가 팔로잉하는 사람의 userId
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "15") int size) {
 
+        Long userId = userDetails.getUser().getUserId();
         Page<FeedResponseDto> feeds = feedService.getFeedsOfFollowings(userId, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
 
         return ResponseEntity.ok(ApiListPagingResponse.from(

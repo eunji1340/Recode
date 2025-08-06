@@ -3,6 +3,7 @@ package com.ssafy.recode.domain.follow.controller;
 import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.follow.dto.response.FollowResponseDto;
 import com.ssafy.recode.domain.follow.service.FollowService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/follow")
+@SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
 public class FollowController {
 

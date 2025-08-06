@@ -10,6 +10,7 @@ import com.ssafy.recode.domain.note.dto.response.NoteUpdateResponseDto;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.service.NoteService;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearer-key")
 @RequestMapping("/notes")
 public class NoteController {
 
