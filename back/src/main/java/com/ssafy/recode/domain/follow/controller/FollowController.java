@@ -61,4 +61,10 @@ public class FollowController {
         return ResponseEntity.ok().body(Map.of("data", Map.of("details", result)));
     }
 
+    // 6. 타인 팔로잉 조회
+    @GetMapping("/followings/{userId}")
+    public ResponseEntity<?> getFollowingsByUserId(@PathVariable long userId) {
+        List<FollowResponseDto> result = followService.getFollowings(userId);
+        return ResponseEntity.ok().body(Map.of("data", Map.of("details", result)));
+    }
 }
