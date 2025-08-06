@@ -123,19 +123,17 @@ public class FeedService {
     public Page<FeedResponseDto> getAllFeeds(String tag, String search, Pageable pageable) {
         Page<Note> notes;
 
-        if ((tag == null || tag.isBlank()) && (search == null || search.isBlank())) {
-            // 전체 조회
-            notes = noteRepository.findAllByIsPublicTrueAndIsDeletedFalse(pageable);
-        } else if (tag != null && !tag.isBlank() && (search == null || search.isBlank())) {
-            // 태그만
+        boolean hasTag = tag != null && !tag.isBlank();
+        boolean hasSearch = search != null && !search.isBlank();
+
+        if (hasTag && hasSearch) {
+            notes = noteRepository.searchNotesByTagAndKeyword(tag, search, pageable);
+        } else if (hasTag) {
             notes = noteRepository.findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
-        } else if ((tag == null || tag.isBlank()) && search != null && !search.isBlank()) {
-            // 검색어만
-            notes = noteRepository.findByNoteTitleContainingIgnoreCaseOrNoteIdContainingAndIsPublicTrueAndIsDeletedFalse(search, search, pageable);
+        } else if (hasSearch) {
+            notes = noteRepository.searchNotesOnly(search, pageable);
         } else {
-            // 태그 + 검색어 둘 다
-            notes = noteRepository.findByTags_TagNameAndNoteTitleContainingIgnoreCaseOrNoteIdContainingAndIsPublicTrueAndIsDeletedFalse(
-                    tag, search, search, pageable);
+            notes = noteRepository.findAllByIsPublicTrueAndIsDeletedFalse(pageable);
         }
 
         return notes.map(note -> {
@@ -157,9 +155,7 @@ public class FeedService {
                     .commentCount(commentCount)
                     .user(UserDto.from(user))
                     .problem(ProblemDto.from(problem))
-                    .tags(note.getTags().stream()
-                            .map(TagDto::from)
-                            .collect(Collectors.toList()))
+                    .tags(note.getTags().stream().map(TagDto::from).toList())
                     .isDeleted(note.getIsDeleted())
                     .build();
         });
