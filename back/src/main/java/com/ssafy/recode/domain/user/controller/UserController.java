@@ -8,6 +8,7 @@ import com.ssafy.recode.domain.user.dto.response.UserListResponseDto;
 import com.ssafy.recode.domain.user.dto.response.UserResponseDto;
 import com.ssafy.recode.domain.user.service.UserService;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,14 @@ public class UserController {
     private final UserService userService;
 
     /** 1. 회원가입 */
+    @Operation(summary = "회원가입", description = "신규 사용자를 등록합니다.")
     @PostMapping("/register")
     public ResponseEntity<ApiSingleResponse<UserResponseDto>> register(@RequestBody UserRequestDto dto) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.register(dto)));
     }
 
+    /** 2. 로그인 */
+    @Operation(summary = "로그인", description = "아이디와 비밀번호를 통해 로그인하고 토큰을 발급합니다.")
     @PostMapping("/login")
     public ResponseEntity<ApiSingleResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto dto, HttpServletResponse response) {
 
@@ -45,7 +49,8 @@ public class UserController {
         return ResponseEntity.ok(ApiSingleResponse.from(responseDto));
     }
 
-    /** 백준ID 유효성 확인 */
+    /** 3. 백준 ID 유효성 확인 */
+    @Operation(summary = "백준 ID 유효성 확인", description = "입력한 백준 ID가 유효한지와 중복 여부를 확인합니다.")
     @PostMapping("/bojId_check")
     public ResponseEntity<ApiSingleResponse<Boolean>> validateBojId(@RequestBody BojIdCheckRequest bojId) {
         int tier = userService.fetchBojTier(bojId.getBojId());
@@ -54,25 +59,29 @@ public class UserController {
         return ResponseEntity.ok(ApiSingleResponse.from(isValid));
     }
 
-    /** 3. recodeId 중복 확인 */
+    /** 4. Recode ID 중복 확인 */
+    @Operation(summary = "Recode ID 중복 확인", description = "Recode ID가 이미 사용 중인지 확인합니다.")
     @PostMapping("/recodeId_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkRecodeId(@RequestBody RecodeIdDupCheckRequest dto) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isRecodeIdDuplicated(dto.getRecodeId())));
     }
 
-    /** 4. 닉네임 중복 확인 */
+    /** 5. 닉네임 중복 확인 */
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임이 이미 사용 중인지 확인합니다.")
     @PostMapping("/nickname_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkNickname(@RequestBody NicknameDupCheckRequest dto) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isNicknameDuplicated(dto.getNickname())));
     }
 
-    /** 5. 이메일 중복 확인 */
+    /** 6. 이메일 중복 확인 */
+    @Operation(summary = "이메일 중복 확인", description = "이메일이 이미 사용 중인지 확인합니다.")
     @PostMapping("/email_dupcheck")
     public ResponseEntity<ApiSingleResponse<Boolean>> checkEmail(@RequestBody EmailDupCheckRequest dto) {
         return ResponseEntity.ok(ApiSingleResponse.from(userService.isEmailDuplicated(dto.getEmail())));
     }
 
-    /** 6. 닉네임 변경 */
+    /** 7. 닉네임 변경 */
+    @Operation(summary = "닉네임 변경", description = "특정 사용자의 닉네임을 변경합니다.")
     @PatchMapping("/{userId}/nickname")
     public ResponseEntity<Void> updateNickname(@PathVariable Long userId,
                                                @RequestBody NicknameUpdateRequest dto) {
@@ -80,7 +89,8 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    /** 7. 비밀번호 변경 */
+    /** 8. 비밀번호 변경 */
+    @Operation(summary = "비밀번호 변경", description = "특정 사용자의 비밀번호를 변경합니다.")
     @PatchMapping("/{userId}/password")
     public ResponseEntity<Void> updatePassword(@PathVariable Long userId,
                                                @RequestBody UpdatePasswordRequest dto) {
@@ -88,20 +98,23 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    /** 8. 전체 회원 정보 조회 */
+    /** 9. 전체 회원 조회 */
+    @Operation(summary = "전체 회원 조회", description = "모든 사용자의 정보를 조회합니다.")
     @GetMapping
     public ResponseEntity<UserListResponseDto> getAllUsers() {
         List<UserResponseDto> users = userService.getAllUsers();
         return ResponseEntity.ok(new UserListResponseDto(users.size(), users));
     }
 
-    /** 9. 특정 회원 정보 조회 */
+    /** 10. 특정 회원 조회 */
+    @Operation(summary = "회원 정보 조회", description = "사용자 ID로 특정 사용자의 정보를 조회합니다.")
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
-    /** 10. 회원 탈퇴 */
+    /** 11. 회원 탈퇴 */
+    @Operation(summary = "회원 탈퇴", description = "사용자 ID를 기반으로 회원을 삭제합니다.")
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
@@ -113,6 +126,7 @@ public class UserController {
      * 기존 refreshToken을 이용해 accessToken + refreshToken 재발급
      * 재발급된 refreshToken을 Secure + HttpOnly + SameSite=None 쿠키로 다시 설정
      */
+    @Operation(summary = "토큰 재발급", description = "쿠키의 refreshToken을 통해 accessToken과 refreshToken을 재발급합니다.")
     @PostMapping("/reissue")
     public ResponseEntity<ApiSingleResponse<LoginResponseDto>> reissue(HttpServletRequest request, HttpServletResponse response) {
 
@@ -131,7 +145,8 @@ public class UserController {
         return ResponseEntity.ok(ApiSingleResponse.from(dto));
     }
 
-    /** 로그아웃 */
+    /** 13. 로그아웃 */
+    @Operation(summary = "로그아웃", description = "쿠키에서 refreshToken을 삭제하여 로그아웃합니다.")
     @PostMapping("/logout")
     public ResponseEntity<ApiSingleResponse<String>> logout(HttpServletResponse response) {
 //        CookieUtil.deleteCookie(response, "refreshToken"); // 배포 시 코드
