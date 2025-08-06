@@ -1,5 +1,6 @@
 package com.ssafy.recode.domain.feed.dto.response;
 
+import com.ssafy.recode.domain.tag.entity.Tag;
 import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 public class FeedResponseDto {
 
     private Long noteId;
+    private String noteTitle;
     private String content;
 
     private Integer successCodeStart;
@@ -19,6 +21,7 @@ public class FeedResponseDto {
     private Boolean isPublic;
     private String createdAt;
     private String updatedAt;
+    private boolean isDeleted;
 
     private Integer viewCount;
     private Integer likeCount;
@@ -26,7 +29,7 @@ public class FeedResponseDto {
 
     private UserDto user;
     private ProblemDto problem;
-    private List<String> tags;
+    private List<TagDto> tags;
 
 }
 

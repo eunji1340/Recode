@@ -21,5 +21,39 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> searchByQuery(@Param("query") String query);
     Optional<Note> findByNoteIdAndIsDeletedFalse(Long noteId);
     Page<Note> findByUserIn(List<User> users, Pageable pageable);
+    Page<Note> findByUserInAndIsPublicTrue(List<User> users, Pageable pageable);
+    // 전체 조회
+    Page<Note> findAllByIsPublicTrueAndIsDeletedFalse(Pageable pageable);
+
+    // 태그만
+    Page<Note> findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(String tagName, Pageable pageable);
+
+    // 검색어만 (noteTitle or noteId)
+    @Query("""
+    SELECT n FROM Note n
+    WHERE n.isPublic = true AND n.isDeleted = false AND (
+        LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
+        LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+        CAST(n.problemId AS string) LIKE %:search% OR
+        LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+    )
+""")
+    Page<Note> searchNotesOnly(@Param("search") String search, Pageable pageable);
+
+
+
+    // 태그 + 검색어
+    @Query("""
+    SELECT DISTINCT n FROM Note n
+    JOIN n.tags t
+    WHERE n.isPublic = true AND n.isDeleted = false AND
+    t.tagName = :tag AND (
+        LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
+        LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+        CAST(n.problemId AS string) LIKE %:search% OR
+        LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+    )
+""")
+    Page<Note> searchNotesByTagAndKeyword(@Param("tag") String tag, @Param("search") String search, Pageable pageable);
 }
 
