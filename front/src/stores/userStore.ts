@@ -30,7 +30,7 @@ export const useUserStore = create(
       
       setToken: (token) => {
         const { exp } = jwtDecode<JwtPayload>(token);
-        set({token,isAuthenticated: true });
+        set({token, isAuthenticated: true });
       },
 
       // 로그아웃 시 토큰 제거 & 인증 상태 업데이트
