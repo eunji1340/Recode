@@ -50,6 +50,8 @@ public class Note {
 
     private Boolean isPublic;
     private Boolean isDeleted;
+    private Boolean isLiked;
+    private Boolean isFollowing;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -93,6 +95,8 @@ public class Note {
         this.failCodeEnd = dto.getFailCodeEnd();
         this.failLanguage = dto.getFailLanguage();
         this.isPublic = dto.getIsPublic();
+        this.isLiked = dto.getIsLiked();
+        this.isFollowing = dto.getIsFollowing();
         this.updatedAt = LocalDateTime.now();
     }
 }

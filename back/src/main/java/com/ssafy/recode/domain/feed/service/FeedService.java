@@ -68,10 +68,17 @@ public class FeedService {
 
     /** 좋아요 삭제 */
     @Transactional
-    public void removeLike(Long likeId) {
-        System.out.println("[삭제 요청] likeId: " + likeId); // 로그
-        likeRepository.deleteById(likeId);
+    public void removeLike(User user, Long noteId) {
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
+
+        Like like = likeRepository.findByUserAndNote(user, note)
+                .orElseThrow(() -> new RuntimeException("Like not found"));
+
+        System.out.println("[삭제 요청] likeId: " + like.getLikeId());
+        likeRepository.delete(like);
     }
+
 
     /** 댓글 생성 */
     public CommentResponseDto createComment(Long userId, Long noteId, String content) {
@@ -126,7 +133,7 @@ public class FeedService {
         commentRepository.delete(comment);
     }
 
-    public Page<FeedResponseDto> getAllFeeds(String tag, String search, Pageable pageable) {
+    public Page<FeedResponseDto> getAllFeeds(User user, String tag, String search, Pageable pageable) {
         Page<Note> notes;
 
         boolean hasTag = tag != null && !tag.isBlank();
@@ -145,15 +152,16 @@ public class FeedService {
         return notes.map(note -> {
             int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
             int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
-
-            User user = userRepository.findById(note.getUser().getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            boolean isLiked = likeRepository.existsByUserAndNote(user, note);
+            boolean isFollowing = followRepository.existsByFollowerAndFollowing(user, note.getUser());
             ProblemEntity problem = new ProblemEntity(note.getProblemId(), note.getProblemName(), note.getProblemTier());
 
             return FeedResponseDto.builder()
                     .noteId(note.getNoteId())
                     .noteTitle(note.getNoteTitle())
                     .isPublic(note.getIsPublic())
+                    .isLiked(isLiked)
+                    .isFollowing(isFollowing)
                     .createdAt(note.getCreatedAt().toString())
                     .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
                     .viewCount(note.getViewCount())
@@ -168,9 +176,9 @@ public class FeedService {
     }
 
     /** 팔로잉 피드 조회 */
-    public Page<FeedResponseDto> getFeedsOfFollowings(Long userId, String tag, String search, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public Page<FeedResponseDto> getFeedsOfFollowings(User user, String tag, String search, Pageable pageable) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Follow> followings = followRepository.findByFollower(user);
         List<User> followingUsers = followings.stream()
@@ -201,6 +209,8 @@ public class FeedService {
                     int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
                     int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
 
+                    boolean isLiked = likeRepository.existsByUserAndNote(user, note);
+                    boolean isFollowing = followRepository.existsByFollowerAndFollowing(user, note.getUser());
                     ProblemEntity problem = new ProblemEntity(
                             note.getProblemId(),
                             note.getProblemName(),
@@ -209,6 +219,7 @@ public class FeedService {
 
                     return FeedResponseDto.builder()
                             .noteId(note.getNoteId())
+                            .noteTitle(note.getNoteTitle())
                             .content(note.getContent())
                             .successCode(note.getSuccessCode())
                             .successCodeStart(note.getSuccessCodeStart())
@@ -219,6 +230,8 @@ public class FeedService {
                             .failCodeEnd(note.getFailCodeEnd())
                             .failLanguage(note.getFailLanguage())
                             .isPublic(note.getIsPublic())
+                            .isLiked(isLiked)
+                            .isFollowing(isFollowing)
                             .createdAt(note.getCreatedAt().toString())
                             .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
                             .viewCount(note.getViewCount())

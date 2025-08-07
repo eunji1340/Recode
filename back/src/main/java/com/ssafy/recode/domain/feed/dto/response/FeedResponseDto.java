@@ -26,6 +26,8 @@ public class FeedResponseDto {
     private String createdAt;
     private String updatedAt;
     private boolean isDeleted;
+    private boolean isLiked;
+    private boolean isFollowing;
 
     private Integer viewCount;
     private Integer likeCount;

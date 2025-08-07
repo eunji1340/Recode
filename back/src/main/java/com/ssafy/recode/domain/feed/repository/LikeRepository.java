@@ -12,4 +12,5 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     int countByNote_NoteId(Long noteId);
     List<Like> findAllByNote_NoteId(Long noteId);
     Optional<Like> findByUserAndNote(User user, Note feed);
+    boolean existsByUserAndNote(User user, Note note);
 }
