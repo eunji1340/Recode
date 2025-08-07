@@ -4,6 +4,7 @@ import com.ssafy.recode.auth.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -15,6 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration // 스프링 설정 클래스로 등록
 @EnableWebSecurity // Spring Security 활성화
@@ -52,11 +58,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 로그인, 회원가입, 토큰 재발급은 인증 없이 접근 허용
                         .requestMatchers("/users/login", "/users/register", "/users/reissue",
-                                "users/bojId_check", "/users/recodeId_dupcheck",
+                                "/users/bojId_check", "/users/recodeId_dupcheck",
                                 "/users/nickname_dupcheck", "/users/email_dupcheck",
-                                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
+                                "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**",
+                                "/solvedac/suggestion"
                         ).permitAll()
-
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
@@ -66,7 +72,6 @@ public class SecurityConfig {
 
         return http.build(); // SecurityFilterChain Bean 반환
     }
-
     /**
      * 비밀번호 암호화에 사용할 빈 등록
      * - BCrypt는 보안상 안전한 해시 함수

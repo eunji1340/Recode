@@ -20,5 +20,7 @@ public class NoteRequestDto {
     private Integer failCodeEnd;
     private String failLanguage;
     private Boolean isPublic;
+    private Boolean isLiked;
+    private Boolean isFollowing;
 }
 

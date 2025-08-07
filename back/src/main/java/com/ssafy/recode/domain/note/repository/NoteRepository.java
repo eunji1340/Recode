@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,5 +57,65 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     )
 """)
     Page<Note> searchNotesByTagAndKeyword(@Param("tag") String tag, @Param("search") String search, Pageable pageable);
+
+    // 태그 + 검색어 + 작성자
+    @Query("""
+SELECT DISTINCT n FROM Note n
+JOIN n.tags t
+WHERE n.isPublic = true AND n.isDeleted = false
+AND n.user IN :users
+AND t.tagName = :tag AND (
+    LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    CAST(n.problemId AS string) LIKE %:search% OR
+    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+)
+""")
+    Page<Note> searchNotesOfUsersByTagAndKeyword(@Param("users") List<User> users,
+                                                 @Param("tag") String tag,
+                                                 @Param("search") String search,
+                                                 Pageable pageable);
+
+    // 검색어만 + 작성자
+    @Query("""
+SELECT n FROM Note n
+WHERE n.isPublic = true AND n.isDeleted = false
+AND n.user IN :users AND (
+    LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    CAST(n.problemId AS string) LIKE %:search% OR
+    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+)
+""")
+    Page<Note> searchNotesOfUsersByKeyword(@Param("users") List<User> users,
+                                           @Param("search") String search,
+                                           Pageable pageable);
+
+    // 태그만 + 작성자
+    @Query("""
+SELECT DISTINCT n FROM Note n
+JOIN n.tags t
+WHERE n.isPublic = true AND n.isDeleted = false
+AND n.user IN :users AND t.tagName = :tag
+""")
+    Page<Note> searchNotesOfUsersByTag(@Param("users") List<User> users,
+                                       @Param("tag") String tag,
+                                       Pageable pageable);
+
+    // 아무 조건 없음 (기존)
+    Page<Note> findByUserInAndIsPublicTrueAndIsDeletedFalse(List<User> users, Pageable pageable);
+
+    List<Note> findByUser_UserId(Long userId);
+
+    @Query("SELECT n FROM Note n JOIN FETCH n.tags WHERE n.user.userId = :userId AND n.isDeleted = false")
+    List<Note> findAllByUserIdWithTags(@Param("userId") Long userId);
+
+    // 30일 이전까지 노트 가져오는 쿼리
+    List<Note> findByUser_UserIdAndCreatedAtAfter(Long userId, LocalDateTime thirtyDaysAgo);
+
+    @Query("SELECT n.createdAt FROM Note n WHERE n.user.userId = :userId")
+    List<LocalDateTime> findAllNoteDateTimesByUserId(@Param("userId") Long userId);
+
+    Page<Note> findAllByUser_UserId(long userId, Pageable pageable);
 }
 

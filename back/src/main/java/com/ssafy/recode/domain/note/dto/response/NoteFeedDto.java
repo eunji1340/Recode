@@ -32,6 +32,8 @@ public class NoteFeedDto {
 
     private Boolean isPublic;
     private Boolean isdeleted;
+    private boolean isLiked;
+    private boolean isFollowing;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -74,6 +76,8 @@ public class NoteFeedDto {
                 .failLanguage(note.getFailLanguage())
                 .isPublic(note.getIsPublic())
                 .isdeleted(note.getIsDeleted())
+                .isLiked(Boolean.TRUE.equals(note.getIsLiked()))
+                .isFollowing(Boolean.TRUE.equals(note.getIsFollowing()))
                 .createdAt(note.getCreatedAt())
                 .updatedAt(note.getUpdatedAt())
                 .viewCount(note.getViewCount())

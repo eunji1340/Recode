@@ -13,15 +13,21 @@ public class FeedResponseDto {
     private String noteTitle;
     private String content;
 
+    private String successCode;
     private Integer successCodeStart;
     private Integer successCodeEnd;
+    private String successLanguage;
+    private String failCode;
     private Integer failCodeStart;
     private Integer failCodeEnd;
+    private String failLanguage;
 
     private Boolean isPublic;
     private String createdAt;
     private String updatedAt;
     private boolean isDeleted;
+    private boolean isLiked;
+    private boolean isFollowing;
 
     private Integer viewCount;
     private Integer likeCount;
