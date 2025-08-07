@@ -94,8 +94,8 @@ public class FeedController {
         return ResponseEntity.ok(ApiListResponse.from(comments));
     }
 
-    // 댓글 수정 -> 200 ok는 나오는데 content 이상하게 null로 나와요!!
-    @PatchMapping("/{noteId}/comments/{commentId}")
+    // 댓글 수정
+    @PutMapping("/{noteId}/comments/{commentId}")
     @Operation(summary = "특정 노트의 댓글 수정")
     public ResponseEntity<ApiSingleResponse<CommentResponseDto>> updateComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                @PathVariable Long noteId,
