@@ -61,7 +61,7 @@ public class SecurityConfig {
                                 "/users/bojId_check", "/users/recodeId_dupcheck",
                                 "/users/nickname_dupcheck", "/users/email_dupcheck",
                                 "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**",
-                                "/solvedac/suggestion"
+                                "/solvedac/suggestion", "/", "/index", "/**.html"
                         ).permitAll()
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
