@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -111,5 +112,9 @@ AND n.user IN :users AND t.tagName = :tag
 
     // 30일 이전까지 노트 가져오는 쿼리
     List<Note> findByUser_UserIdAndCreatedAtAfter(Long userId, LocalDateTime thirtyDaysAgo);
+
+    @Query("SELECT n.createdAt FROM Note n WHERE n.user.userId = :userId")
+    List<LocalDateTime> findAllNoteDateTimesByUserId(@Param("userId") Long userId);
+
 }
 

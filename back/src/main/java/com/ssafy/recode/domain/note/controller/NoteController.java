@@ -115,5 +115,16 @@ public class NoteController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "연속 스트릭 조회", description = "오늘까지 연속 스트릭을 얼마나 유지하고 있는가를 조회합니다.")
+    @GetMapping("/note-streak")
+    public ResponseEntity<Long> getStreak(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUser().getUserId();
+        long streak = noteService.getStreak(userId);
+
+        return ResponseEntity.ok(streak);
+    }
+
 
 }
