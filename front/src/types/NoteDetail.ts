@@ -1,4 +1,4 @@
-import type { TagProps } from '@/components/tag';
+import type { TagProps } from "@/components/feed/Tag";
 
 interface Problem {
   problemId: number;

@@ -16,7 +16,7 @@ export function mapApiFeedCardToExploreData(apiFeed: ApiFeedCard): ExploreFeedCa
     commentCount: apiFeed.commentCount,
     isLiked: apiFeed.liked,
     isFollowing: apiFeed.following,
-
+    successLanguage: apiFeed.successLanguage,
     user: {
       userId: apiFeed.user.userId,
       nickname: apiFeed.user.nickname,
@@ -52,6 +52,7 @@ export function mapApiFeedCardToMainFeedData(apiFeed: ApiFeedCard): MainFeedData
     failCode: apiFeed.failCode,
     successCodeStart: apiFeed.successCodeStart,
     successCodeEnd: apiFeed.successCodeEnd,
+    successLanguage: apiFeed.successLanguage,
     failCodeStart: apiFeed.failCodeStart,
     failCodeEnd: apiFeed.failCodeEnd,
 
@@ -65,7 +66,6 @@ export function mapApiFeedCardToMainFeedData(apiFeed: ApiFeedCard): MainFeedData
       problemId: apiFeed.problem.problemId,
       problemName: apiFeed.problem.problemName,
       problemTier: apiFeed.problem.problemTier,
-      problemLanguage: apiFeed.problem.problemLanguage,
     },
 
     tags: apiFeed.tags.map((tag) => tag.tagName),

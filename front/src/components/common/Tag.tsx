@@ -2,7 +2,7 @@
 
 import { FiHash } from 'react-icons/fi';
 
-interface TagProps {
+export interface TagProps {
   tagName: string;
 }
 
