@@ -8,14 +8,14 @@ import com.ssafy.recode.domain.feed.repository.CommentRepository;
 import com.ssafy.recode.domain.feed.repository.LikeRepository;
 import com.ssafy.recode.domain.follow.entity.Follow;
 import com.ssafy.recode.domain.follow.repository.FollowRepository;
+import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
+import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -242,5 +242,26 @@ public class FeedService {
         return commentRepository.findAllByUser_UserId(userId).stream()
                 .map(CommentResponseDto::from)
                 .collect(Collectors.toList());
+    }
+
+
+    public NoteResponseWrapper getLikedNotesByUserId(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "note.noteId"));
+        Page<Like> likePage = likeRepository.findAllByUser_UserId(userId, pageable);
+
+        List<NoteResponseDto> details = likePage
+                .map(like -> NoteResponseDto.from(like.getNote()))
+                .toList();
+
+        return NoteResponseWrapper.builder()
+                .details(details)
+                .pageable(NoteResponseWrapper.PageableInfo.builder()
+                        .pageNumber(likePage.getNumber())
+                        .pageSize(likePage.getSize())
+                        .build())
+                .totalElements(likePage.getTotalElements())
+                .totalPages(likePage.getTotalPages())
+                .last(likePage.isLast())
+                .build();
     }
 }
