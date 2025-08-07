@@ -62,7 +62,6 @@ public class SecurityConfig {
                                 "/users/nickname_dupcheck", "/users/email_dupcheck",
                                 "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
@@ -71,19 +70,6 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build(); // SecurityFilterChain Bean 반환
-    }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
     }
     /**
      * 비밀번호 암호화에 사용할 빈 등록

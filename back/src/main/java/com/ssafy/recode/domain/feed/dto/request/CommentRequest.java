@@ -9,6 +9,5 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class CommentRequest {
-    @JsonProperty("content")
     private String content;
 }
