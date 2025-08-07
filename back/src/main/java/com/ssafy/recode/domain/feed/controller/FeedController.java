@@ -9,6 +9,7 @@ import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.global.dto.response.ApiListPagingResponse;
 import com.ssafy.recode.global.dto.response.ApiListResponse;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
+import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -158,4 +159,23 @@ public class FeedController {
         ));
     }
 
+    // 특정 유저의 댓글 조회
+    @GetMapping("/comments/{userId}")
+    @Operation(summary = "특정 유저의 전체 댓글 조회")
+    public ResponseEntity<ApiListResponse<CommentResponseDto>> getCommentsByUserId(@PathVariable Long userId) {
+        List<CommentResponseDto> comments = feedService.getCommentsByUserId(userId);
+        return ResponseEntity.ok(ApiListResponse.from(comments));
+    }
+
+    @Operation(summary = "사용자가 좋아요한 노트 목록 조회", description = "userId가 좋아요한 노트들을 페이지네이션으로 조회합니다.")
+    @GetMapping("/{userId}/liked-notes")
+    public ResponseEntity<Map<String, Object>> getLikedNotesByUserId(
+            @PathVariable long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        NoteResponseWrapper response = feedService.getLikedNotesByUserId(userId, page, size);
+        Map<String, Object> body = Map.of("data", response);
+        return ResponseEntity.ok(body);
+    }
 }

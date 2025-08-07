@@ -86,9 +86,32 @@ public class NoteService {
         return savedNote;
     }
 
+    // 노트 조회
     public NoteResponseWrapper getNotes(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "noteId"));
         Page<Note> notePage = noteRepository.findAll(pageable);
+
+        List<NoteResponseDto> details = notePage
+                .stream()
+                .map(NoteResponseDto::from)
+                .toList();
+
+        return NoteResponseWrapper.builder()
+                .details(details)
+                .pageable(NoteResponseWrapper.PageableInfo.builder()
+                        .pageNumber(notePage.getNumber())
+                        .pageSize(notePage.getSize())
+                        .build())
+                .totalElements(notePage.getTotalElements())
+                .totalPages(notePage.getTotalPages())
+                .last(notePage.isLast())
+                .build();
+    }
+
+    // 타인 노트 조회
+    public NoteResponseWrapper getNotesByUserId(long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "noteId"));
+        Page<Note> notePage = noteRepository.findAllByUser_UserId(userId, pageable);
 
         List<NoteResponseDto> details = notePage
                 .stream()

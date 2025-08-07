@@ -116,5 +116,6 @@ AND n.user IN :users AND t.tagName = :tag
     @Query("SELECT n.createdAt FROM Note n WHERE n.user.userId = :userId")
     List<LocalDateTime> findAllNoteDateTimesByUserId(@Param("userId") Long userId);
 
+    Page<Note> findAllByUser_UserId(long userId, Pageable pageable);
 }
 
