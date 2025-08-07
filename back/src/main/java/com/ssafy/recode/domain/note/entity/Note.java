@@ -50,8 +50,8 @@ public class Note {
 
     private Boolean isPublic;
     private Boolean isDeleted;
-    private Boolean isLiked;
-    private Boolean isFollowing;
+    private Boolean isLiked = false;
+    private Boolean isFollowing = false;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
