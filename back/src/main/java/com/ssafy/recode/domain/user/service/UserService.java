@@ -130,6 +130,13 @@ public class UserService {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             User user = userDetails.getUser(); // 또는 getUsername 등 상황에 맞게
 
+            int latestTier = fetchBojTier(user.getBojId());
+            if (latestTier != -1 && user.getUserTier() != latestTier) {
+                log.info("[BOJ 티어 업데이트] 기존: {}, 최신: {}", user.getUserTier(), latestTier);
+                user.updateUserTier(latestTier);
+                userRepository.save(user);
+            }
+
             // JWT 생성
             String accessToken = jwtTokenProvider.createAccessToken(user.getRecodeId());
             String refreshToken = jwtTokenProvider.createRefreshToken(user.getRecodeId());

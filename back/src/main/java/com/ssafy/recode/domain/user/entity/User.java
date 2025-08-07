@@ -9,6 +9,7 @@ import lombok.*;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 public class User {
 
     @Id
@@ -53,4 +54,9 @@ public class User {
     public void markAsDeleted() {
         this.isDeleted = true;
     }
+
+    public void updateUserTier(int newTier) {
+        this.userTier = newTier;
+    }
+
 }
