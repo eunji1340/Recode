@@ -1,6 +1,7 @@
 package com.ssafy.recode.domain.note.controller;
 
 import com.ssafy.recode.auth.CustomUserDetails;
+import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
 import com.ssafy.recode.domain.note.dto.response.*;
@@ -80,8 +81,9 @@ public class NoteController {
 
     @Operation(summary = "노트 상세 조회", description = "노트 ID를 통해 특정 노트의 상세 정보를 조회합니다.")
     @GetMapping("/{noteId}")
-    public ResponseEntity<?> getNote(@PathVariable Long noteId){
-        NoteFeedDto noteFeedDto = noteService.getNoteFeedDtoById(noteId);
+    public ResponseEntity<?> getNote(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                     @PathVariable Long noteId){
+        FeedResponseDto noteFeedDto = noteService.getNoteFeedDtoById(userDetails.getUser(), noteId);
 
         return ResponseEntity.ok(noteFeedDto);
     }

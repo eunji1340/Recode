@@ -29,7 +29,6 @@ public class SolvedacService {
                 .fromHttpUrl("https://solved.ac/api/v3/search/suggestion")
                 .queryParam("query", query)
                 .build()
-                .encode(StandardCharsets.UTF_8)
                 .toUriString();
 
         // 요청 헤더 생성: 응답 받을 언어 한국어로 설정
