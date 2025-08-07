@@ -55,11 +55,11 @@ public class FeedController {
     }
 
     // 좋아요 삭제
-    @DeleteMapping("/{noteId}/hearts/{likeId}")
+    @DeleteMapping("/{noteId}/hearts")
     @Operation(summary = "특정 노트에 좋아요 삭제")
-    public ResponseEntity<Void> removeLike(@PathVariable Long noteId,
-                                           @PathVariable Long likeId) {
-        feedService.removeLike(likeId);
+    public ResponseEntity<Void> removeLike(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                           @PathVariable Long noteId) {
+        feedService.removeLike(userDetails.getUser(), noteId);
         return ResponseEntity.ok().build();
     }
 
@@ -120,13 +120,15 @@ public class FeedController {
     @GetMapping
     @Operation(summary = "전체피드 조회 (태그/검색어)로 검색")
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getAllFeeds(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "15") int size,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String search) {
 
+//        Long userId = userDetails.getUser().getUserId();
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FeedResponseDto> feeds = feedService.getAllFeeds(tag, search, pageable);
+        Page<FeedResponseDto> feeds = feedService.getAllFeeds(userDetails.getUser(), tag, search, pageable);
 
         return ResponseEntity.ok(ApiListPagingResponse.from(
                 feeds.getContent(),
@@ -145,9 +147,9 @@ public class FeedController {
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String search) {
 
-        Long userId = userDetails.getUser().getUserId();
+//        Long userId = userDetails.getUser().getUserId();
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FeedResponseDto> feeds = feedService.getFeedsOfFollowings(userId,tag, search, pageable);
+        Page<FeedResponseDto> feeds = feedService.getFeedsOfFollowings(userDetails.getUser(),tag, search, pageable);
 
         return ResponseEntity.ok(ApiListPagingResponse.from(
                 feeds.getContent(),

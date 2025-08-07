@@ -1,5 +1,13 @@
 package com.ssafy.recode.domain.note.service;
 
+import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
+import com.ssafy.recode.domain.feed.dto.response.ProblemDto;
+import com.ssafy.recode.domain.feed.dto.response.TagDto;
+import com.ssafy.recode.domain.feed.dto.response.UserDto;
+import com.ssafy.recode.domain.feed.entity.ProblemEntity;
+import com.ssafy.recode.domain.feed.repository.CommentRepository;
+import com.ssafy.recode.domain.feed.repository.LikeRepository;
+import com.ssafy.recode.domain.follow.repository.FollowRepository;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
 import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
@@ -37,6 +45,9 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
     private final SolvedacApiClient solvedacApiClient;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
     private final TagService tagService;
     private final AiNoteGeneratorService aiNoteGeneratorService;
 
@@ -159,11 +170,51 @@ public class NoteService {
     }
 
     /** 특정 노트 조회 **/
-    public NoteFeedDto getNoteFeedDtoById(Long noteId) {
+    @Transactional(readOnly = true)
+    public FeedResponseDto getNoteFeedDtoById(User loginUser, Long noteId) {
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteNotFoundException(noteId));
-        return NoteFeedDto.from(note);
+
+        boolean isLiked = likeRepository.existsByUserAndNote(loginUser, note);
+        boolean isFollowing = followRepository.existsByFollowerAndFollowing(loginUser, note.getUser());
+
+        int likeCount = likeRepository.countByNote_NoteId(noteId);
+        int commentCount = commentRepository.countByFeed_NoteId(noteId);
+        ProblemEntity problem = new ProblemEntity(
+                note.getProblemId(),
+                note.getProblemName(),
+                note.getProblemTier()
+        );
+
+        return FeedResponseDto.builder()
+                .noteId(note.getNoteId())
+                .noteTitle(note.getNoteTitle())
+                .content(note.getContent())
+                .successCode(note.getSuccessCode())
+                .successCodeStart(note.getSuccessCodeStart())
+                .successCodeEnd(note.getSuccessCodeEnd())
+                .successLanguage(note.getSuccessLanguage())
+                .failCode(note.getFailCode())
+                .failCodeStart(note.getFailCodeStart())
+                .failCodeEnd(note.getFailCodeEnd())
+                .failLanguage(note.getFailLanguage())
+                .isPublic(note.getIsPublic())
+                .isLiked(isLiked)
+                .isFollowing(isFollowing)
+                .createdAt(note.getCreatedAt().toString())
+                .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
+                .viewCount(note.getViewCount())
+                .likeCount(likeCount)
+                .commentCount(commentCount)
+                .user(UserDto.from(note.getUser()))
+                .problem(ProblemDto.from(problem))
+                .tags(note.getTags().stream()
+                        .map(TagDto::from)
+                        .collect(Collectors.toList()))
+                .isDeleted(note.getIsDeleted())
+                .build();
     }
+
 
     public Long getNotesByUserId(Long userId){
         if (userId == null) {
