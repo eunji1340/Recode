@@ -2,7 +2,6 @@ package com.ssafy.recode.domain.cookie.controller;
 
 import com.ssafy.recode.domain.cookie.dto.request.BaekjoonCookieRequestDto;
 import com.ssafy.recode.domain.cookie.service.BaekjoonCookieService;
-import com.ssafy.recode.domain.feed.service.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
