@@ -89,7 +89,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-2">
         <ProfileHeader
           nickname={user.nickname}
           bojId={user.bojId}
@@ -113,7 +113,7 @@ export default function Dashboard() {
         onTabChange={setActiveTab}
       />
 
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-2">
         <StatsSection totalCount={totalCount} tagCounts={tagCounts} />
       </div>
     </>
