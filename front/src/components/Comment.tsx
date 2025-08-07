@@ -2,6 +2,7 @@ import { useState } from 'react';
 import api from '../api/axiosInstance';
 import type { CommentData } from '../types';
 
+// TODO: DTO 맞추기
 export default function Comment({
   noteId,
   profilePic,
@@ -90,12 +91,7 @@ export default function Comment({
             >
               취소
             </button>
-            <button
-              className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-              onClick={handleSave}
-            >
-              저장
-            </button>
+            <button onClick={handleSave}>저장</button>
           </div>
         ) : (
           // --- 보기 모드 버튼 ---

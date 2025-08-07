@@ -1,52 +1,100 @@
-import React, { useState } from 'react';
-import { FaHeart } from 'react-icons/fa';
-import { FiHeart, FiMessageSquare, FiHash } from 'react-icons/fi';
+import React, { useEffect, useRef, useState } from 'react';
+import ProblemTitle from './ProblemTitle';
+import FollowButton from './FollowButton';
+import HeartIcon from './HeartIcon';
+import CommentIcon from './CommentIcon';
+import Tag from './Tag';
+import UserProfile from '../user/UserProfile';
 
-interface FeedCardProps {
-  noteTitle: string;
-  content: string;
-  createdAt: string;
-  user: {
-    nickname: string;
-    image?: string;
-  };
-  problem: {
-    tier: number;
-    language?: string; // ✅ optional 처리
-  };
-  tags: string[];
-  likeCount: number;
-  commentCount: number;
-  isLiked: boolean;
-}
+import { useLike } from '../../hooks/useLike';
+import { useFollow } from '../../hooks/useFollow';
+import type { ExploreFeedCardData } from '../../types/feed';
 
+interface FeedCardProps extends ExploreFeedCardData {}
+
+/**
+ * 피드 카드 단일 항목 컴포넌트 (ExplorePage용)
+ */
 const FeedCard: React.FC<FeedCardProps> = ({
+  noteId,
+  isLiked,
+  likeCount,
+  isFollowing,
   noteTitle,
-  content,
   createdAt,
   user,
   problem,
   tags,
-  likeCount,
   commentCount,
-  isLiked,
 }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [liked, setLiked] = useState(isLiked);
-  const [likes, setLikes] = useState(likeCount);
+  const { liked, likeCount: currentLikeCount, toggleLike } = useLike(
+    noteId,
+    isLiked,
+    likeCount
+  );
 
-  const handleFollowToggle = () => setIsFollowing((prev) => !prev);
-  const handleLikeClick = () => {
-    setLiked((prev) => !prev);
-    setLikes((prev) => prev + (liked ? -1 : 1));
-  };
+  const { isFollowing: currentFollowing, toggleFollow } = useFollow(
+    isFollowing,
+    user.userId
+  );
+
+  const tagContainerRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(tags.length);
+
+  useEffect(() => {
+    const updateVisibleTags = () => {
+      const container = tagContainerRef.current;
+      if (!container) return;
+
+      const tagWidths = tags.map((tag) => {
+        const temp = document.createElement('span');
+        temp.style.visibility = 'hidden';
+        temp.style.position = 'absolute';
+        temp.className =
+          'inline-flex items-center gap-[2px] border border-[#A0BACC] bg-[#E6EEF4] text-[#13233D] rounded-full px-2 py-[2px] text-xs font-medium flex-shrink-0';
+        temp.innerText = `# ${tag}`;
+        document.body.appendChild(temp);
+        const width = temp.offsetWidth + 4;
+        document.body.removeChild(temp);
+        return width;
+      });
+
+      const plusTag = document.createElement('span');
+      plusTag.style.visibility = 'hidden';
+      plusTag.style.position = 'absolute';
+      plusTag.className = 'text-[10px] text-zinc-400 font-medium whitespace-nowrap';
+      plusTag.innerText = `+${tags.length - 1}`;
+      document.body.appendChild(plusTag);
+      const plusWidth = plusTag.offsetWidth + 4;
+      document.body.removeChild(plusTag);
+
+      let total = 0;
+      let showCount = 0;
+      const max = container.offsetWidth;
+
+      for (let i = 0; i < tagWidths.length; i++) {
+        const nextWidth = total + tagWidths[i];
+        const remaining = tagWidths.length - (i + 1);
+        const needPlus = remaining > 0;
+        if (needPlus && nextWidth + plusWidth > max) break;
+        if (!needPlus && nextWidth > max) break;
+
+        total = nextWidth;
+        showCount++;
+      }
+
+      setVisibleCount(showCount);
+    };
+
+    updateVisibleTags();
+    window.addEventListener('resize', updateVisibleTags);
+    return () => window.removeEventListener('resize', updateVisibleTags);
+  }, [tags]);
 
   const getTimeAgo = (dateStr: string): string => {
     const now = new Date();
     const created = new Date(dateStr);
-    const diffMin = Math.floor(
-      (now.getTime() - created.getTime()) / (1000 * 60),
-    );
+    const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
     if (diffMin < 1) return '방금 전';
     if (diffMin < 60) return `${diffMin}분 전`;
     const diffHr = Math.floor(diffMin / 60);
@@ -64,23 +112,19 @@ const FeedCard: React.FC<FeedCardProps> = ({
     return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${key}/${key}-original.svg`;
   };
 
-  const visibleTags = tags.slice(0, 3);
-  const extraTagCount = tags.length - visibleTags.length;
-  const HeartIcon = liked ? FaHeart : FiHeart;
-  const languageIconUrl = getLanguageIconUrl(problem.language);
+  const languageIconUrl = getLanguageIconUrl(problem.problemLanguage);
 
   return (
-    <div className="w-[320px] h-[300px] bg-white rounded-xl shadow p-6 overflow-hidden flex flex-col justify-between hover:shadow-md transition cursor-pointer text-[#0B0829]">
+    <div className="w-[360px] h-[330px] bg-white rounded-xl shadow p-6 overflow-hidden flex flex-col justify-between hover:shadow-md transition cursor-pointer text-[#0B0829]">
       {/* Header */}
       <div className="w-full">
-        {/* 문제 레벨 + 제목 */}
-        <div className="flex items-center gap-2">
-          <div className="bg-[#FFD600] text-white text-xs font-bold px-2 py-1 rounded-md shadow">
-            {problem.tier}
-          </div>
-          <span className="font-semibold text-sm">{noteTitle}</span>
-        </div>
-
+        <ProblemTitle
+          problemId={problem.problemId}
+          problemName={problem.problemName}
+          problemTier={problem.problemTier}
+          size={20}
+          fontSize="text-base"
+        />
         <div className="my-2 h-px bg-zinc-200" />
 
         {/* 작성자 + 팔로우 */}
@@ -88,39 +132,24 @@ const FeedCard: React.FC<FeedCardProps> = ({
           <span>{getTimeAgo(createdAt)}</span>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              {user.image ? (
-                <img
-                  src={user.image}
-                  className="w-5 h-5 rounded-full"
-                  alt="profile"
-                />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-[#A0BACC] flex items-center justify-center text-white text-[10px] font-bold">
-                  {user.nickname[0]}
-                </div>
-              )}
-              <span className="text-[#0B0829] font-medium">
-                {user.nickname}
-              </span>
+              <UserProfile
+                nickname={user.nickname}
+                image={user.image}
+                size={20}
+              />
+              <span className="text-[#0B0829] font-medium">{user.nickname}</span>
             </div>
-            <button
-              onClick={handleFollowToggle}
-              className={`px-2 py-[2px] text-xs font-medium rounded-full transition-colors border
-                ${
-                  isFollowing
-                    ? 'text-white border-[#13233D] bg-[#13233D]'
-                    : 'text-[#13233D] border-[#13233D] hover:bg-[#F0F2F5]'
-                }`}
-            >
-              {isFollowing ? '팔로잉' : '팔로우'}
-            </button>
+            <FollowButton
+              isFollowing={currentFollowing}
+              onToggle={toggleFollow}
+            />
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="text-center font-bold text-2xl mb-2 line-clamp-2">
-        {content}
+        {noteTitle}
       </div>
 
       {/* Footer */}
@@ -129,41 +158,37 @@ const FeedCard: React.FC<FeedCardProps> = ({
           <div className="flex items-center gap-1 text-sm">
             <img
               src={languageIconUrl}
-              alt={`${problem.language} icon`}
+              alt={`${problem.problemLanguage} icon`}
               className="w-5 h-5"
             />
-            <span className="text-xs">{problem.language}</span>
+            <span className="text-xs">{problem.problemLanguage}</span>
           </div>
         )}
         <div className="border-t border-zinc-200" />
+
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-2 overflow-hidden max-w-[200px]">
-            {visibleTags.map((tag, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center gap-[2px] border border-[#A0BACC] bg-[#E6EEF4] text-[#13233D] rounded-full px-2 py-[2px] text-[10px] font-medium flex-shrink-0"
-              >
-                <FiHash className="w-[10px] h-[10px] -ml-[1px]" />
-                {tag}
-              </span>
+          {/* 태그 */}
+          <div
+            ref={tagContainerRef}
+            className="flex items-center gap-1 overflow-hidden max-w-[230px]"
+          >
+            {tags.slice(0, visibleCount).map((tag, idx) => (
+              <Tag key={idx} tagName={tag} />
             ))}
-            {extraTagCount > 0 && (
-              <span className="text-[10px] text-zinc-400 font-medium">
-                +{extraTagCount}
+            {visibleCount < tags.length && (
+              <span className="text-[10px] text-zinc-400 font-medium whitespace-nowrap">
+                +{tags.length - visibleCount}
               </span>
             )}
           </div>
-          <div className="flex gap-[6px] text-xs items-center shrink-0 min-w-[64px]">
-            <div className="flex items-center gap-1 text-rose-500">
-              <button onClick={handleLikeClick}>
-                <HeartIcon className="w-4 h-4" />
-              </button>
-              <span>{likes}</span>
-            </div>
-            <div className="flex items-center gap-1 text-[#13233D]">
-              <FiMessageSquare className="w-4 h-4" />
-              <span>{commentCount}</span>
-            </div>
+
+          <div className="flex gap-2 text-xs items-center shrink-0 min-w-[64px]">
+            <HeartIcon
+              liked={liked}
+              likeCount={currentLikeCount}
+              onClick={toggleLike}
+            />
+            <CommentIcon count={commentCount} />
           </div>
         </div>
       </div>
