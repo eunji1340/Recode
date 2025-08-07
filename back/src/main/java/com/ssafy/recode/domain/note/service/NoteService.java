@@ -25,11 +25,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -176,5 +175,49 @@ public class NoteService {
         countMap.forEach((tag, count) -> result.add(new NoteTagDto(tag, count)));
 
         return result;
+    }
+
+    public Long getNotesByCreatedAt(Long userId) {
+        if (userId == null) {
+            throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        try {
+            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+            List<Note> noteList = noteRepository.findByUser_UserIdAndCreatedAtAfter(userId, thirtyDaysAgo);
+            return (long) noteList.size();
+
+        } catch (Exception e) {
+            throw BaseException.of(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public Long getStreak(Long userId) {
+        if (userId == null) {
+            throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        try {
+            // 1. createdAt 날짜 목록 가져오기 (LocalDateTime)
+            List<LocalDateTime> dateTimes = noteRepository.findAllNoteDateTimesByUserId(userId);
+
+            // 2. LocalDate로 변환해서 Set으로 중복 제거
+            Set<LocalDate> dateSet = dateTimes.stream()
+                    .map(LocalDateTime::toLocalDate)
+                    .collect(Collectors.toSet());
+
+            // 3. 오늘부터 거꾸로 확인해서 streak 계산
+            LocalDate today = LocalDate.now();
+            long streak = 0;
+
+            while (dateSet.contains(today.minusDays(streak))) {
+                streak++;
+            }
+
+            return streak;
+
+        } catch (Exception e) {
+            throw BaseException.of(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 }
