@@ -177,4 +177,20 @@ public class NoteService {
 
         return result;
     }
+
+    public Long getNotesByCreatedAt(Long userId) {
+        if (userId == null) {
+            throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        try {
+            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+            List<Note> noteList = noteRepository.findByUser_UserIdAndCreatedAtAfter(userId, thirtyDaysAgo);
+            return (long) noteList.size();
+
+        } catch (Exception e) {
+            throw BaseException.of(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

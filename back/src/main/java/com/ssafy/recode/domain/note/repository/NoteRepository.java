@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,5 +109,7 @@ AND n.user IN :users AND t.tagName = :tag
     @Query("SELECT n FROM Note n JOIN FETCH n.tags WHERE n.user.userId = :userId AND n.isDeleted = false")
     List<Note> findAllByUserIdWithTags(@Param("userId") Long userId);
 
+    // 30일 이전까지 노트 가져오는 쿼리
+    List<Note> findByUser_UserIdAndCreatedAtAfter(Long userId, LocalDateTime thirtyDaysAgo);
 }
 
