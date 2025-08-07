@@ -83,12 +83,13 @@ export default function ExplorePage() {
   const [searchTags, setSearchTags] = useState<string[]>([]);
 
   useEffect(() => {
+    // token 포함된 api로 대체
     // fetch('http://localhost:8080/feeds?userId=1')
-    // axiosInstance로 대체
+    //   .then((res) => res.json())
     api
-      .get(`/feeds?page=0&size=15`)
+      .get(`/feeds`)
       .then((response) => {
-        const apiFeeds: ApiFeed[] = response.data.data.details;
+        const apiFeeds: ApiFeed[] = response.data;
         console.log(apiFeeds);
         const mappedFeeds = apiFeeds.map(mapApiFeedToFeedCardData);
         setFeeds(mappedFeeds);

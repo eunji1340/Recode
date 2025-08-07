@@ -5,7 +5,7 @@ import { useUserStore } from '../stores/userStore';
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_REST_API_URL,
+  baseURL: import.meta.env.VITE_REST_API_URL, // API 기본 경로
 });
 
 // 모든 요청 전에 실행되는 인터셉터

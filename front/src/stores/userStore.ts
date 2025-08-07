@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface UserState {
   token: string | null;
@@ -16,7 +16,7 @@ export const useUserStore = create(
       clearToken: () => set({ token: null }), // 토큰 삭제 함수
     }),
     {
-      name: "user-storage", // localStorage에 저장될 때 사용될 키
-    }
-  )
+      name: 'user-storage', // localStorage에 저장될 때 사용될 키
+    },
+  ),
 );
