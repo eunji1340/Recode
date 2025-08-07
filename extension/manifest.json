@@ -17,6 +17,11 @@
                 "scripts/baekjoon.js"
             ],
             "run_at": "document_idle"
+        },
+          {
+             "matches": ["http://localhost:8080/*"], 
+              "js": ["scripts/recode.js"],                
+             "run_at": "document_idle"
         }
     ],
     "background": {
@@ -25,11 +30,12 @@
     },
     "permissions": [
         "cookies",
+        "storage",
         "tabs",
         "https://www.acmicpc.net/"
     ],
     "host_permissions": [
         "https://www.acmicpc.net/*",
-        "https://recode.example.com/*"
+        "http://localhost:8080/*"
     ]
 }
