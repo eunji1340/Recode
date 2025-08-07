@@ -13,7 +13,7 @@ export interface NoteData {
   failCodeStart: number;
   failCodeEnd: number;
   viewCount: number;
-  createdAt: number;
+  createdAt: string;
   updatedAt: string;
   isPublic: boolean;
   isDeleted: boolean;

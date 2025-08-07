@@ -1,6 +1,13 @@
 import api from './axiosInstance';
-import type { ApiFeedCard, ExploreFeedCardData, MainFeedData } from '@/types/feed';
-import { mapApiFeedCardToMainFeedData, mapApiFeedCardToExploreData } from '../utils/mapApiFeed';
+import type {
+  ApiFeedCard,
+  ExploreFeedCardData,
+  MainFeedData,
+} from '@/types/feed';
+import {
+  mapApiFeedCardToMainFeedData,
+  mapApiFeedCardToExploreData,
+} from '../utils/mapApiFeed';
 
 /**
  * 좋아요 추가 (POST)
@@ -41,7 +48,7 @@ export const removeFollow = async (followId: number): Promise<void> => {
  * @param page - 현재 페이지 번호
  * @param size - 한 페이지당 요청할 피드 개수
  * @param search - 공통 검색어
- * @param tags - 태그 필터링 목록
+ * @param tag - 태그 필터링 목록
  * @param sort - 정렬 기준 (latest | likes | comments)
  * @param scope - 유저 범위 (all | following)
  * @returns items: 변환된 피드 데이터 배열, last: 마지막 페이지 여부
@@ -50,14 +57,14 @@ export async function fetchExploreFeeds({
   page,
   size,
   search = '',
-  tags = [],
+  tag = '',
   sort = 'latest',
   scope = 'all',
 }: {
   page: number;
   size: number;
   search?: string;
-  tags?: string[];
+  tag?: string;
   sort?: string;
   scope?: string;
 }): Promise<{ items: ExploreFeedCardData[]; last: boolean }> {
@@ -66,7 +73,7 @@ export async function fetchExploreFeeds({
       page,
       size,
       search,
-      tags,
+      tag,
       sort,
       scope,
     },
@@ -87,26 +94,26 @@ export async function fetchExploreFeeds({
  * @param page - 현재 페이지 번호
  * @param size - 한 페이지당 요청할 피드 개수
  * @param search - 공통 검색어
- * @param tags - 태그 필터링 목록
+ * @param tag - 태그
  * @returns items: 변환된 피드 데이터 배열, last: 마지막 페이지 여부
  */
 export async function fetchMainFeeds({
   page,
   size,
   search = '',
-  tags = [],
+  tag = '',
 }: {
   page: number;
   size: number;
   search?: string;
-  tags?: string[];
+  tag?: string;
 }): Promise<{ items: MainFeedData[]; last: boolean }> {
   const res = await api.get('/feeds/followings', {
     params: {
       page,
       size,
       search,
-      tags,
+      tag,
     },
   });
 

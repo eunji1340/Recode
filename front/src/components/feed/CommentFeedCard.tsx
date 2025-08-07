@@ -1,26 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ProblemTitle from './ProblemTitle';
-import FollowButton from '../common/FollowButton';
 import HeartIcon from '../common/HeartIcon';
 import CommentIcon from '../common/CommentIcon';
 import Tag from '../common/Tag';
 import UserProfile from '../user/UserProfile';
 
 import { useLike } from '../../hooks/useLike';
-import { useFollow } from '../../hooks/useFollow';
 import type { ExploreFeedCardData } from '../../types/feed';
 
-interface FeedCardProps extends ExploreFeedCardData {}
+interface CommentFeedCardProps extends ExploreFeedCardData {
+  comment: string;
+}
 
-/**
- * 피드 카드 단일 항목 컴포넌트 (ExplorePage용)
- */
-const FeedCard: React.FC<FeedCardProps> = ({
+const CommentFeedCard: React.FC<CommentFeedCardProps> = ({
   noteId,
   isLiked,
-  viewcount,
   likeCount,
-  isFollowing,
   noteTitle,
   createdAt,
   user,
@@ -28,17 +23,13 @@ const FeedCard: React.FC<FeedCardProps> = ({
   problem,
   tags,
   commentCount,
+  comment,
 }) => {
   const {
     liked,
     likeCount: currentLikeCount,
     toggleLike,
   } = useLike(noteId, isLiked, likeCount);
-
-  const { isFollowing: currentFollowing, toggleFollow } = useFollow(
-    isFollowing,
-    user.userId,
-  );
 
   const tagContainerRef = useRef<HTMLDivElement>(null);
   const [visibleCount, setVisibleCount] = useState(tags.length);
@@ -113,72 +104,36 @@ const FeedCard: React.FC<FeedCardProps> = ({
     return `${Math.floor(diffHr / 24)}일 전`;
   };
 
-  const getLanguageIconUrl = (lang?: string): string | null => {
-    if (!lang) return null;
-    const exceptions: Record<string, string> = {
-      'C++': 'cplusplus',
-      'C#': 'csharp',
-    };
-    const key = exceptions[lang] ?? lang.toLowerCase();
-    return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${key}/${key}-original.svg`;
-  };
-
-  const languageIconUrl = getLanguageIconUrl(successLanguage);
-
   return (
     <div className="w-[330px] h-[300px] bg-white rounded-xl shadow p-6 overflow-hidden flex flex-col justify-between hover:shadow-md transition cursor-pointer text-[#0B0829]">
-      {/* Header */}
+      {/* 헤더 */}
       <div className="w-full">
         <ProblemTitle
           problemId={problem.problemId}
           problemName={problem.problemName}
           problemTier={problem.problemTier}
-          size={20}
-          fontSize="text-base"
+          size={12}
+          fontSize="text-xs"
         />
-        <div className="my-2 h-px bg-zinc-200" />
-
-        {/* 작성자 + 팔로우 */}
-        <div className="flex items-center justify-between text-xs text-[#A0BACC]">
-          <span>{getTimeAgo(createdAt)}</span>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <UserProfile
-                nickname={user.nickname}
-                image={user.image}
-                size={20}
-              />
-              <span className="text-[#0B0829] font-medium">
-                {user.nickname}
-              </span>
-            </div>
-            <FollowButton
-              isFollowing={currentFollowing}
-              onToggle={toggleFollow}
+        <div className="flex items-center justify-between text-xs">
+          <div className="text-base font-semibold mt-1">{noteTitle}</div>
+          <div className="flex items-center justify-between text-xs text-zinc-500 mt-2">
+            <UserProfile
+              nickname={user.nickname}
+              image={user.image}
+              size={20}
             />
           </div>
         </div>
+        <div className="my-2 h-px bg-zinc-200" />
       </div>
 
-      {/* Content */}
-      <div className="text-center font-bold text-2xl mb-2 line-clamp-2">
-        {noteTitle}
-      </div>
+      {/* 본문 */}
+      <div className="text-center  text-xl mb-2 line-clamp-2">{comment}</div>
 
       {/* Footer */}
       <div className="text-sm space-y-2">
-        {languageIconUrl && (
-          <div className="flex items-center gap-1 text-sm">
-            <img
-              src={languageIconUrl}
-              alt={`${successLanguage} icon`}
-              className="w-5 h-5"
-            />
-            <span className="text-xs">{successLanguage}</span>
-          </div>
-        )}
         <div className="border-t border-zinc-200" />
-
         <div className="flex items-center justify-between w-full">
           {/* 태그 */}
           <div
@@ -212,4 +167,4 @@ const FeedCard: React.FC<FeedCardProps> = ({
   );
 };
 
-export default FeedCard;
+export default CommentFeedCard;
