@@ -1,7 +1,7 @@
 import React from 'react';
-import HeartIcon from '../feed/HeartIcon';
-import CommentIcon from '../feed/CommentIcon';
-import Tag from '../feed/Tag';
+import HeartIcon from '../common/HeartIcon';
+import CommentIcon from '../common/CommentIcon';
+import Tag from '../common/Tag';
 
 interface MainFeedFooterProps {
   liked: boolean;

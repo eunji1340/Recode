@@ -1,15 +1,15 @@
 import { useParams } from 'react-router-dom';
-import Tag from '../components/feed/Tag';
-import HeartIcon from '../components/HeartIcon';
-import CommentIcon from '../components/feed/CommentIcon';
+import Tag from '../components/common/Tag';
+import HeartIcon from '../components/common/HeartIcon';
+import CommentIcon from '../components/common/CommentIcon';
 import { useEffect, useState } from 'react';
 import Comment from '../components/Comment';
 import type { NoteDetail, NoteDetailResponse } from '../types/NoteDetail';
-import type { CommentResponse } from '@/types/comment';
+import type { CommentResponse } from '../types/comment';
 import api from '../api/axiosInstance';
 import CodePreview from '../components/code/CodePreview';
-import FollowBtn from '../components/FollowBtn';
 import ProblemTitle from '../components/feed/ProblemTitle';
+import FollowButton from '../components/common/FollowButton';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -102,8 +102,8 @@ export default function NoteDetailPage() {
   };
   const handleDisLike = async () => {
     try {
-      // likeId 없어도 되게 변경해준대
-      //   await api.delete(`/fees/${noteId}/hearts/${likeId}`);
+      const resp = await api.delete(`/fees/${noteId}/hearts`);
+      console.log('좋아요 취소 완료');
     } catch (err) {
       console.log(err);
     }
@@ -151,13 +151,18 @@ export default function NoteDetailPage() {
               ) : (
                 <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
                   {note.user.nickname[0]}
+                  {/* TODO */}
                 </div>
               )}
               {/* TODO: 타인 닉네임 클릭 시 타인 페이지로 이동 */}
               <div className="text-base font-semibold">
                 {note.user.nickname}
               </div>
-              <FollowBtn></FollowBtn>
+              {/* TODO: 팔로우 본인확인 */}
+              <FollowButton
+                isFollowing={true}
+                onToggle={() => {}}
+              ></FollowButton>
             </div>
           </div>
           <hr className="my-3 border-t-2 border-gray-300" />
@@ -202,8 +207,8 @@ export default function NoteDetailPage() {
               <hr className="my-3 border-t-2 border-gray-300" />
               <div className="flex flex-row justify-between">
                 <div className="tags">
-                  {note.tags.map((name, index) => (
-                    <Tag key={index} tagName={name}></Tag>
+                  {note.tags.map((tagId, tagName) => (
+                    <Tag key={tagId} tagName={tagName}></Tag>
                   ))}
                 </div>
                 <div className="likes-and-comments flex flex-row">

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ProblemTitle from './ProblemTitle';
-import FollowButton from './FollowButton';
-import HeartIcon from './HeartIcon';
-import CommentIcon from './CommentIcon';
-import Tag from './Tag';
+import FollowButton from '../common/FollowButton';
+import HeartIcon from '../common/HeartIcon';
+import CommentIcon from '../common/CommentIcon';
+import Tag from '../common/Tag';
 import UserProfile from '../user/UserProfile';
 
 import { useLike } from '../../hooks/useLike';
@@ -27,15 +27,15 @@ const FeedCard: React.FC<FeedCardProps> = ({
   tags,
   commentCount,
 }) => {
-  const { liked, likeCount: currentLikeCount, toggleLike } = useLike(
-    noteId,
-    isLiked,
-    likeCount
-  );
+  const {
+    liked,
+    likeCount: currentLikeCount,
+    toggleLike,
+  } = useLike(noteId, isLiked, likeCount);
 
   const { isFollowing: currentFollowing, toggleFollow } = useFollow(
     isFollowing,
-    user.userId
+    user.userId,
   );
 
   const tagContainerRef = useRef<HTMLDivElement>(null);
@@ -62,7 +62,8 @@ const FeedCard: React.FC<FeedCardProps> = ({
       const plusTag = document.createElement('span');
       plusTag.style.visibility = 'hidden';
       plusTag.style.position = 'absolute';
-      plusTag.className = 'text-[10px] text-zinc-400 font-medium whitespace-nowrap';
+      plusTag.className =
+        'text-[10px] text-zinc-400 font-medium whitespace-nowrap';
       plusTag.innerText = `+${tags.length - 1}`;
       document.body.appendChild(plusTag);
       const plusWidth = plusTag.offsetWidth + 4;
@@ -94,7 +95,9 @@ const FeedCard: React.FC<FeedCardProps> = ({
   const getTimeAgo = (dateStr: string): string => {
     const now = new Date();
     const created = new Date(dateStr);
-    const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
+    const diffMin = Math.floor(
+      (now.getTime() - created.getTime()) / (1000 * 60),
+    );
     if (diffMin < 1) return '방금 전';
     if (diffMin < 60) return `${diffMin}분 전`;
     const diffHr = Math.floor(diffMin / 60);
@@ -137,7 +140,9 @@ const FeedCard: React.FC<FeedCardProps> = ({
                 image={user.image}
                 size={20}
               />
-              <span className="text-[#0B0829] font-medium">{user.nickname}</span>
+              <span className="text-[#0B0829] font-medium">
+                {user.nickname}
+              </span>
             </div>
             <FollowButton
               isFollowing={currentFollowing}
