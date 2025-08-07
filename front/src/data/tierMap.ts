@@ -32,3 +32,10 @@ export const tierMap: Record<number, string> = {
   30: "Ruby I",
   31: "Master",
 };
+
+/**
+ * 숫자 tier → 이미지 경로 매핑
+ */
+export const tierImageMap: Record<number, string> = Object.fromEntries(
+  Array.from({ length: 32 }, (_, i) => [i, `tiers/${i}.png`])
+);
