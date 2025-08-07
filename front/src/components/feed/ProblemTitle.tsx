@@ -6,6 +6,7 @@ interface ProblemTitleProps {
   problemTier: number;
   size?: number; // 티어 이미지 크기 (기본 20px)
   fontSize?: string; // 폰트 사이즈 클래스 (Tailwind, ex: 'text-sm')
+  fontColor?: string; // 폰트 색상
 }
 
 /**
@@ -18,6 +19,7 @@ export default function ProblemTitle({
   problemTier,
   size = 20,
   fontSize = 'text-sm',
+  fontColor = '#0B0829',
 }: ProblemTitleProps) {
   const tierSrc = tierImageMap[problemTier];
 
@@ -35,7 +37,7 @@ export default function ProblemTitle({
       )}
 
       {/* 문제 번호 + 이름 */}
-      <span className="font-semibold text-[#0B0829]">
+      <span className={`font-semibold text-[${fontColor}]`}>
         {problemId} {problemName}
       </span>
     </div>

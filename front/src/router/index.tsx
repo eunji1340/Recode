@@ -12,6 +12,7 @@ import HeartsPage from '../pages/mypage/HeartsPage';
 import CommentsPage from '../pages/mypage/CommentsPage';
 import SettingPage from '../pages/mypage/SettingPage';
 import NoteDetailPage from '../pages/NoteDetailPage';
+import ProblemSelectPage from '../pages/ProblemSelectPage';
 
 const AppRouter = () => (
   <Routes>
@@ -29,7 +30,8 @@ const AppRouter = () => (
     <Route path="/" element={<Navigate to="/feed" replace />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route path="/note/:id" element={<NoteDetailPage />} />
-    <Route path="/note/generate" element={<NoteGeneratePage />} />
+    <Route path="/note/generate" element={<ProblemSelectPage />} />
+    <Route path="/note/generate/:id" element={<NoteGeneratePage />} />
   </Routes>
 );
 
