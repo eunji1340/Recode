@@ -3,15 +3,23 @@ import CodeEditor from '../components/code/CodeEditor';
 import CodePreview from '../components/code/CodePreview';
 import type { SubmissionItem } from '../types';
 import { useState } from 'react';
-// import { useParams } from 'react-router-dom';
 import mockSubmissionApiResponse from '../data/MockSubmissionData';
-import { fetchMockAiNote } from '../data/MockAiNoteData';
-
-type Visibility = 'private' | 'public';
+import api from '../api/axiosInstance';
+import { useNavigate, useParams } from 'react-router-dom';
+import ProblemTitle from '../components/feed/ProblemTitle';
+import { useLocation } from 'react-router-dom';
+import type {
+  AIGenerateRequestDTO,
+  noteGenerateRequestDTO,
+} from '@/types/note';
 
 export default function NoteGeneratePage() {
-  //   // const { problemId } = useParams<{ problemId: string }>();
-  const problemId = 'TEST-12345'; // 임시 ID
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { problemName, problemTier } = location.state || {};
+
+  const problemId = parseInt(id ?? '0', 10);
 
   const [successCode, setSuccessCode] = useState<SubmissionItem | null>(null);
   const [failCode, setFailCode] = useState<SubmissionItem | null>(null);
@@ -20,9 +28,9 @@ export default function NoteGeneratePage() {
     '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.',
   );
   const [isGenerating, setIsGenerating] = useState(false);
-  const [visibility, setVisibility] = useState<Visibility>('private');
+  const [visibility, setVisibility] = useState(true);
 
-  // TODO: fetch 변경 & 비동기 ��직 추가
+  // TODO: 문제 가져오기는 추후에 대체
   const successList = mockSubmissionApiResponse.data.pass.detail;
   const failList = mockSubmissionApiResponse.data.fail.detail;
 
@@ -35,27 +43,76 @@ export default function NoteGeneratePage() {
     setFailCode(submission);
   };
 
+  const AIRequest: AIGenerateRequestDTO = {
+    problemId: problemId,
+    problemName: problemName,
+    problemTier: problemTier,
+    successCode: successCode ? successCode.code : '',
+    successCodeStart: 0,
+    successCodeEnd: 0,
+    failCode: failCode ? failCode.code : '',
+    failCodeStart: 0,
+    failCodeEnd: 0,
+  };
+
+  // AI 생성 api
+  const AIgenerate = async (): Promise<string> => {
+    try {
+      const resp = await api.post(`/notes/ai-generate`, AIRequest);
+      const content = resp.data.content;
+      console.log('생성 완료', content);
+      return content;
+    } catch (err) {
+      console.log(err);
+      return '';
+    }
+  };
+
   const handleGenerateNote = async () => {
     setIsGenerating(true);
     try {
-      const aiNote = await fetchMockAiNote();
-      setTitle(aiNote.title);
-      setNoteContent(aiNote.content);
+      const aiNoteContent = await AIgenerate();
+      console.log(aiNoteContent);
+      setNoteContent(aiNoteContent);
     } catch (error) {
       console.error('AI 노트 생성 실패:', error);
-      // TODO: 사용자에게 에러 알림
+      alert('AI 노트 생성 실패. 다시 시도하세요');
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleSave = () => {
-    // TODO: 실제 저장 API 연결
-    // console.log('문제 ID:', problemId);
-    console.log('저장할 제목:', title);
-    console.log('저장할 노트 내용:', noteContent);
-    console.log('공개 범위:', visibility);
-    alert('노트 제목, 내용, 공개 범위가 콘솔에 저장되었습니다.');
+  const noteGenerateRequest: noteGenerateRequestDTO = {
+    problemId: problemId,
+    problemName: problemName,
+    problemTier: problemTier,
+    noteTitle: title,
+    content: noteContent,
+    successCode: successCode ? successCode.code : '',
+    successCodeStart: 0,
+    successCodeEnd: 0,
+    successLanguage: successCode ? successCode.language : '',
+    failCode: failCode ? failCode.code : '',
+    failCodeStart: 0,
+    failCodeEnd: 0,
+    failLanguage: failCode ? failCode.language : '',
+    isPublic: visibility,
+    isLiked: false,
+    isFollowing: false,
+  };
+
+  //   노트 생성
+  const handleSave = async () => {
+    try {
+      const resp = await api.post(`/notes`, noteGenerateRequest);
+      const res = resp.data;
+      const createdNoteId = res.noteId;
+      alert('노트 생성 완료');
+      navigate(`/note/${createdNoteId}`);
+    } catch (err) {
+      console.log('에러 발생');
+      console.log(err);
+    }
   };
 
   return (
@@ -84,7 +141,13 @@ export default function NoteGeneratePage() {
             />
           </svg>
         </a>
-        문제: {problemId}
+        <ProblemTitle
+          problemId={problemId}
+          problemName={problemName}
+          problemTier={problemTier}
+          fontSize="text-lg"
+          fontColor="white"
+        ></ProblemTitle>
       </div>
 
       {/* body */}
@@ -182,8 +245,8 @@ export default function NoteGeneratePage() {
                     id="private"
                     name="visibility"
                     value="private"
-                    checked={visibility === 'private'}
-                    onChange={() => setVisibility('private')}
+                    checked={visibility === false}
+                    onChange={() => setVisibility(false)}
                     className="mr-1"
                   />
                   <label htmlFor="private">나만 공개</label>
@@ -194,8 +257,8 @@ export default function NoteGeneratePage() {
                     id="public"
                     name="visibility"
                     value="public"
-                    checked={visibility === 'public'}
-                    onChange={() => setVisibility('public')}
+                    checked={visibility === true}
+                    onChange={() => setVisibility(true)}
                     className="mr-1"
                   />
                   <label htmlFor="public">전체 공개</label>

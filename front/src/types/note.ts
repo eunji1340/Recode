@@ -17,3 +17,36 @@ export interface Note {
   isPublic: boolean;
   createdAt: string;
 }
+
+// note 생성 api에 전달되는 DTO
+export interface noteGenerateRequestDTO {
+  problemId: number;
+  problemName: string;
+  problemTier: number;
+  noteTitle: string;
+  content: string;
+  successCode: string;
+  successCodeStart: number;
+  successCodeEnd: number;
+  successLanguage: string;
+  failCode: string;
+  failCodeStart: number;
+  failCodeEnd: number;
+  failLanguage: string;
+  isPublic: boolean;
+  isLiked: boolean;
+  isFollowing: boolean;
+}
+
+// AI 노트 생성 API에 전달할 DTO
+export interface AIGenerateRequestDTO {
+  problemId: number;
+  problemName: string;
+  problemTier: number;
+  successCode: string;
+  successCodeStart: number;
+  successCodeEnd: number;
+  failCode: string;
+  failCodeStart: number;
+  failCodeEnd: number;
+}
