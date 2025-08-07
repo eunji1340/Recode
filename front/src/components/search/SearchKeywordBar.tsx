@@ -12,14 +12,23 @@ interface SearchKeywordBarProps {
    * @param val - 새로운 검색어 문자열
    */
   onChange: (val: string) => void;
-  onEnter?: () => void;
+
+  /**
+   * Enter 키 입력 시 실행할 콜백
+   */
+  onEnter: () => void;
 }
 
 /**
- * SearchKeywordBar - 검색어 입력 인풋창
- * - ExplorePage, MainFeedPage 등에서 사용
+ * SearchKeywordBar - 일반 검색어 입력창
  */
 const SearchKeywordBar: React.FC<SearchKeywordBarProps> = ({ value, onChange, onEnter }) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onEnter(); // 엔터 시 검색 실행
+    }
+  };
+
   return (
     <div className="relative flex-1">
       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
@@ -31,11 +40,7 @@ const SearchKeywordBar: React.FC<SearchKeywordBarProps> = ({ value, onChange, on
         className="w-full pl-10 pr-3 py-2 border border-zinc-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#13233D]"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            onEnter?.(); // 엔터 눌렀을 때 실행
-          }
-        }}
+        onKeyDown={handleKeyDown}
       />
     </div>
   );

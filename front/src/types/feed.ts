@@ -6,6 +6,7 @@ export interface ApiFeedCard {
   noteTitle: string | null;
   content: string;
   createdAt: string;
+  viewcount: number;
   likeCount: number;
   commentCount: number;
   liked: boolean;
@@ -28,7 +29,6 @@ export interface ApiFeedCard {
     problemId: number;
     problemName: string;
     problemTier: number;
-    problemLanguage?: string;
   };
   tags: {
     tagId: number;
@@ -44,6 +44,7 @@ export interface MainFeedData {
   noteTitle: string;
   content: string;
   createdAt: string;
+  viewcount: number;
   likeCount: number;
   commentCount: number;
   isLiked: boolean;
@@ -55,7 +56,7 @@ export interface MainFeedData {
   successCodeEnd: number;
   failCodeStart: number;
   failCodeEnd: number;
-
+  successLanguage: string;
   user: {
     userId: number;
     nickname: string;
@@ -66,7 +67,6 @@ export interface MainFeedData {
     problemId: number;
     problemName: string;
     problemTier: number;
-    problemLanguage?: string;
   };
 
   tags: string[]; // tagName만 사용
@@ -79,11 +79,12 @@ export interface ExploreFeedCardData {
   noteId: number;
   noteTitle: string;
   createdAt: string;
+  viewcount: number;
   likeCount: number;
   commentCount: number;
   isLiked: boolean;
   isFollowing: boolean;
-
+  successLanguage: string;
   user: {
     userId: number;
     nickname: string;
@@ -94,7 +95,6 @@ export interface ExploreFeedCardData {
     problemId: number;
     problemName: string;
     problemTier: number;
-    problemLanguage?: string;
   };
 
   tags: string[];

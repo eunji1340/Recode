@@ -14,6 +14,7 @@ const MainFeedCard: React.FC<MainFeedData> = ({
   successCode,
   successCodeStart,
   successCodeEnd,
+  successLanguage,
   failCode,
   failCodeStart,
   failCodeEnd,
@@ -30,6 +31,7 @@ const MainFeedCard: React.FC<MainFeedData> = ({
     isLiked,
     likeCount
   );
+  console.log(noteTitle)
 
   return (
     <div className="w-full bg-white rounded-xl shadow px-5 py-4 space-y-2 text-[#0B0829]">
@@ -48,7 +50,7 @@ const MainFeedCard: React.FC<MainFeedData> = ({
           problemId={problem.problemId}
           problemName={problem.problemName}
           problemTier={problem.problemTier}
-          problemLanguage={problem.problemLanguage}
+          problemLanguage={successLanguage}
         />
 
         {/* 코드 비교 */}
@@ -59,7 +61,7 @@ const MainFeedCard: React.FC<MainFeedData> = ({
           successCodeEnd={successCodeEnd}
           failCodeStart={failCodeStart}
           failCodeEnd={failCodeEnd}
-          problemLanguage={problem.problemLanguage}
+          problemLanguage={successLanguage}
         />
 
         {/* 노트 내용 */}
