@@ -11,6 +11,7 @@ import NotesPage from '../pages/mypage/NotesPage';
 import HeartsPage from '../pages/mypage/HeartsPage';
 import CommentsPage from '../pages/mypage/CommentsPage';
 import SettingPage from '../pages/mypage/SettingPage';
+import NoteDetailPage from '../pages/NoteDetailPage';
 
 const AppRouter = () => (
   <Routes>
@@ -27,6 +28,7 @@ const AppRouter = () => (
     <Route path="/feed" element={<FeedPage />} />
     <Route path="/" element={<Navigate to="/feed" replace />} />
     <Route path="/explore" element={<ExplorePage />} />
+    <Route path="/note/:id" element={<NoteDetailPage />} />
     <Route path="/note/generate" element={<NoteGeneratePage />} />
   </Routes>
 );

@@ -5,6 +5,7 @@ import FeedCard from '../components/feed/FeedCard';
 import { useInfiniteFeeds } from '../hooks/useInfiniteFeeds';
 import { fetchExploreFeeds } from '../api/feed';
 import type { ExploreFeedCardData, SortOption } from '../types/feed';
+import { Link } from 'react-router-dom';
 
 /**
  * ExplorePage - 전체 피드 탐색 페이지
@@ -18,12 +19,15 @@ export default function ExplorePage() {
   const [userScope, setUserScope] = useState<'all' | 'following'>('all');
 
   // 무한스크롤 훅 사용
-  const searchParams = useMemo(() => ({
-    search,
-    tags,
-    sort: sortBy,
-    scope: userScope,
-  }), [search, tags, sortBy, userScope]);
+  const searchParams = useMemo(
+    () => ({
+      search,
+      tags,
+      sort: sortBy,
+      scope: userScope,
+    }),
+    [search, tags, sortBy, userScope],
+  );
 
   const {
     dataList: feeds,
@@ -32,7 +36,7 @@ export default function ExplorePage() {
   } = useInfiniteFeeds<ExploreFeedCardData>(
     fetchExploreFeeds,
     searchParams,
-    15
+    15,
   );
 
   return (
@@ -47,10 +51,11 @@ export default function ExplorePage() {
           sortBy={sortBy}
           onSortChange={setSortBy}
         />
-
         <div className="grid grid-cols-[repeat(auto-fit,minmax(330px,1fr))] gap-y-6">
           {feeds.map((feed) => (
-            <FeedCard key={feed.noteId} {...feed} />
+            <Link key={feed.noteId} to={`/note/${feed.noteId}`}>
+              <FeedCard key={feed.noteId} {...feed} />
+            </Link>
           ))}
 
           {/* 피드가 없을 때 */}
@@ -60,10 +65,8 @@ export default function ExplorePage() {
             </div>
           )}
         </div>
-
         {/* 마지막 요소 감지용 */}
         <div ref={observerRef} className="h-1" />
-
         {/* 로딩 중일 때 표시 */}
         {isLoading && (
           <div className="text-center py-6 text-sm text-zinc-500">

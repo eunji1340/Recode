@@ -3,6 +3,7 @@ import SearchBox from '../components/search/SearchBox';
 import MainFeedCard from '../components/feed/MainFeed';
 import { useInfiniteFeeds } from '../hooks/useInfiniteFeeds';
 import { fetchMainFeeds } from '../api/feed';
+import { Link } from 'react-router-dom';
 
 /**
  * FeedPage - 메인 피드 페이지
@@ -11,7 +12,9 @@ import { fetchMainFeeds } from '../api/feed';
  */
 const FeedPage = () => {
   // 정렬 기준
-  const [sortBy, setSortBy] = useState<'latest' | 'likes' | 'views' | 'comments'>('latest');
+  const [sortBy, setSortBy] = useState<
+    'latest' | 'likes' | 'views' | 'comments'
+  >('latest');
 
   // 검색 파라미터 (search + tags)
   const [searchParams, setSearchParams] = useState({
@@ -49,7 +52,12 @@ const FeedPage = () => {
       {/* 피드 목록 */}
       <div className="w-full max-w-[1100px] flex flex-col gap-6">
         {feeds.map((item) => (
-          <MainFeedCard key={`${item.noteId}-${item.user.userId}`} {...item} />
+          <Link to={`/note/${item.noteId}`}>
+            <MainFeedCard
+              key={`${item.noteId}-${item.user.userId}`}
+              {...item}
+            />
+          </Link>
         ))}
         <div ref={observerRef} />
       </div>
