@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function FollowBtn() {
-  // TODO: user 상태 맞게 업데이트
+  // TODO: user 상태 맞게 업데이트- API 아직 안 닮
   const [isFollowing, setIsFollowing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 

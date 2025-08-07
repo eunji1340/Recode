@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
-import Tag from '../components/tag';
+import Tag from '../components/feed/Tag';
 import HeartIcon from '../components/HeartIcon';
-import CommentIcon from '../components/CommentIcon';
+import CommentIcon from '../components/feed/CommentIcon';
 import { useEffect, useState } from 'react';
 import Comment from '../components/Comment';
 import type { NoteDetail, NoteDetailResponse } from '../types/NoteDetail';
@@ -9,6 +9,7 @@ import type { CommentResponse } from '@/types/comment';
 import api from '../api/axiosInstance';
 import CodePreview from '../components/code/CodePreview';
 import FollowBtn from '../components/FollowBtn';
+import ProblemTitle from '../components/feed/ProblemTitle';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -50,6 +51,8 @@ export default function NoteDetailPage() {
         `/notes/${noteId}`,
       );
       setNote(noteResponse.data);
+      console.log(noteResponse.data);
+
       setError(null);
     } catch (err) {
       console.log(err);
@@ -82,10 +85,25 @@ export default function NoteDetailPage() {
   // timestamp Date String으로 변환
   const date = new Date(note.createdAt).toLocaleDateString('ko-KR');
 
-  const handleHeartClick = async () => {
+  //  좋아요 추가 & 삭제 API
+  const handleHeartClick = () => {
+    // user가 좋아요 누른 상태면 handleDislike, 안 누른 상태면 handleLike 호출
+    // user가 좋아요 눌렀는지?
+    // if (user === clickedLike ) ? handleDisLike : handleLike;
+  };
+
+  const handleLike = async () => {
     try {
       const resp = await api.post(`/feeds/${noteId}/hearts`);
       console.log('좋아요 성공', resp.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleDisLike = async () => {
+    try {
+      // likeId 없어도 되게 변경해준대
+      //   await api.delete(`/fees/${noteId}/hearts/${likeId}`);
     } catch (err) {
       console.log(err);
     }
@@ -110,6 +128,8 @@ export default function NoteDetailPage() {
     }
   };
 
+  const image = '';
+
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
       <div className="w-full bg-white rounded-xl shadow px-5 py-4 space-y-2 text-[#0B0829]">
@@ -120,20 +140,34 @@ export default function NoteDetailPage() {
               <div>{note.noteTitle}</div>
               <div className="text-sm font-bold">생성일: {date} </div>
             </div>
-            <div className="user-container">
-              <div>{note.user.nickname}</div>
-              {/* TODO: 팔로우 버튼 컴포넌트 분리 */}
+
+            <div className="flex items-center gap-2">
+              {image ? (
+                <img
+                  src={image}
+                  alt="profile"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
+                  {note.user.nickname[0]}
+                </div>
+              )}
+              {/* TODO: 타인 닉네임 클릭 시 타인 페이지로 이동 */}
+              <div className="text-base font-semibold">
+                {note.user.nickname}
+              </div>
               <FollowBtn></FollowBtn>
             </div>
           </div>
           <hr className="my-3 border-t-2 border-gray-300" />
           <div className="text-xl font-bold">
-            {/* TODO: problemTier 정적 콘텐츠로 변환 */}
-            {note.problem.problemTier +
-              ' ' +
-              note.problem.problemId +
-              ' ' +
-              note.problem.problemName}
+            <ProblemTitle
+              problemId={note.problem.problemId}
+              problemName={note.problem.problemName}
+              problemTier={note.problem.problemTier}
+              fontSize="text-xl"
+            ></ProblemTitle>
           </div>
           <div>
             <div className="text-lg font-bold my-3">코드</div>
@@ -169,7 +203,7 @@ export default function NoteDetailPage() {
               <div className="flex flex-row justify-between">
                 <div className="tags">
                   {note.tags.map((name, index) => (
-                    <Tag key={index} name={name}></Tag>
+                    <Tag key={index} tagName={name}></Tag>
                   ))}
                 </div>
                 <div className="likes-and-comments flex flex-row">
@@ -183,7 +217,7 @@ export default function NoteDetailPage() {
                   </div>
                   <div>
                     <CommentIcon
-                      commentCount={comments?.details.length ?? 0}
+                      count={comments?.details.length ?? 0}
                     ></CommentIcon>
                   </div>
                 </div>

@@ -18,6 +18,7 @@ export default function HeartIcon({
   onClick,
 }: HeartIconButtonProps) {
   const Icon = liked ? FaHeart : FiHeart;
+
   return (
     <div className="flex items-center gap-1 text-rose-500">
       <button onClick={onClick}>
