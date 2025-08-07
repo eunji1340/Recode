@@ -236,4 +236,11 @@ public class FeedService {
 
         return new PageImpl<>(dtoList, pageable, notesPage.getTotalElements());
     }
+
+    /** userID로 댓글 전체 조회 */
+    public List<CommentResponseDto> getCommentsByUserId(Long userId) {
+        return commentRepository.findAllByUser_UserId(userId).stream()
+                .map(CommentResponseDto::from)
+                .collect(Collectors.toList());
+    }
 }

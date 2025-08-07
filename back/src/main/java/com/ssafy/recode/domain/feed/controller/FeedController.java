@@ -156,4 +156,11 @@ public class FeedController {
         ));
     }
 
+    // 특정 유저의 댓글 조회
+    @GetMapping("/comments/{userId}")
+    @Operation(summary = "특정 유저의 전체 댓글 조회")
+    public ResponseEntity<ApiListResponse<CommentResponseDto>> getCommentsByUserId(@PathVariable Long userId) {
+        List<CommentResponseDto> comments = feedService.getCommentsByUserId(userId);
+        return ResponseEntity.ok(ApiListResponse.from(comments));
+    }
 }
