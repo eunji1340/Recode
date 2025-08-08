@@ -7,6 +7,7 @@ import com.ssafy.recode.auth.JwtTokenProvider;
 import com.ssafy.recode.domain.user.dto.request.LoginRequestDto;
 import com.ssafy.recode.domain.user.dto.request.UserRequestDto;
 import com.ssafy.recode.domain.user.dto.response.TokenPair;
+import com.ssafy.recode.domain.user.dto.response.UserDetailDto;
 import com.ssafy.recode.domain.user.dto.response.UserResponseDto;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
@@ -227,16 +228,18 @@ public class UserService {
     }
 
     /** 특정 회원 조회 */
-    public UserResponseDto getUserById(Long userId) {
+    public UserDetailDto getUserById(Long userId) {
         User user = findUserById(userId);
-        return new UserResponseDto(user);
+        return new UserDetailDto(user);
     }
 
     /** 회원 탈퇴 */
+    @Transactional
     public void deleteUser(Long userId) {
-        User user = findUserById(userId);
-        user.markAsDeleted();
-        userRepository.save(user);
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("존재하지 않는 유저입니다.");
+        }
+        userRepository.deleteById(userId);
     }
 
     /** 유저 조회 공통 로직 */

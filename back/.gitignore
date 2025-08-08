@@ -45,3 +45,4 @@ logs/recode.log
 # 환경 변수 파일
 src/main/resources/.env
 src/main/resources/application-key.properties
+logs/recode.log

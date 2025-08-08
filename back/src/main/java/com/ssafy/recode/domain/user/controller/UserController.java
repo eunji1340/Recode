@@ -2,10 +2,7 @@ package com.ssafy.recode.domain.user.controller;
 
 import com.ssafy.recode.domain.user.CookieUtil;
 import com.ssafy.recode.domain.user.dto.request.*;
-import com.ssafy.recode.domain.user.dto.response.LoginResponseDto;
-import com.ssafy.recode.domain.user.dto.response.TokenPair;
-import com.ssafy.recode.domain.user.dto.response.UserListResponseDto;
-import com.ssafy.recode.domain.user.dto.response.UserResponseDto;
+import com.ssafy.recode.domain.user.dto.response.*;
 import com.ssafy.recode.domain.user.service.UserService;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -108,10 +105,12 @@ public class UserController {
         return ResponseEntity.ok(new UserListResponseDto(users.size(), users));
     }
 
-    /** 10. 특정 회원 조회 */
+    /**
+     * 10. 특정 회원 조회
+     */
     @Operation(summary = "회원 정보 조회", description = "사용자 ID로 특정 사용자의 정보를 조회합니다.")
     @GetMapping("/{userId}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserDetailDto> getUser(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
