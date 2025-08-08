@@ -28,8 +28,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 255)
     private String nickname;
 
-//    @Column(name = "image", length = 255)
-//    private String image; // 예: "/uploads/user123.jpg"
+    @Column(name = "image", length = 255)
+    private String image;
 
     @Column(nullable = false, length = 255)
     private String password;
@@ -59,4 +59,7 @@ public class User {
         this.userTier = newTier;
     }
 
+    public void updateImage(String image) {
+        this.image = image;
+    }
 }

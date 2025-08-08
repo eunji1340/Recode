@@ -105,7 +105,8 @@ public class UserService {
             JsonNode user = root.get("items").get(0);
             String handle = user.get("handle").asText();
             if (bojId.equals(handle)) {
-                int tier = user.get("tier").asInt(); // 여전히 tier 반환은 유지
+                int tier = user.get("tier").asInt();
+                String profileImageUrl = user.get("profileImageUrl").asText();
                 log.debug("[BOJ ID 유효] handle: {}, tier: {}", handle, tier);
                 return tier;
             }
@@ -115,6 +116,35 @@ public class UserService {
         }
 
         return -1;
+    }
+
+    private String fetchProfileImageUrlFromBoj(String bojId) {
+        String url = "https://solved.ac/api/v3/search/user?query=" + bojId + "&page=1";
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .header("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) return null;
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(response.body());
+
+            int count = root.get("count").asInt();
+            if (count == 0) return null;
+
+            JsonNode user = root.get("items").get(0);
+            return user.get("profileImageUrl").asText(); // profileImageUrl 반환
+
+        } catch (Exception e) {
+            log.error("[BOJ 프로필 이미지 URL 조회 중 예외 발생]", e);
+            return null;
+        }
     }
 
     /** 2. 로그인 */
@@ -136,6 +166,9 @@ public class UserService {
                 user.updateUserTier(latestTier);
                 userRepository.save(user);
             }
+
+            String profileImageUrl = fetchProfileImageUrlFromBoj(user.getBojId());
+            user.updateImage(profileImageUrl);
 
             // JWT 생성
             String accessToken = jwtTokenProvider.createAccessToken(user.getRecodeId());
