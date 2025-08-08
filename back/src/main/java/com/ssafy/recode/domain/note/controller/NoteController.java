@@ -2,15 +2,21 @@ package com.ssafy.recode.domain.note.controller;
 
 import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
+import com.ssafy.recode.domain.feed.service.FeedService;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
 import com.ssafy.recode.domain.note.dto.response.*;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.service.NoteService;
+import com.ssafy.recode.global.dto.response.ApiListPagingResponse;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -139,15 +145,4 @@ public class NoteController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "타인 노트 목록 조회", description = "userId로 전체 노트를 페이지네이션을 통해 조회합니다.")
-    @GetMapping("/{userId}/notes")
-    public ResponseEntity<Map<String, Object>> getNotesByUserId(
-            @PathVariable long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-
-        NoteResponseWrapper response = noteService.getNotesByUserId(userId, page, size);
-        Map<String, Object> body = Map.of("data", response);
-        return ResponseEntity.ok(body);
-    }
 }
