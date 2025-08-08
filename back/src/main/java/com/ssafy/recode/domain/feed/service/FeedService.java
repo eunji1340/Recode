@@ -214,7 +214,7 @@ public class FeedService {
                     .viewCount(note.getViewCount())
                     .likeCount(likeCount)
                     .commentCount(commentCount)
-                    .user(UserDto.from(user))
+                    .user(UserDto.from(note.getUser()))
                     .problem(ProblemDto.from(problem))
                     .tags(note.getTags().stream().map(TagDto::from).toList())
                     .isDeleted(note.getIsDeleted())
