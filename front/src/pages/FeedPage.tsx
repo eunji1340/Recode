@@ -1,16 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import SearchBox from '../components/search/SearchBox';
 import MainFeedCard from '../components/feed/MainFeed';
+import EmptyFeedState from '../components/feed/EmptyFeedState'; // 추가
 import { useInfiniteFeeds } from '../hooks/useInfiniteFeeds';
 import { fetchMainFeeds } from '../api/feed';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // 추가
 
-/**
- * FeedPage - 메인 피드 페이지
- * - 상단: 검색창(SearchBox)
- * - 하단: 무한스크롤 기반 피드(MainFeedCard) 목록 출력
- */
 const FeedPage = () => {
+  const navigate = useNavigate(); // 추가
   const [sortBy, setSortBy] = useState<'latest' | 'likes' | 'views' | 'comments'>('latest');
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -43,7 +40,7 @@ const FeedPage = () => {
             onAddTag={(tag) => {
               setTags((prev) => [...prev, tag]);
               setTagForQuery(tag);
-              reset(); // 검색 리셋
+              reset();
             }}
             onRemoveTag={(tag) => {
               const newTags = tags.filter((t) => t !== tag);
@@ -66,12 +63,21 @@ const FeedPage = () => {
 
       {/* 피드 목록 */}
       <div className="w-full max-w-[1100px] flex flex-col gap-6">
-        {feeds.map((item) => (
-          <Link key={item.noteId} to={`/note/${item.noteId}`}>
-            <MainFeedCard key={`${item.noteId}-${item.user.userId}`} {...item} />
-          </Link>
-        ))}
-        <div ref={observerRef} />
+        {feeds.length > 0 ? (
+          <>
+            {feeds.map((item) => (
+              <MainFeedCard
+                key={`${item.noteId}-${item.user.userId}`}
+                {...item}
+              />
+            ))}
+            <div ref={observerRef} />
+          </>
+        ) : !isLoading ? (
+          <EmptyFeedState 
+            onExplore={() => navigate('/explore')}
+          />
+        ) : null}
       </div>
 
       {/* 로딩 표시 */}

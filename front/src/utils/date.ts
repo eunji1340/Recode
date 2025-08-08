@@ -1,3 +1,16 @@
+export function getTimeAgo(input: string | Date): string {
+  const now = new Date();
+  const created = typeof input === 'string' ? new Date(input) : input;
+
+  const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
+  if (diffMin < 1) return '방금 전';
+  if (diffMin < 60) return `${diffMin}분 전`;
+
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}시간 전`;
+
+  return `${Math.floor(diffHr / 24)}일 전`;
+}
 // src/utils/date.ts
 
 /** API에서 내려오는 일자형 데이터 */

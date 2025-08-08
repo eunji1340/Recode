@@ -18,10 +18,10 @@ export default function MyPage() {
     <div className="py-8 max-w-5xl mx-auto">
       <h1 className="text-4xl font-bold mb-5">마이페이지</h1>
 
-      {/* ✅ 공통 탭 바 */}
+      {/* 공통 탭 바 */}
       <UserTabBar userId={urlUserId} />
 
-      {/* ✅ 하위 라우트 (대시보드/오답노트/설정 등) */}
+      {/* 하위 라우트 (대시보드/오답노트/설정 등) */}
       <div className="mt-3">
         <Outlet />
       </div>

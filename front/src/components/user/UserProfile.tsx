@@ -1,3 +1,4 @@
+// UserProfile.tsx
 import React from 'react';
 
 interface UserProfileProps {
@@ -26,7 +27,10 @@ export default function UserProfile({
     fontSize: `${fontSize}px`,
   };
 
-  return image ? (
+  // image가 존재하고 "null" 문자열이 아닐 경우에만 img 태그 렌더링
+  const shouldRenderImage = image && image !== "null";
+
+  return shouldRenderImage ? (
     <img
       src={image}
       alt="profile"
