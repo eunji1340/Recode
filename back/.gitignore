@@ -42,9 +42,6 @@ back/logs/recode.log
 
 ### VS Code ###
 .vscode/
-<<<<<<< HEAD
-logs/recode.log
 
-# 환경 변수 파일
-src/main/resources/.env
+# application key 파일 무시
 src/main/resources/application-key.properties
