@@ -59,7 +59,7 @@ public class SecurityConfig {
                         // 로그인, 회원가입, 토큰 재발급은 인증 없이 접근 허용
                         .requestMatchers("/users/login", "/users/register", "/users/reissue",
                                 "/users/bojId_check", "/users/recodeId_dupcheck",
-                                "/users/nickname_dupcheck", "/users/email_dupcheck",
+                                "/users/nickname_dupcheck", "/users/email_dupcheck", "/users/{userId}/boj-cookies",
                                 "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**",
                                 "/solvedac/suggestion", "/", "/index", "/**.html"
                         ).permitAll()

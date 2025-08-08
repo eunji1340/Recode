@@ -4,6 +4,8 @@ import com.ssafy.recode.domain.user.CookieUtil;
 import com.ssafy.recode.domain.user.dto.request.*;
 import com.ssafy.recode.domain.user.dto.response.LoginResponseDto;
 import com.ssafy.recode.domain.user.dto.response.TokenPair;
+import com.ssafy.recode.domain.user.dto.request.CookieRequestDto;
+import com.ssafy.recode.domain.user.dto.request.UserRequestDto;
 import com.ssafy.recode.domain.user.dto.response.UserListResponseDto;
 import com.ssafy.recode.domain.user.dto.response.UserResponseDto;
 import com.ssafy.recode.domain.user.service.UserService;
@@ -154,5 +156,13 @@ public class UserController {
 //        CookieUtil.deleteCookie(response, "refreshToken"); // 배포 시 코드
         CookieUtil.deleteTestCookie(response, "refreshToken");
         return ResponseEntity.ok(ApiSingleResponse.from("성공적으로 로그아웃 되었습니다."));
+    }
+
+    /** 14. 백준 쿠키 저장 **/
+    @Operation(summary = "백준 쿠키 저장", description = "백준에서 세션 쿠키를 추출하여 저장합니다.")
+    @PostMapping("/{userId}/boj-cookies")
+    public ResponseEntity<?> saveBojCookies(@PathVariable Long userId, @RequestBody CookieRequestDto cookieRequestDto ) {
+        userService.saveBojCookieValue(userId, cookieRequestDto.getCookieValue());
+        return ResponseEntity.ok("백준 쿠키가 성공적으로 저장되었습니다.");
     }
 }
