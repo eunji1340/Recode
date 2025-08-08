@@ -1,6 +1,6 @@
 import api from './axiosInstance';
 import type {
-  ApiFeedCard,
+  ApiFeed,
   ExploreFeedCardData,
   MainFeedData,
 } from '@/types/feed';
@@ -79,7 +79,7 @@ export async function fetchExploreFeeds({
     },
   });
 
-  const apiFeeds: ApiFeedCard[] = res.data.data.details;
+  const apiFeeds: ApiFeed[] = res.data.data.details;
 
   return {
     items: apiFeeds.map(mapApiFeedCardToExploreData),
@@ -117,10 +117,79 @@ export async function fetchMainFeeds({
     },
   });
 
-  const apiFeeds: ApiFeedCard[] = res.data.data.details;
+  const apiFeeds: ApiFeed[] = res.data.data.details;
 
   return {
     items: apiFeeds.map(mapApiFeedCardToMainFeedData),
+    last: res.data.data.last,
+  };
+}
+
+/**
+ * 특정 사용자의 오답노트 목록 조회
+ */
+export async function fetchUserFeeds({
+  userId,
+  page,
+  size,
+  search = '',
+  tag = '',
+}: {
+  userId: number;
+  page: number;
+  size: number;
+  search?: string;
+  tag?: string;
+}): Promise<{ items: ExploreFeedCardData[]; last: boolean }> {
+  const res = await api.get(`/feeds/${userId}`, {
+    params: {
+      page,
+      size,
+      search,
+      tag,
+    },
+  });
+
+  const apiFeeds: ApiFeed[] = res.data.data.details;
+
+  return {
+    items: apiFeeds.map(mapApiFeedCardToExploreData),
+    last: res.data.data.last,
+  };
+}
+
+/**
+ * 사용자가 좋아요한 노트 목록 조회
+ */
+export async function fetchLikedFeeds({
+  userId,
+  page,
+  size,
+  sortType,
+  search = '',
+  tag = '',
+}: {
+  userId: number;
+  page: number;
+  size: number;
+  sortType: number;
+  search?: string;
+  tag?: string;
+}): Promise<{ items: ExploreFeedCardData[]; last: boolean }> {
+  const res = await api.get(`/feeds/${userId}/liked-notes`, {
+    params: {
+      page,
+      size,
+      sortType,
+      search,
+      tag,
+    },
+  });
+
+  const apiFeeds = res.data.data.details;
+
+  return {
+    items: apiFeeds.map(mapApiFeedCardToExploreData),
     last: res.data.data.last,
   };
 }

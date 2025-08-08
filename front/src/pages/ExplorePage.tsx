@@ -40,7 +40,7 @@ export default function ExplorePage() {
   const sortedFeeds = useMemo(() => {
     let feeds =
       userScope === 'following'
-        ? rawFeeds.filter((feed) => feed.isFollowing)
+        ? rawFeeds.filter((feed) => feed.following)
         : [...rawFeeds];
 
     if (sortBy === 'latest') {
@@ -49,7 +49,7 @@ export default function ExplorePage() {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     } else if (sortBy === 'views') {
-      feeds.sort((a, b) => (b.viewcount ?? 0) - (a.viewcount ?? 0));
+      feeds.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
     } else if (sortBy === 'likes') {
       feeds.sort((a, b) => (b.likeCount ?? 0) - (a.likeCount ?? 0));
     } else if (sortBy === 'comments') {
@@ -83,9 +83,7 @@ export default function ExplorePage() {
 
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-8">
           {sortedFeeds.map((feed) => (
-            <Link key={feed.noteId} to={`/note/${feed.noteId}`}>
-              <FeedCard {...feed} />
-            </Link>
+            <FeedCard key={feed.noteId} {...feed} />
           ))}
 
           {sortedFeeds.length === 0 && !isLoading && (

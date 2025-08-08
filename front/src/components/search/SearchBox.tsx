@@ -63,7 +63,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         </span>
         <input
           type="text"
-          placeholder="문제 제목 혹은 사용자명으로 검색"
+          placeholder="문제 제목, 사용자명, 노트 제목으로 검색"
           className="w-full pl-10 pr-3 py-2 border border-zinc-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#13233D]"
           value={keyword}
           onChange={handleKeywordChange}

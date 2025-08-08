@@ -14,7 +14,7 @@ interface CommentFeedCardProps extends ExploreFeedCardData {
 
 const CommentFeedCard: React.FC<CommentFeedCardProps> = ({
   noteId,
-  isLiked,
+  liked: isLiked,
   likeCount,
   noteTitle,
   createdAt,
