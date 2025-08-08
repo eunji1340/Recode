@@ -1,5 +1,6 @@
 package com.ssafy.recode.domain.user.controller;
 
+import com.ssafy.recode.domain.user.dto.request.CookieRequestDto;
 import com.ssafy.recode.domain.user.dto.request.UserRequestDto;
 import com.ssafy.recode.domain.user.dto.response.UserListResponseDto;
 import com.ssafy.recode.domain.user.dto.response.UserResponseDto;
@@ -85,5 +86,12 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    /** 백준 쿠키 저장 **/
+    @PostMapping("/{userId}/boj-cookies")
+    public ResponseEntity<?> saveBojCookies(@PathVariable Long userId, @RequestBody CookieRequestDto cookieRequestDto ) {
+        userService.saveBojCookieValue(userId, cookieRequestDto.getCookieValue());
+        return ResponseEntity.ok("백준 쿠키가 성공적으로 저장되었습니다.");
     }
 }

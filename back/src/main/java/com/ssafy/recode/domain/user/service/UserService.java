@@ -2,12 +2,14 @@ package com.ssafy.recode.domain.user.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.recode.domain.user.dto.request.CookieRequestDto;
 import com.ssafy.recode.domain.user.dto.request.UserRequestDto;
 import com.ssafy.recode.domain.user.dto.response.UserResponseDto;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.openqa.selenium.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -143,6 +147,7 @@ public class UserService {
     }
 
     /** 특정 회원 조회 */
+    @Transactional(readOnly = true)
     public UserResponseDto getUserById(Long userId) {
         User user = findUserById(userId);
         return new UserResponseDto(user);
@@ -156,7 +161,8 @@ public class UserService {
     }
 
     /** 유저 조회 공통 로직 */
-    private User findUserById(Long userId) {
+    @Transactional(readOnly = true)
+    public User findUserById(Long userId) {
         return userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 탈퇴한 유저입니다."));
     }
@@ -165,5 +171,12 @@ public class UserService {
     public String getBaekjoonId(Long userId) {
         User user = findUserById(userId);
         return user.getBojId();
+    }
+
+    /** 사용자에게서 받은 쿠키를 User 엔티티에 저장 **/
+    public void saveBojCookieValue(Long userId, String cookieValue) {
+        User user = findUserById(userId);
+        user.setBojCookieValue(cookieValue);
+        userRepository.save(user);
     }
 }
