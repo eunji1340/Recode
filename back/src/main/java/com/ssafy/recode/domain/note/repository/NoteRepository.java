@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     Optional<Note> findByNoteIdAndIsDeletedFalse(Long noteId);
     Page<Note> findByUserIn(List<User> users, Pageable pageable);
     Page<Note> findByUserInAndIsPublicTrue(List<User> users, Pageable pageable);
+    List<Note> findAllByNoteIdIn(Collection<Long> noteIds);
     // 전체 조회
     Page<Note> findAllByIsPublicTrueAndIsDeletedFalse(Pageable pageable);
 

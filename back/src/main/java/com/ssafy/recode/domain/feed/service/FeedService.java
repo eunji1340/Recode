@@ -25,8 +25,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -224,9 +224,6 @@ public class FeedService {
 
     /** 팔로잉 피드 조회 */
     public Page<FeedResponseDto> getFeedsOfFollowings(User user, String tag, String search, Pageable pageable) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-
         List<Follow> followings = followRepository.findByFollower(user);
         List<User> followingUsers = followings.stream()
                 .map(Follow::getFollowing)
@@ -298,30 +295,132 @@ public class FeedService {
     }
 
     /** userID로 댓글 전체 조회 */
-    public List<CommentResponseDto> getCommentsByUserId(Long userId) {
-        return commentRepository.findAllByUser_UserId(userId).stream()
-                .map(CommentResponseDto::from)
-                .collect(Collectors.toList());
-    }
+    @Transactional(readOnly = true)
+    // commenterId: 누구의 댓글을 볼지, user: 현재 로그인 사용자(뷰어)
+    public Page<UserCommentDto> getCommentsByUserId(Long commenterId, User user, Pageable pageable) {
 
+        Pageable pagingOnly = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 
-    public NoteResponseWrapper getLikedNotesByUserId(Long userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "note.noteId"));
-        Page<Like> likePage = likeRepository.findAllByUser_UserId(userId, pageable);
+        // 1) 댓글 페이지 조회
+        Page<Comment> commentPage = commentRepository.findByUser_UserId(commenterId, pagingOnly);
+        if (commentPage.isEmpty()) return Page.empty(pagingOnly);
 
-        List<NoteResponseDto> details = likePage
-                .map(like -> NoteResponseDto.from(like.getNote()))
+        // 2) 댓글 달린 노트들 배치 조회
+        List<Comment> pageComments = commentPage.getContent();
+        Set<Long> noteIds = pageComments.stream()
+                .map(c -> c.getFeed().getNoteId())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Map<Long, Note> noteMap = noteRepository.findAllByNoteIdIn(noteIds).stream()
+                .collect(Collectors.toMap(Note::getNoteId, Function.identity()));
+
+        Long viewerId = (user != null ? user.getUserId() : null);
+        Set<Long> likedNoteIds = (viewerId == null)
+                ? Set.of()
+                : likeRepository.findLikedNoteIds(viewerId, noteIds);
+
+        Set<Long> ownerIds = pageComments.stream()
+                .map(c -> c.getFeed().getUser().getUserId())
+                .collect(Collectors.toSet());
+
+        Set<Long> followingUserIds = (viewerId == null)
+                ? Set.of()
+                : followRepository.findFollowingUserIds(viewerId, ownerIds);
+
+        List<UserCommentDto> dtoList = commentPage.stream()
+                .map(c -> {
+                    Note n = noteMap.get(c.getFeed().getNoteId());
+                    if (n == null) return null;
+
+                    boolean isLiked = likedNoteIds.contains(n.getNoteId());
+                    boolean isFollowing = followingUserIds.contains(n.getUser().getUserId());
+
+                    int likeCount = (n.getLikeCount() != null)
+                            ? n.getLikeCount()
+                            : likeRepository.countByNote_NoteId(n.getNoteId());
+
+                    int commentCount = (n.getCommentCount() != null)
+                            ? n.getCommentCount()
+                            : commentRepository.countByFeed_NoteId(n.getNoteId());
+
+                    return UserCommentDto.builder()
+                            .noteId(n.getNoteId())
+                            .noteTitle(n.getNoteTitle())
+                            .commentWriter(c.getUser().getBojId())
+                            .content(c.getContent())
+                            .isPublic(n.getIsPublic())
+                            .createdAt(c.getCreatedAt() != null ? c.getCreatedAt().toString() : null)
+                            .updatedAt(c.getUpdatedAt() != null ? c.getUpdatedAt().toString() : null)
+                            .isDeleted(Boolean.TRUE.equals(n.getIsDeleted()))
+                            .isLiked(isLiked)
+                            .isFollowing(isFollowing)
+                            .viewCount(n.getViewCount())
+                            .likeCount(likeCount)
+                            .commentCount(commentCount)
+                            .user(UserDto.from(n.getUser()))
+                            .problem(ProblemDto.from(new ProblemEntity(
+                                    n.getProblemId(), n.getProblemName(), n.getProblemTier())))
+                            .tags(n.getTags().stream().map(TagDto::from).toList())
+                            .build();
+                })
+                .filter(Objects::nonNull)
                 .toList();
 
-        return NoteResponseWrapper.builder()
-                .details(details)
-                .pageable(NoteResponseWrapper.PageableInfo.builder()
-                        .pageNumber(likePage.getNumber())
-                        .pageSize(likePage.getSize())
-                        .build())
-                .totalElements(likePage.getTotalElements())
-                .totalPages(likePage.getTotalPages())
-                .last(likePage.isLast())
-                .build();
+        return new PageImpl<>(dtoList, pagingOnly, commentPage.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserCommentDto> getLikedNotesByUserId(Long userId, User viewer, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "note.createdAt"));
+
+        Page<Like> likePage = likeRepository.findAllByUser_UserId(userId, pageable);
+        if (likePage.isEmpty()) return Page.empty(pageable);
+
+        List<Note> notes = likePage.stream().map(Like::getNote).filter(Objects::nonNull).toList();
+        Set<Long> ownerIds = notes.stream()
+                .map(n -> n.getUser().getUserId())
+                .collect(Collectors.toSet());
+
+        Long viewerId = (viewer != null ? viewer.getUserId() : null);
+        Set<Long> followingUserIds = (viewerId == null || ownerIds.isEmpty())
+                ? Set.of()
+                : followRepository.findFollowingUserIds(viewerId, ownerIds);
+
+        List<UserCommentDto> dtoList = likePage.stream()
+                .map(Like::getNote)
+                .filter(Objects::nonNull)
+                .map(n -> {
+                    int likeCount = (n.getLikeCount() != null)
+                            ? n.getLikeCount()
+                            : likeRepository.countByNote_NoteId(n.getNoteId());
+
+                    int commentCount = (n.getCommentCount() != null)
+                            ? n.getCommentCount()
+                            : commentRepository.countByFeed_NoteId(n.getNoteId());
+
+                    boolean isFollowing = followingUserIds.contains(n.getUser().getUserId());
+
+                    return UserCommentDto.builder()
+                            .noteId(n.getNoteId())
+                            .noteTitle(n.getNoteTitle())
+                            .content(null)
+                            .isPublic(n.getIsPublic())
+                            .createdAt(n.getCreatedAt() != null ? n.getCreatedAt().toString() : null)
+                            .updatedAt(n.getUpdatedAt() != null ? n.getUpdatedAt().toString() : null)
+                            .isDeleted(Boolean.TRUE.equals(n.getIsDeleted()))
+                            .isLiked(true)
+                            .isFollowing(isFollowing)
+                            .viewCount(n.getViewCount())
+                            .likeCount(likeCount)
+                            .commentCount(commentCount)
+                            .user(UserDto.from(n.getUser()))
+                            .problem(ProblemDto.from(new ProblemEntity(
+                                    n.getProblemId(), n.getProblemName(), n.getProblemTier())))
+                            .tags(n.getTags().stream().map(TagDto::from).toList())
+                            .build();
+                })
+                .toList();
+
+        return new PageImpl<>(dtoList, pageable, likePage.getTotalElements());
     }
 }

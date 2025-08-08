@@ -4,6 +4,7 @@ import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.feed.dto.request.CommentRequest;
 import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
 import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
+import com.ssafy.recode.domain.feed.dto.response.UserCommentDto;
 import com.ssafy.recode.domain.feed.service.FeedService;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.service.UserService;
@@ -165,21 +166,46 @@ public class FeedController {
     // 특정 유저의 댓글 조회
     @GetMapping("/comments/{userId}")
     @Operation(summary = "특정 유저의 전체 댓글 조회")
-    public ResponseEntity<ApiListResponse<CommentResponseDto>> getCommentsByUserId(@PathVariable Long userId) {
-        List<CommentResponseDto> comments = feedService.getCommentsByUserId(userId);
-        return ResponseEntity.ok(ApiListResponse.from(comments));
+    public ResponseEntity<ApiListPagingResponse<UserCommentDto>> getCommentsByUserId(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size); // 정렬 없음
+
+        User viewer = (userDetails != null) ? userDetails.getUser() : null;
+
+        Page<UserCommentDto> result = feedService.getCommentsByUserId(userId, viewer, pageable);
+
+        return ResponseEntity.ok(
+                ApiListPagingResponse.from(
+                        result.getContent(),
+                        result.getTotalElements(),
+                        result.getTotalPages(),
+                        result.isLast()
+                )
+        );
     }
+
 
     @Operation(summary = "사용자가 좋아요한 노트 목록 조회", description = "userId가 좋아요한 노트들을 페이지네이션으로 조회합니다.")
     @GetMapping("/{userId}/liked-notes")
-    public ResponseEntity<Map<String, Object>> getLikedNotesByUserId(
+    public ResponseEntity<ApiListPagingResponse<UserCommentDto>> getLikedNotesByUserId(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        NoteResponseWrapper response = feedService.getLikedNotesByUserId(userId, page, size);
-        Map<String, Object> body = Map.of("data", response);
-        return ResponseEntity.ok(body);
+        Page<UserCommentDto> result = feedService.getLikedNotesByUserId(userId, userDetails.getUser(), page, size);
+        return ResponseEntity.ok(
+                ApiListPagingResponse.from(
+                        result.getContent(),
+                        result.getTotalElements(),
+                        result.getTotalPages(),
+                        result.isLast()
+                )
+        );
     }
 
     @Operation(summary = "userId로 노트 검색", description = "userId로 노트를 조회합니다.")
