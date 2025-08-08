@@ -10,10 +10,7 @@ import com.ssafy.recode.domain.feed.repository.LikeRepository;
 import com.ssafy.recode.domain.follow.repository.FollowRepository;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
-import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
-import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
-import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
-import com.ssafy.recode.domain.note.dto.response.NoteTagDto;
+import com.ssafy.recode.domain.note.dto.response.*;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
 import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
@@ -35,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -293,5 +291,23 @@ public class NoteService {
         } catch (Exception e) {
             throw BaseException.of(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public List<NoteCountDto> getNoteCountByCreatedAt(Long userId) {
+        List<Note> notes = noteRepository.findByUserUserIdAndIsDeletedFalse(userId);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        // 그룹핑 후 Dto로 변환
+        Map<String, Long> grouped = notes.stream()
+                .collect(Collectors.groupingBy(
+                        note -> note.getCreatedAt().toLocalDate().format(formatter),
+                        Collectors.counting()
+                ));
+
+        return grouped.entrySet().stream()
+                .sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey())) // 최신 날짜 먼저
+                .map(e -> new NoteCountDto(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
     }
 }
