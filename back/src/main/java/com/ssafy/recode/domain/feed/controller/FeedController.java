@@ -211,16 +211,15 @@ public class FeedController {
     @Operation(summary = "userId로 노트 검색", description = "userId로 노트를 조회합니다.")
     @GetMapping("/{userId}")
     public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getNotesByUserId(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "15") int size,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String search) {
 
-//        Long userId = userDetails.getUser().getUserId();
-
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FeedResponseDto> feeds = feedService.getAllFeedsByUserId(userId, tag, search, pageable);
+        Page<FeedResponseDto> feeds = feedService.getAllFeedsByUserId(userDetails.getUser(), userId, tag, search, pageable);
 
         return ResponseEntity.ok(ApiListPagingResponse.from(
                 feeds.getContent(),

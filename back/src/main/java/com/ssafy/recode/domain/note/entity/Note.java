@@ -30,7 +30,6 @@ public class Note {
     private Integer problemTier;
     private String noteTitle;
 
-    @Lob
     private String content;
     @Column(columnDefinition = "LONGTEXT")
     private String successCode;

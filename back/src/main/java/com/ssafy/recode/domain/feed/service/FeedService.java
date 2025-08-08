@@ -177,30 +177,37 @@ public class FeedService {
         });
     }
 
-    public Page<FeedResponseDto> getAllFeedsByUserId(long userId, String tag, String search, Pageable pageable) {
-        Page<Note> notes;
+    @Transactional(readOnly = true)
+    public Page<FeedResponseDto> getAllFeedsByUserId(
+            User viewer, long userId, String tag, String search, Pageable pageable) {
 
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> BaseException.of(CommonErrorCode.USER_NOT_FOUND));
+
+        Page<Note> notes;
 
         boolean hasTag = tag != null && !tag.isBlank();
         boolean hasSearch = search != null && !search.isBlank();
 
         if (hasTag && hasSearch) {
-            notes = noteRepository.searchNotesByTagAndKeyword(tag, search, pageable);
+            // 특정 유저 + 태그 + 키워드
+            notes = noteRepository.searchUserNotesByTagAndKeyword(userId, tag, search, pageable);
         } else if (hasTag) {
-            notes = noteRepository.findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
+            // 특정 유저 + 태그
+            notes = noteRepository.findByUserAndTag(userId, tag, pageable);
         } else if (hasSearch) {
-            notes = noteRepository.searchNotesOnly(search, pageable);
+            // 특정 유저 + 키워드
+            notes = noteRepository.searchUserNotesOnly(userId, search, pageable);
         } else {
-            notes = noteRepository.findAllByIsPublicTrueAndIsDeletedFalse(pageable);
+            // 특정 유저 전체 공개글
+            notes = noteRepository.findByUser_UserIdAndIsPublicTrueAndIsDeletedFalse(userId, pageable);
         }
 
         return notes.map(note -> {
             int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
             int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
-            boolean isLiked = likeRepository.existsByUserAndNote(user, note);
-            boolean isFollowing = followRepository.existsByFollowerAndFollowing(user, note.getUser());
+            boolean isLiked = likeRepository.existsByUserAndNote(viewer, note);
+            boolean isFollowing = followRepository.existsByFollowerAndFollowing(viewer, note.getUser());
             ProblemEntity problem = new ProblemEntity(note.getProblemId(), note.getProblemName(), note.getProblemTier());
 
             return FeedResponseDto.builder()

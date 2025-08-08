@@ -121,5 +121,56 @@ AND n.user IN :users AND t.tagName = :tag
     Page<Note> findAllByUser_UserId(long userId, Pageable pageable);
 
     List<Note> findByUserUserIdAndIsDeletedFalse(Long userId);
+
+    // 특정 유저 + 전체(공개 & 삭제안됨)
+    Page<Note> findByUser_UserIdAndIsPublicTrueAndIsDeletedFalse(Long userId, Pageable pageable);
+
+    // 특정 유저 + 태그만
+    @Query("""
+SELECT DISTINCT n FROM Note n
+JOIN n.tags t
+WHERE n.isPublic = true AND n.isDeleted = false
+  AND n.user.userId = :userId
+  AND t.tagName = :tag
+""")
+    Page<Note> findByUserAndTag(@Param("userId") Long userId,
+                                @Param("tag") String tag,
+                                Pageable pageable);
+
+    // 특정 유저 + 검색어만
+    @Query("""
+SELECT n FROM Note n
+WHERE n.isPublic = true AND n.isDeleted = false
+  AND n.user.userId = :userId
+  AND (
+    LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
+    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    CAST(n.problemId AS string) LIKE %:search% OR
+    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+  )
+""")
+    Page<Note> searchUserNotesOnly(@Param("userId") Long userId,
+                                   @Param("search") String search,
+                                   Pageable pageable);
+
+    // 특정 유저 + 태그 + 검색어
+    @Query("""
+SELECT DISTINCT n FROM Note n
+JOIN n.tags t
+WHERE n.isPublic = true AND n.isDeleted = false
+  AND n.user.userId = :userId
+  AND t.tagName = :tag
+  AND (
+    LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
+    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+    CAST(n.problemId AS string) LIKE %:search% OR
+    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+  )
+""")
+    Page<Note> searchUserNotesByTagAndKeyword(@Param("userId") Long userId,
+                                              @Param("tag") String tag,
+                                              @Param("search") String search,
+                                              Pageable pageable);
+
 }
 
