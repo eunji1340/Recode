@@ -29,7 +29,7 @@ public class Note {
     private String problemName;
     private Integer problemTier;
     private String noteTitle;
-
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
     @Column(columnDefinition = "LONGTEXT")
     private String successCode;
