@@ -1,13 +1,20 @@
 // src/pages/mypage/dashboard/Dashboard.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api/axiosInstance';
 import ProfileHeader from './dashboard/ProfileHeader';
 import FollowModal from './dashboard/FollowModal';
 import StatsSection from './dashboard/StatsSection';
+import StreakSection from './dashboard/StreakSection';
+import StreakCalendarModal from './dashboard/StreakCalendarModal';
+import { getWeekDays, toKey, buildCountMap, addMonths, startOfMonth, addDays } from '../../utils/date';
+
+
 
 import type { FollowDetail } from './dashboard/FollowModal';
 import type { TagCount } from './dashboard/StatsSection';
+import type { DailyCount } from '../../utils/date';
+
 interface UserInfo {
   nickname: string;
   bojId: string;
@@ -24,15 +31,24 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   // 팔로우 모달 상태
-  const [modalOpen, setModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'followers' | 'followings'>('followers');
-  const [modalDetails, setModalDetails] = useState<FollowDetail[]>([]);
-  const [modalLoading, setModalLoading] = useState(false);
+  const [followOpen, setFollowOpen] = useState(false);
+  const [followTab, setFollowTab] = useState<'followers' | 'followings'>('followers');
+  const [followDetails, setFollowDetails] = useState<FollowDetail[]>([]);
+  const [followLoading, setFollowLoading] = useState(false);
 
-  // 태그 통계 상태
+  // 태그 통계
   const [totalCount, setTotalCount] = useState(0);
   const [tagCounts, setTagCounts] = useState<TagCount[]>([]);
 
+  // 스트릭 관련 상태
+  const [todayStreak, setTodayStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(0);
+  const [dailyRows, setDailyRows] = useState<DailyCount[]>([]);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(startOfMonth(new Date()));
+
+
+  
   // 사용자 정보, 노트 수, 팔로워/팔로잉 수 로드
   useEffect(() => {
     if (!userId) return;
@@ -74,15 +90,45 @@ export default function Dashboard() {
 
   // 모달 열릴 때 팔로우 상세 로드
   useEffect(() => {
-    if (!modalOpen || !userId) return;
-    setModalLoading(true);
+    if (!followOpen || !userId) return;
+    setFollowLoading(true);
     api
-      .get<{ data: { details: FollowDetail[] } }>(`/follow/${activeTab}?userId=${userId}`)
-      .then(res => setModalDetails(res.data.data.details))
-      .catch(() => setModalDetails([]))
-      .finally(() => setModalLoading(false));
-  }, [modalOpen, activeTab, userId]);
+      .get<{ data: { details: FollowDetail[] } }>(`/follow/${followTab}?userId=${userId}`)
+      .then(res => setFollowDetails(res.data.data.details))
+      .catch(() => setFollowDetails([]))
+      .finally(() => setFollowLoading(false));
+  }, [followOpen, followTab, userId]);
 
+
+  // 스트릭 데이터 
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      // 오늘 기준 스트릭 유지일 수
+      const { data: streak } = await api.get<number>('/notes/note-streak', {
+      });
+      setTodayStreak(streak);
+
+      const { data: maxStreak } = await api.get<number>(`/notes/max-streak`);
+      setMaxStreak(maxStreak);
+      // 일자별 노트 개수 (최근 N일 반환 가정)
+      const { data: rows } = await api.get<DailyCount[]>('/notes/note-count-date', {
+      });
+      setDailyRows(rows || []);
+    })().catch(console.error);
+  }, [userId]);
+
+    // 주간 데이터(월~일) 구성
+  const week = useMemo(() => {
+    const map = buildCountMap(dailyRows);
+    const days = getWeekDays(new Date());
+    return days.map(d => ({ date: d, count: map[toKey(d)] ?? 0 }));
+  }, [dailyRows]);
+
+  // 모달용 월간 카운트 맵
+  const monthCountMap = useMemo(() => buildCountMap(dailyRows), [dailyRows]);
+
+  // 상태 관리
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
   if (!user) return null;
@@ -98,23 +144,44 @@ export default function Dashboard() {
           followerCount={user.followerCount}
           followingCount={user.followingCount}
           onOpenModal={(type) => {
-            setActiveTab(type);
-            setModalOpen(true);
+            setFollowTab(type);
+            setFollowOpen(true);
           }}
         />
       </div>
 
       <FollowModal
-        open={modalOpen}
-        activeTab={activeTab}
-        details={modalDetails}
-        loading={modalLoading}
-        onClose={() => setModalOpen(false)}
-        onTabChange={setActiveTab}
+        open={followOpen}
+        activeTab={followTab}
+        details={followDetails}
+        loading={followLoading}
+        onClose={() => setFollowOpen(false)}
+        onTabChange={setFollowTab}
       />
 
       <div className="container mx-auto p-2">
-        <StatsSection totalCount={totalCount} tagCounts={tagCounts} />
+        <StatsSection
+          totalCount={totalCount} 
+          tagCounts={tagCounts}
+          nickname={user.nickname} 
+          />
+      </div>
+      <div className="container mx-auto p-2">
+        <StreakSection
+          todayStreak={todayStreak}
+          maxStreak={maxStreak}
+          week={week}
+          onOpenCalendar={() => setCalendarOpen(true)}
+         />
+
+      <StreakCalendarModal
+        open={calendarOpen}
+        onClose={() => setCalendarOpen(false)}
+        monthBase={calendarMonth}         // 이번 달
+        counts={monthCountMap}
+        onPrevMonth={() => setCalendarMonth(m => addMonths(m, -1))} // 이전 달
+        onNextMonth={() => setCalendarMonth(m => addMonths(m,  1))} // 다음 달
+      />
       </div>
     </>
   );
