@@ -128,6 +128,17 @@ public class NoteController {
         return ResponseEntity.ok(streak);
     }
 
+    @Operation(summary = "일자별 노트 개수 조회", description = "일자별로 노트 개수가 몇개인지 조회하는 메서드")
+    @GetMapping("/note-count-date")
+    public ResponseEntity<List<NoteCountDto>> getNoteCountByCreatedAt(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUser().getUserId();
+        List<NoteCountDto> response = noteService.getNoteCountByCreatedAt(userId);
+
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "타인 노트 목록 조회", description = "userId로 전체 노트를 페이지네이션을 통해 조회합니다.")
     @GetMapping("/{userId}/notes")
     public ResponseEntity<Map<String, Object>> getNotesByUserId(
