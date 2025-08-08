@@ -117,5 +117,7 @@ AND n.user IN :users AND t.tagName = :tag
     List<LocalDateTime> findAllNoteDateTimesByUserId(@Param("userId") Long userId);
 
     Page<Note> findAllByUser_UserId(long userId, Pageable pageable);
+
+    List<Note> findByUserUserIdAndIsDeletedFalse(Long userId);
 }
 

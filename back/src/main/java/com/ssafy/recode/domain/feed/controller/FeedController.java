@@ -6,6 +6,7 @@ import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
 import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
 import com.ssafy.recode.domain.feed.service.FeedService;
 import com.ssafy.recode.domain.user.entity.User;
+import com.ssafy.recode.domain.user.service.UserService;
 import com.ssafy.recode.global.dto.response.ApiListPagingResponse;
 import com.ssafy.recode.global.dto.response.ApiListResponse;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -33,6 +35,7 @@ import java.util.Map;
 public class FeedController {
 
     private final FeedService feedService;
+    private final UserService userService;
 
     // 좋아요 수 조회
     @GetMapping("/{noteId}/hearts")
@@ -177,5 +180,27 @@ public class FeedController {
         NoteResponseWrapper response = feedService.getLikedNotesByUserId(userId, page, size);
         Map<String, Object> body = Map.of("data", response);
         return ResponseEntity.ok(body);
+    }
+
+    @Operation(summary = "userId로 노트 검색", description = "userId로 노트를 조회합니다.")
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getNotesByUserId(
+            @PathVariable long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String search) {
+
+//        Long userId = userDetails.getUser().getUserId();
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<FeedResponseDto> feeds = feedService.getAllFeedsByUserId(userId, tag, search, pageable);
+
+        return ResponseEntity.ok(ApiListPagingResponse.from(
+                feeds.getContent(),
+                feeds.getTotalElements(),
+                feeds.getTotalPages(),
+                feeds.isLast()
+        ));
     }
 }

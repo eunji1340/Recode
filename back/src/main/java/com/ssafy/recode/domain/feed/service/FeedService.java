@@ -13,6 +13,8 @@ import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
 import com.ssafy.recode.domain.user.entity.User;
 import com.ssafy.recode.domain.user.repository.UserRepository;
+import com.ssafy.recode.global.exception.BaseException;
+import com.ssafy.recode.global.exception.CommonErrorCode;
 import com.ssafy.recode.global.wrapper.NoteResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -168,6 +170,51 @@ public class FeedService {
                     .likeCount(likeCount)
                     .commentCount(commentCount)
                     .user(UserDto.from(note.getUser()))
+                    .problem(ProblemDto.from(problem))
+                    .tags(note.getTags().stream().map(TagDto::from).toList())
+                    .isDeleted(note.getIsDeleted())
+                    .build();
+        });
+    }
+
+    public Page<FeedResponseDto> getAllFeedsByUserId(long userId, String tag, String search, Pageable pageable) {
+        Page<Note> notes;
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> BaseException.of(CommonErrorCode.USER_NOT_FOUND));
+
+        boolean hasTag = tag != null && !tag.isBlank();
+        boolean hasSearch = search != null && !search.isBlank();
+
+        if (hasTag && hasSearch) {
+            notes = noteRepository.searchNotesByTagAndKeyword(tag, search, pageable);
+        } else if (hasTag) {
+            notes = noteRepository.findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
+        } else if (hasSearch) {
+            notes = noteRepository.searchNotesOnly(search, pageable);
+        } else {
+            notes = noteRepository.findAllByIsPublicTrueAndIsDeletedFalse(pageable);
+        }
+
+        return notes.map(note -> {
+            int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
+            int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
+            boolean isLiked = likeRepository.existsByUserAndNote(user, note);
+            boolean isFollowing = followRepository.existsByFollowerAndFollowing(user, note.getUser());
+            ProblemEntity problem = new ProblemEntity(note.getProblemId(), note.getProblemName(), note.getProblemTier());
+
+            return FeedResponseDto.builder()
+                    .noteId(note.getNoteId())
+                    .noteTitle(note.getNoteTitle())
+                    .isPublic(note.getIsPublic())
+                    .isLiked(isLiked)
+                    .isFollowing(isFollowing)
+                    .createdAt(note.getCreatedAt().toString())
+                    .updatedAt(note.getUpdatedAt() != null ? note.getUpdatedAt().toString() : null)
+                    .viewCount(note.getViewCount())
+                    .likeCount(likeCount)
+                    .commentCount(commentCount)
+                    .user(UserDto.from(user))
                     .problem(ProblemDto.from(problem))
                     .tags(note.getTags().stream().map(TagDto::from).toList())
                     .isDeleted(note.getIsDeleted())

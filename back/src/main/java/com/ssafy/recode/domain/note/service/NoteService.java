@@ -10,10 +10,7 @@ import com.ssafy.recode.domain.feed.repository.LikeRepository;
 import com.ssafy.recode.domain.follow.repository.FollowRepository;
 import com.ssafy.recode.domain.note.dto.request.AiNoteRequestDto;
 import com.ssafy.recode.domain.note.dto.request.NoteRequestDto;
-import com.ssafy.recode.domain.note.dto.response.AiNoteResponseDto;
-import com.ssafy.recode.domain.note.dto.response.NoteFeedDto;
-import com.ssafy.recode.domain.note.dto.response.NoteResponseDto;
-import com.ssafy.recode.domain.note.dto.response.NoteTagDto;
+import com.ssafy.recode.domain.note.dto.response.*;
 import com.ssafy.recode.domain.note.entity.Note;
 import com.ssafy.recode.domain.note.repository.NoteRepository;
 import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
@@ -35,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -266,6 +264,43 @@ public class NoteService {
         }
     }
 
+    public Long getMaxStreak(Long userId) {
+        if (userId == null) {
+            throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        try {
+            // 30일 전부터 오늘까지의 노트 조회
+            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+            List<Note> noteList = noteRepository.findByUser_UserIdAndCreatedAtAfter(userId, thirtyDaysAgo);
+
+            // 작성한 날짜를 Set으로 저장 (중복 제거)
+            Set<LocalDate> noteDates = noteList.stream()
+                    .map(note -> note.getCreatedAt().toLocalDate())
+                    .collect(Collectors.toSet());
+
+            // 스트릭 계산
+            Long maxStreak = 0L;
+            Long currentStreak = 0L;
+
+            for (int i = 0; i <= 30; i++) {
+                LocalDate date = LocalDate.now().minusDays(i);
+
+                if (noteDates.contains(date)) {
+                    currentStreak++;
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    currentStreak = 0L;
+                }
+            }
+
+            return maxStreak;
+
+        } catch (Exception e) {
+            throw BaseException.of(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public Long getStreak(Long userId) {
         if (userId == null) {
             throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
@@ -293,5 +328,23 @@ public class NoteService {
         } catch (Exception e) {
             throw BaseException.of(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public List<NoteCountDto> getNoteCountByCreatedAt(Long userId) {
+        List<Note> notes = noteRepository.findByUserUserIdAndIsDeletedFalse(userId);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        // 그룹핑 후 Dto로 변환
+        Map<String, Long> grouped = notes.stream()
+                .collect(Collectors.groupingBy(
+                        note -> note.getCreatedAt().toLocalDate().format(formatter),
+                        Collectors.counting()
+                ));
+
+        return grouped.entrySet().stream()
+                .sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey())) // 최신 날짜 먼저
+                .map(e -> new NoteCountDto(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
     }
 }
