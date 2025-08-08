@@ -37,3 +37,6 @@ back/logs/recode.log
 
 ### VS Code ###
 .vscode/
+
+# application key 파일 무시
+src/main/resources/application-key.properties
