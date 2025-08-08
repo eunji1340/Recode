@@ -123,6 +123,15 @@ public class NoteController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "한달내 최대 스트릭 조회", description = "오늘 기준 30일 전까지의 최대 스트릭을 조회합니다.")
+    @GetMapping("/max-streak")
+    public ResponseEntity<Long> getMaxStreak(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUser().getUserId();
+
+        Long response = noteService.getMaxStreak(userId);
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "연속 스트릭 조회", description = "오늘까지 연속 스트릭을 얼마나 유지하고 있는가를 조회합니다.")
     @GetMapping("/note-streak")
     public ResponseEntity<Long> getStreak(
@@ -144,5 +153,7 @@ public class NoteController {
 
         return ResponseEntity.ok(response);
     }
+
+
 
 }

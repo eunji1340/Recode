@@ -264,6 +264,43 @@ public class NoteService {
         }
     }
 
+    public Long getMaxStreak(Long userId) {
+        if (userId == null) {
+            throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        try {
+            // 30일 전부터 오늘까지의 노트 조회
+            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+            List<Note> noteList = noteRepository.findByUser_UserIdAndCreatedAtAfter(userId, thirtyDaysAgo);
+
+            // 작성한 날짜를 Set으로 저장 (중복 제거)
+            Set<LocalDate> noteDates = noteList.stream()
+                    .map(note -> note.getCreatedAt().toLocalDate())
+                    .collect(Collectors.toSet());
+
+            // 스트릭 계산
+            Long maxStreak = 0L;
+            Long currentStreak = 0L;
+
+            for (int i = 0; i <= 30; i++) {
+                LocalDate date = LocalDate.now().minusDays(i);
+
+                if (noteDates.contains(date)) {
+                    currentStreak++;
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    currentStreak = 0L;
+                }
+            }
+
+            return maxStreak;
+
+        } catch (Exception e) {
+            throw BaseException.of(CommonErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public Long getStreak(Long userId) {
         if (userId == null) {
             throw BaseException.of(CommonErrorCode.INVALID_INPUT_VALUE);
