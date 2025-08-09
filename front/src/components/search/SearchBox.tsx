@@ -1,81 +1,120 @@
-// components/search/SearchBox.tsx
-import React, { useState, useEffect } from 'react';
-import SearchUserScopeTabs from './SearchUserScopeTabs';
-import SearchKeywordBar from './SearchKeywordBar';
-import SearchTagBar from './SearchTagBar';
-import { FiRotateCcw } from "react-icons/fi";
+import React, { useState, useRef } from 'react';
+import { FiSearch, FiHash, FiRotateCcw } from 'react-icons/fi';
+import SortDropdown from '../feed/SortDropdown';
+import type { SortOption } from '../../types/feed';
 
 interface SearchBoxProps {
-  showUserScopeTabs?: boolean;
-  defaultUserScope?: 'all' | 'following';
-  onSearch: (params: {
-    keyword: string;
-    tags: string[];
-    userScope?: 'all' | 'following';
-  }) => void;
+  onKeywordChange: (keyword: string) => void;
+  onAddTag: (tag: string) => void;
+  onRemoveTag: (tag: string) => void;
+  selectedTags: string[];
+  sortBy: SortOption;
+  onSortChange: (value: SortOption) => void;
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({
-  showUserScopeTabs = true,
-  defaultUserScope = 'all',
-  onSearch,
+  onKeywordChange,
+  onAddTag,
+  onRemoveTag,
+  selectedTags,
+  sortBy,
+  onSortChange,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [userScope, setUserScope] = useState<'all' | 'following'>(defaultUserScope);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [keyword, setKeyword] = useState('');
+  const [tagInput, setTagInput] = useState('');
+  const tagInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setUserScope(defaultUserScope);
-  }, [defaultUserScope]);
+  const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setKeyword(val);
+    onKeywordChange(val);
+  };
 
-  const handleAddTag = (tag: string) => {
-    if (tag.trim() && !selectedTags.includes(tag.trim())) {
-      setSelectedTags([...selectedTags, tag.trim()]);
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const trimmed = tagInput.trim();
+      if (trimmed && !selectedTags.includes(trimmed)) {
+        onAddTag(trimmed);
+        setTagInput('');
+      }
+    } else if (
+      e.key === 'Backspace' &&
+      tagInput === '' &&
+      selectedTags.length > 0
+    ) {
+      onRemoveTag(selectedTags[selectedTags.length - 1]);
     }
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
-  };
-
-  const handleSearch = () => {
-    onSearch({
-      keyword: searchTerm,
-      tags: selectedTags,
-      userScope: showUserScopeTabs ? userScope : undefined,
-    });
-  };
-
   const handleReset = () => {
-    setSearchTerm('');
-    setSelectedTags([]);
-    setUserScope(defaultUserScope);
+    setKeyword('');
+    setTagInput('');
+    onKeywordChange('');
+    selectedTags.forEach((tag) => onRemoveTag(tag));
   };
 
   return (
-    <div className="w-full space-y-2">
-      {showUserScopeTabs && (
-        <SearchUserScopeTabs value={userScope} onChange={setUserScope} />
-      )}
-
-      <div className="flex flex-col md:flex-row gap-2 items-stretch">
-        <SearchKeywordBar value={searchTerm} onChange={setSearchTerm} />
-        <button
-          onClick={handleSearch}
-          className="bg-[#13233D] hover:bg-[#0f1b30] text-white text-sm px-5 rounded-md whitespace-nowrap"
-        >
-          검색
-        </button>
+    <div className="w-full space-y-3">
+      {/* 키워드 검색창 */}
+      <div className="relative w-full">
+        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
+          <FiSearch />
+        </span>
+        <input
+          type="text"
+          placeholder="문제 제목, 사용자명, 노트 제목으로 검색"
+          className="w-full pl-10 pr-3 py-2 border border-zinc-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#13233D]"
+          value={keyword}
+          onChange={handleKeywordChange}
+        />
       </div>
 
-      <div className="flex flex-col md:flex-row gap-2 items-stretch">
-        <SearchTagBar tags={selectedTags} onAdd={handleAddTag} onRemove={handleRemoveTag} />
-        <button
-          onClick={handleReset}
-          className="text-sm flex items-center text-[#13233D] whitespace-nowrap gap-1 px-1"
-        >
-          <FiRotateCcw className="w-4 h-4" /> 초기화
-        </button>
+      {/* 태그 검색창 */}
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
+            <FiHash />
+          </span>
+          <div className="flex flex-wrap items-center gap-2 px-10 py-2 border rounded-md text-sm bg-white min-h-[42px]">
+            {selectedTags.map((tag) => (
+              <span
+                key={tag}
+                className="flex items-center bg-zinc-100 px-2 py-1 rounded-full text-sm text-zinc-800"
+              >
+                #{tag}
+                <button
+                  onClick={() => onRemoveTag(tag)}
+                  className="ml-1 text-zinc-500 hover:text-red-500 transition"
+                  aria-label={`${tag} 제거`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+            <input
+              ref={tagInputRef}
+              type="text"
+              placeholder="태그 검색"
+              className="flex-1 border-none outline-none text-sm bg-transparent min-w-[80px]"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleTagKeyDown}
+            />
+          </div>
+        </div>
+
+        {/* 초기화 & 정렬 */}
+        <div className="flex gap-4 items-center mt-2 md:mt-0">
+          <button
+            onClick={handleReset}
+            aria-label="검색 초기화"
+            className="bg-[#FF8400] hover:bg-[#e67200] text-sm flex items-center text-white rounded-md gap-1 px-3 py-2"
+          >
+            <FiRotateCcw className="w-4 h-4" /> 초기화
+          </button>
+          <SortDropdown selected={sortBy} onChange={onSortChange} />
+        </div>
       </div>
     </div>
   );

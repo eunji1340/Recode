@@ -46,3 +46,15 @@ logs/recode.log
 src/main/resources/.env
 
 src/main/resources/application-key.properties
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+.gradle/
+.idea/
+logs/
+
+.env
+.env.*

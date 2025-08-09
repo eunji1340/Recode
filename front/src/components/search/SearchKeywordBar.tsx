@@ -1,21 +1,46 @@
 import React from 'react';
-import { FiSearch } from "react-icons/fi";
+import { FiSearch } from 'react-icons/fi';
 
-interface Props {
+interface SearchKeywordBarProps {
+  /**
+   * 현재 입력된 검색어 값
+   */
   value: string;
+
+  /**
+   * 검색어 입력 변경 시 호출되는 핸들러
+   * @param val - 새로운 검색어 문자열
+   */
   onChange: (val: string) => void;
+
+  /**
+   * Enter 키 입력 시 실행할 콜백
+   */
+  onEnter: () => void;
 }
 
-const SearchKeywordBar: React.FC<Props> = ({ value, onChange }) => {
+/**
+ * SearchKeywordBar - 일반 검색어 입력창
+ */
+const SearchKeywordBar: React.FC<SearchKeywordBarProps> = ({ value, onChange, onEnter }) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onEnter(); // 엔터 시 검색 실행
+    }
+  };
+
   return (
     <div className="relative flex-1">
-      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]"><FiSearch /></span>
+      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
+        <FiSearch />
+      </span>
       <input
         type="text"
-        placeholder="문제 제목 혹은 사용자명으로 검색"
-        className="w-full pl-10 pr-3 py-2 border rounded-md text-sm"
+        placeholder="문제 제목, 사용자명, 노트 제목으로 검색"
+        className="w-full pl-10 pr-3 py-2 border border-zinc-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#13233D]"
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
     </div>
   );
