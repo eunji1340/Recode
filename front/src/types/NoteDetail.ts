@@ -1,4 +1,7 @@
-import type { TagProps } from "@/components/feed/Tag";
+interface Tag {
+  tagId: number;
+  tagName: string;
+}
 
 interface Problem {
   problemId: number;
@@ -13,7 +16,7 @@ interface User {
   userTier: number;
 }
 
-export interface NoteDetailResponse {
+export interface NoteDetailResponseDTO {
   noteId: number;
   problem: Problem;
   user: User;
@@ -34,5 +37,6 @@ export interface NoteDetailResponse {
   viewCount: number;
   likeCount: number;
   commentCount: number;
-  tags: TagProps[];
+  tags: Tag[];
+  liked: boolean;
 }
