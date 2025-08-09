@@ -2,7 +2,7 @@
 # [1단계] 빌드 
 # 1. build 환경 설정
 # node.js 22 lts img  
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
 # 2. 작업 디렉토리 설정
 WORKDIR /app

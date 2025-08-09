@@ -4,6 +4,7 @@ import HeartIcon from '../components/common/HeartIcon';
 import { useEffect, useState } from 'react';
 import type { NoteDetailResponseDTO } from '../types/NoteDetail';
 import api from '../api/axiosInstance';
+import { addFollow, removeFollow } from '../api/feed';
 import CodePreview from '../components/code/CodePreview';
 import ProblemTitle from '../components/feed/ProblemTitle';
 import FollowButton from '../components/common/FollowButton';
@@ -31,6 +32,7 @@ export default function NoteDetailPage() {
   const [writer, setWriter] = useState<User>(); // note 작성한 user
   const [isSuccessCodeExpanded, setIsSuccessCodeExpanded] = useState(false);
   const [isFailCodeExpanded, setIsFailCodeExpanded] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const { userId } = useUserStore();
   const loginUserId = parseInt(userId ?? '0', 10);
@@ -59,6 +61,7 @@ export default function NoteDetailPage() {
         `/notes/${noteId}`,
       );
       setNote(noteResponse.data);
+      setIsFollowing(noteResponse.data.following); // 팔로우 상태 초기화
       console.log(noteResponse.data);
       setError(null);
       setWriter(noteResponse.data.user);
@@ -99,6 +102,26 @@ export default function NoteDetailPage() {
       console.error('Failed to update like status:', err);
       setNote(originalNote);
       // TODO: 사용자에게 에러 알림 (예: toast message)
+    }
+  };
+
+  const handleToggleFollow = async () => {
+    if (!note || !note.user) return;
+
+    const originalFollowingState = isFollowing;
+    // Optimistic UI update
+    setIsFollowing(!isFollowing);
+
+    try {
+      if (isFollowing) {
+        await removeFollow(note.user.userId);
+      } else {
+        await addFollow(note.user.userId);
+      }
+    } catch (err) {
+      console.error('Failed to toggle follow:', err);
+      // Revert UI on error
+      setIsFollowing(originalFollowingState);
     }
   };
 
@@ -161,10 +184,18 @@ export default function NoteDetailPage() {
               <div className="text-base font-semibold">
                 {note.user.nickname}
               </div>
-              <FollowButton
-                isFollowing={true}
-                onToggle={() => {}}
-              ></FollowButton>
+              {/* user 본인이면 숨기기 */}
+              {loginUserId !== note.user.userId ? (
+                <div>
+                  <FollowButton
+                    isFollowing={isFollowing}
+                    onToggle={handleToggleFollow}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
+              ) : (
+                <div></div>
+              )}
             </div>
           </div>
           <hr className="my-3 border-t-2 border-gray-300" />

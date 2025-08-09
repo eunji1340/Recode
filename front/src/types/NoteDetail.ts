@@ -39,4 +39,6 @@ export interface NoteDetailResponseDTO {
   commentCount: number;
   tags: Tag[];
   liked: boolean;
+  following: boolean;
+  deleted: boolean;
 }

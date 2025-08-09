@@ -5,7 +5,6 @@ import FeedCard from '../components/feed/FeedCard';
 import { useInfiniteFeeds } from '../hooks/useInfiniteFeeds';
 import { fetchExploreFeeds } from '../api/feed';
 import type { ExploreFeedCardData, SortOption } from '../types/feed';
-import { Link } from 'react-router-dom';
 
 export default function ExplorePage() {
   const [search, setSearch] = useState('');
@@ -55,7 +54,6 @@ export default function ExplorePage() {
     } else if (sortBy === 'comments') {
       feeds.sort((a, b) => (b.commentCount ?? 0) - (a.commentCount ?? 0));
     }
-
 
     return feeds;
   }, [rawFeeds, userScope, sortBy]);
