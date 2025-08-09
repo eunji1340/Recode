@@ -1,26 +1,35 @@
 import { useParams } from 'react-router-dom';
 import Tag from '../components/common/Tag';
 import HeartIcon from '../components/common/HeartIcon';
-import CommentIcon from '../components/common/CommentIcon';
 import { useEffect, useState } from 'react';
-import Comment from '../components/Comment';
-import type { NoteDetail, NoteDetailResponse } from '../types/NoteDetail';
-import type { CommentResponse } from '../types/comment';
+import type { NoteDetailResponseDTO } from '../types/NoteDetail';
 import api from '../api/axiosInstance';
 import CodePreview from '../components/code/CodePreview';
 import ProblemTitle from '../components/feed/ProblemTitle';
 import FollowButton from '../components/common/FollowButton';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { CommentResponseDTO, User } from '../types/comment';
+import CommentIcon from '../components/common/CommentIcon';
+import Comment from '../components/note/Comment';
+import { useUserStore } from '../stores/userStore';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
 
-  const [note, setNote] = useState<NoteDetail | null>(null);
+  const [note, setNote] = useState<NoteDetailResponseDTO | null>(null);
   //   새로 작성하는 댓글
   const [commentText, setCommentText] = useState('');
   //    기존 작성된 댓글
-  const [comments, setComments] = useState<CommentResponse | null>(null);
+  const [comments, setComments] = useState<CommentResponseDTO[] | []>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [writer, setWriter] = useState<User>(); // note 작성한 user
+  const [isSuccessCodeExpanded, setIsSuccessCodeExpanded] = useState(false);
+  const [isFailCodeExpanded, setIsFailCodeExpanded] = useState(false);
+
+  const { userId } = useUserStore();
+  const loginUserId = parseInt(userId, 10);
 
   if (!id) {
     return <div>Invalid note ID</div>;
@@ -30,32 +39,28 @@ export default function NoteDetailPage() {
 
   const fetchComments = async () => {
     try {
-      setLoading(true);
-
-      const commentResponse = await api.get<CommentResponse>(
+      const commentResponse = await api.get<CommentResponseDTO[]>(
         `/feeds/${noteId}/comments`,
       );
       setComments(commentResponse.data);
-      setError(null);
     } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch comments:', err);
     }
   };
 
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const noteResponse = await api.get<NoteDetailResponse>(
+      const noteResponse = await api.get<NoteDetailResponseDTO>(
         `/notes/${noteId}`,
       );
       setNote(noteResponse.data);
       console.log(noteResponse.data);
-
       setError(null);
+      setWriter(noteResponse.data.user);
     } catch (err) {
       console.log(err);
+      setError('노트를 불러오는 데 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -66,6 +71,50 @@ export default function NoteDetailPage() {
     fetchComments();
   }, [noteId]); // noteId가 변경될 때만 실행
 
+  const handleLikeToggle = async () => {
+    if (!note) return;
+
+    // 좋아요 UI: API 호출 전 미리 변경 (optimistic update)
+    const originalNote = note;
+    const newLikedStatus = !note.liked;
+    const newLikeCount = note.liked ? note.likeCount - 1 : note.likeCount + 1;
+
+    setNote({
+      ...note,
+      liked: newLikedStatus,
+      likeCount: newLikeCount,
+    });
+
+    try {
+      if (newLikedStatus) {
+        await api.post(`/feeds/${noteId}/hearts`);
+      } else {
+        await api.delete(`/feeds/${noteId}/hearts`);
+      }
+    } catch (err) {
+      console.error('Failed to update like status:', err);
+      setNote(originalNote);
+      // TODO: 사용자에게 에러 알림 (예: toast message)
+    }
+  };
+
+  //   댓글 작성 API
+  const handleWriteComment = async () => {
+    if (!commentText.trim()) return; // 빈 댓글 방지
+
+    const commentRequest = {
+      content: commentText,
+    };
+
+    try {
+      await api.post(`/feeds/${noteId}/comments`, commentRequest);
+      setCommentText('');
+      fetchComments(); // 댓글 목록 새로고침
+    } catch (err) {
+      console.log('Failed to write comment:', err);
+    }
+  };
+
   if (loading) {
     return <div>로딩 중...</div>;
   }
@@ -74,60 +123,12 @@ export default function NoteDetailPage() {
     return <div>{error}</div>;
   }
 
-  //   TODO: 클라이언트 에러 페이지 만들기
   if (!note) {
     return <div>노트 데이터를 찾을 수 없습니다.</div>;
   }
 
-  // TODO: token decoding
-  //   const isWriter: boolean = note.user.userId ===   ? true : false;
-
   // timestamp Date String으로 변환
   const date = new Date(note.createdAt).toLocaleDateString('ko-KR');
-
-  //  좋아요 추가 & 삭제 API
-  const handleHeartClick = () => {
-    // user가 좋아요 누른 상태면 handleDislike, 안 누른 상태면 handleLike 호출
-    // user가 좋아요 눌렀는지?
-    // if (user === clickedLike ) ? handleDisLike : handleLike;
-  };
-
-  const handleLike = async () => {
-    try {
-      const resp = await api.post(`/feeds/${noteId}/hearts`);
-      console.log('좋아요 성공', resp.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  const handleDisLike = async () => {
-    try {
-      const resp = await api.delete(`/fees/${noteId}/hearts`);
-      console.log('좋아요 취소 완료');
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  //   댓글 작성 API
-  const handleWriteComment = async () => {
-    const commentData = {
-      content: commentText,
-    };
-
-    try {
-      const resp = await api.post(`/feeds/${noteId}/comments`, commentData);
-      //   const resp = await api.patch(`/users/41/nickname`, {
-      //     nickname: '메롱',
-      //   });
-      console.log('댓글 작성', resp.data);
-      setCommentText('');
-      fetchComments();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const image = '';
 
   return (
@@ -138,7 +139,7 @@ export default function NoteDetailPage() {
           <div className="container flex flex-row justify-between">
             <div className="text-2xl font-bold">
               <div>{note.noteTitle}</div>
-              <div className="text-sm font-bold">생성일: {date} </div>
+              <div className="text-sm font-bold">작성일: {date} </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -151,14 +152,11 @@ export default function NoteDetailPage() {
               ) : (
                 <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
                   {note.user.nickname[0]}
-                  {/* TODO */}
                 </div>
               )}
-              {/* TODO: 타인 닉네임 클릭 시 타인 페이지로 이동 */}
               <div className="text-base font-semibold">
                 {note.user.nickname}
               </div>
-              {/* TODO: 팔로우 본인확인 */}
               <FollowButton
                 isFollowing={true}
                 onToggle={() => {}}
@@ -177,78 +175,113 @@ export default function NoteDetailPage() {
           <div>
             <div className="text-lg font-bold my-3">코드</div>
             <hr className="my-3 border-t-2 border-gray-300" />
-            <div className="flex flex-row justify-around">
-              {/* TODO: 코드 접기 추가 & 스타일 변경 */}
-              <div>
+            <div className="flex flex-row justify-around gap-4">
+              <div className="w-1/2">
                 <div className="text-sm font-bold">성공 코드</div>
-                <pre>
-                  <CodePreview
-                    code={note.successCode}
-                    language={note.successLanguage}
-                  ></CodePreview>
-                </pre>
+                <div
+                  className={`relative transition-all duration-300 ease-in-out overflow-hidden ${
+                    isSuccessCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
+                  }`}
+                >
+                  <pre>
+                    <CodePreview
+                      code={note.successCode}
+                      language={note.successLanguage}
+                    ></CodePreview>
+                  </pre>
+                  {!isSuccessCodeExpanded && (
+                    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent"></div>
+                  )}
+                </div>
+                <button
+                  onClick={() =>
+                    setIsSuccessCodeExpanded(!isSuccessCodeExpanded)
+                  }
+                  className="text-sm text-blue-500 hover:underline mt-1"
+                >
+                  {isSuccessCodeExpanded ? '접기' : '더 보기'}
+                </button>
               </div>
-              <div>
+              <div className="w-1/2">
                 <div className="text-sm font-bold">실패 코드</div>
-                <pre>
-                  <CodePreview
-                    code={note.failCode}
-                    language={note.failLanguage}
-                  ></CodePreview>
-                </pre>
+                <div
+                  className={`relative transition-all duration-300 ease-in-out overflow-hidden ${
+                    isFailCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
+                  }`}
+                >
+                  <pre>
+                    <CodePreview
+                      code={note.failCode}
+                      language={note.failLanguage}
+                    ></CodePreview>
+                  </pre>
+                  {!isFailCodeExpanded && (
+                    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent"></div>
+                  )}
+                </div>
+                <button
+                  onClick={() => setIsFailCodeExpanded(!isFailCodeExpanded)}
+                  className="text-sm text-blue-500 hover:underline mt-1"
+                >
+                  {isFailCodeExpanded ? '접기' : '더 보기'}
+                </button>
               </div>
             </div>
             <div className="content">
               <div className="text-lg font-bold my-3">본문</div>
               <hr className="my-3 border-t-2 border-gray-300" />
-              <div>{note.content}</div>
+              <div className="prose max-w-none p-4">
+                <Markdown remarkPlugins={[remarkGfm]}>{note.content}</Markdown>
+              </div>
             </div>
             <div>
               <hr className="my-3 border-t-2 border-gray-300" />
               <div className="flex flex-row justify-between">
                 <div className="tags">
-                  {note.tags.map((tagId, tagName) => (
-                    <Tag key={tagId} tagName={tagName}></Tag>
+                  {note.tags.map((tag) => (
+                    <Tag key={tag.tagId} tagName={tag.tagName}></Tag>
                   ))}
                 </div>
                 <div className="likes-and-comments flex flex-row">
                   <div>
-                    {/* TODO: user 본인의 게시글 별 like 여부 확인 */}
                     <HeartIcon
-                      //   liked={liked}
-                      likes={note.likeCount}
-                      onClick={handleHeartClick}
+                      liked={note.liked}
+                      likeCount={note.likeCount}
+                      onClick={handleLikeToggle}
                     ></HeartIcon>
                   </div>
                   <div>
-                    <CommentIcon
-                      count={comments?.details.length ?? 0}
-                    ></CommentIcon>
+                    <CommentIcon count={comments.details.length}></CommentIcon>
                   </div>
                 </div>
               </div>
-              {/* TODO: 작성자일때만 보기로 대체 */}
-              <div className="flex gap-2 mt-4">
-                <button className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                  수정
-                </button>
-                <button className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                  삭제
-                </button>
-              </div>
+
+              {/* 작성자 본인일때만 버튼 보여주기 */}
+              {writer?.userId === loginUserId ? (
+                <div className="flex gap-2 mt-4">
+                  <button className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                    수정
+                  </button>
+                  <button className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                    삭제
+                  </button>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </div>
           </div>
           <hr className="my-3 border-t-2 border-gray-300" />
           {/* 댓글 */}
           <div className="comment-container mt-6">
             <div className="w-full mb-4">
-              {/* TODO: 댓글 삭제 및 수정 API 연동 */}
               <textarea
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-150 ease-in-out resize-none"
                 name="comment-create"
                 id="comment-create"
                 rows={3}
                 placeholder="댓글을 입력하세요..."
+                value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
               ></textarea>
               <div className="flex justify-end mt-2">
@@ -262,16 +295,16 @@ export default function NoteDetailPage() {
             </div>
             <div className="text-lg font-bold my-3">댓글</div>
             <div>
-              {comments && comments.details && comments.details.length > 0 ? (
+              {comments && comments.details.length > 0 ? (
                 comments.details.map((item) => (
                   <Comment
-                    key={item.commentId}
-                    noteId={item.noteId}
+                    user={item.user}
+                    commentId={item.commentId}
                     content={item.content}
                     createdAt={item.createdAt}
-                    nickname={item.user.nickname}
-                    commentId={item.commentId}
-                    onCommentDeleted={fetchComments}
+                    noteId={note.noteId}
+                    key={item.commentId}
+                    onCommentChange={fetchComments} // 댓글 변경 시 새로고침
                   ></Comment>
                 ))
               ) : (
