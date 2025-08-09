@@ -1,16 +1,21 @@
 package com.ssafy.recode.domain.problem.controller;
 
+import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.problem.dto.SubmissionResultDto;
 import com.ssafy.recode.domain.problem.service.SubmissionService;
 import com.ssafy.recode.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/problems")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/problems")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -21,10 +26,13 @@ public class SubmissionController {
     @GetMapping("/{problemId}/submissions")
     public ResponseEntity<SubmissionResultDto> getSubmissions(
             @PathVariable int problemId,
-            @RequestParam Long userId //TODO: Spring Security 적용 시 제거 예정
+            @AuthenticationPrincipal CustomUserDetails principal
     ) {
-        String bojId = userService.getBaekjoonId(userId);
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
+        Long userId = principal.getUserId();
         SubmissionResultDto result = submissionService.getSubmissions(problemId, userId);
         return ResponseEntity.ok(result);
     }
