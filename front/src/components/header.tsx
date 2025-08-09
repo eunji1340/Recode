@@ -21,20 +21,19 @@ export default function Header() {
   const navigate = useNavigate();
 
   // Zustand store에서 인증 상태 가져오기
-  const { isAuthenticated, userId, nickname, clearToken, checkAuth } = useUserStore();
+  const { isAuthenticated, userId, nickname, clearToken, checkAuth } =
+    useUserStore();
 
   // 마운트 시 토큰 유효성 검사
   useEffect(() => {
     checkAuth();
-  }, []);  
-  
+  }, []);
 
   const handleLogout = () => {
     clearToken();
     navigate('/users/login');
   };
 
-  
   return (
     <div
       className={clsx(

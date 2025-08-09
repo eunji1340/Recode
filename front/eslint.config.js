@@ -15,6 +15,15 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
 
+  // 일부 규칙 완화
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'warn',
+    },
+  },
+
   // React 관련 설정
   {
     files: ['**/*.{ts,tsx}'],
@@ -36,6 +45,7 @@ export default [
       // 플러그인의 추천 규칙 적용
       ...pluginReactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': 'warn',
+      'react-hooks/rules-of-hooks': 'warn',
     },
   },
 

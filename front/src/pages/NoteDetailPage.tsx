@@ -9,7 +9,11 @@ import ProblemTitle from '../components/feed/ProblemTitle';
 import FollowButton from '../components/common/FollowButton';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import type { CommentResponseDTO, User } from '../types/comment';
+import type {
+  CommentApiResponse,
+  CommentResponseDTO,
+  User,
+} from '../types/comment';
 import CommentIcon from '../components/common/CommentIcon';
 import Comment from '../components/note/Comment';
 import { useUserStore } from '../stores/userStore';
@@ -21,7 +25,7 @@ export default function NoteDetailPage() {
   //   새로 작성하는 댓글
   const [commentText, setCommentText] = useState('');
   //    기존 작성된 댓글
-  const [comments, setComments] = useState<CommentResponseDTO[] | []>([]);
+  const [comments, setComments] = useState<CommentApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [writer, setWriter] = useState<User>(); // note 작성한 user
@@ -29,7 +33,7 @@ export default function NoteDetailPage() {
   const [isFailCodeExpanded, setIsFailCodeExpanded] = useState(false);
 
   const { userId } = useUserStore();
-  const loginUserId = parseInt(userId, 10);
+  const loginUserId = parseInt(userId ?? '0', 10);
 
   if (!id) {
     return <div>Invalid note ID</div>;
@@ -39,7 +43,7 @@ export default function NoteDetailPage() {
 
   const fetchComments = async () => {
     try {
-      const commentResponse = await api.get<CommentResponseDTO[]>(
+      const commentResponse = await api.get<CommentApiResponse>(
         `/feeds/${noteId}/comments`,
       );
       setComments(commentResponse.data);
@@ -251,7 +255,9 @@ export default function NoteDetailPage() {
                     ></HeartIcon>
                   </div>
                   <div>
-                    <CommentIcon count={comments.details.length}></CommentIcon>
+                    <CommentIcon
+                      count={comments?.details ? comments.details.length : 0}
+                    ></CommentIcon>
                   </div>
                 </div>
               </div>
@@ -296,7 +302,7 @@ export default function NoteDetailPage() {
             <div className="text-lg font-bold my-3">댓글</div>
             <div>
               {comments && comments.details.length > 0 ? (
-                comments.details.map((item) => (
+                comments.details.map((item: CommentResponseDTO) => (
                   <Comment
                     user={item.user}
                     commentId={item.commentId}
@@ -317,3 +323,4 @@ export default function NoteDetailPage() {
     </div>
   );
 }
+

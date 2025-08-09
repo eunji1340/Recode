@@ -26,7 +26,7 @@ export interface NoteDetailResponseDTO {
   successCodeStart: number;
   successCodeEnd: number;
   successLanguage: string;
-  failCode: number;
+  failCode: string;
   failCodeStart: number;
   failCodeEnd: number;
   failLanguage: string;
