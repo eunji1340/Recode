@@ -26,7 +26,7 @@ export interface CommentData {
   nickname?: string;
   noteId: number;
   content: string;
-  createdAt: number;
+  createdAt: string;
   profilePic?: string; // 추후 확인
   onCommentDeleted?: () => void;
 }

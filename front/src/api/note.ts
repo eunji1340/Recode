@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-import axios from 'axios';
-import type { Note } from '../types/note'
-
-export async function fetchNotes(userId: number, page = 0, size = 20): Promise<Note[]> {
-  const res = await axios.get('http://localhost:8080/notes', {
-    params: { page, size },
-=======
 import axios from './axiosInstance';
 import type { Note } from '../types/note';
 
@@ -36,15 +28,10 @@ export async function fetchNotes({
 
   const res = await axios.get(`/notes`, {
     params,
->>>>>>> front
     headers: {
       userId: userId.toString(),
     },
   });
 
-<<<<<<< HEAD
-  return res.data.data.details; // 백엔드 응답 구조 기준
-=======
   return res.data.data.details; // 무한스크롤을 위한 배열 반환
->>>>>>> front
 }

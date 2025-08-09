@@ -18,7 +18,7 @@ export default function Comment({
 
   const { userId } = useUserStore();
 
-  const loginUserId = parseInt(userId, 10);
+  const loginUserId = parseInt(userId ?? '0', 10);
 
   // timestamp Date String으로 변환
   const date = new Date(createdAt).toLocaleDateString('ko-KR');

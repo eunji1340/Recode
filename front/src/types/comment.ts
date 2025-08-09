@@ -15,3 +15,7 @@ export interface CommentResponseDTO {
   createdAt: number;
   updatedAt?: number | null;
 }
+
+export interface CommentApiResponse {
+  details: CommentResponseDTO[];
+}

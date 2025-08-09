@@ -21,30 +21,24 @@ export default function Header() {
   const navigate = useNavigate();
 
   // Zustand store에서 인증 상태 가져오기
-  const { isAuthenticated, userId, nickname, clearToken, checkAuth } = useUserStore();
+  const { isAuthenticated, userId, nickname, clearToken, checkAuth } =
+    useUserStore();
 
   // 마운트 시 토큰 유효성 검사
   useEffect(() => {
     checkAuth();
-  }, []);  
-  
+  }, []);
 
   const handleLogout = () => {
     clearToken();
     navigate('/users/login');
   };
 
-  
   return (
     <div
       className={clsx(
-<<<<<<< HEAD
-        "h-screenf bg-primary text-fontsecondary flex flex-col transition-all duration-300",
-        collapsed ? "w-20 items-center" : "w-64"
-=======
         'fixed top-0 left-0 h-screen bg-primary text-fontsecondary flex flex-col transition-all duration-300 z-50',
         collapsed ? 'w-20' : 'w-64',
->>>>>>> front
       )}
     >
       {/* 상단 로고 영역 */}
