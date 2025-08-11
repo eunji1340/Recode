@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainFeedHeader from './MainFeedHeader';
 import MainFeedProblemInfo from './MainFeedProblemInfo';
 import MainFeedCodeBlock from './MainFeedCodeBlock';
@@ -18,29 +19,46 @@ const MainFeedCard: React.FC<MainFeedData> = ({
   failCode,
   failCodeStart,
   failCodeEnd,
+  failLanguage,
+  isPublic,
   createdAt,
+  updatedAt,
+  viewCount,
   likeCount,
   commentCount,
-  isLiked,
   user,
   problem,
   tags,
+  deleted,
+  liked: isLiked,
+  following: isFollowing,
 }) => {
+  const navigate = useNavigate();
   const { liked, likeCount: currentLikeCount, toggleLike } = useLike(
     noteId,
     isLiked,
     likeCount
   );
-  console.log(noteTitle)
+  
+  // 유저 디테일 페이지 이동
+  const handleProfileClick = () => {
+    navigate(`/user/${user.userId}`);
+  };
+
+  const handleCardClick = () => {
+    navigate(`/note/${noteId}`);
+  };
 
   return (
-    <div className="w-full bg-white rounded-xl shadow px-5 py-4 space-y-2 text-[#0B0829]">
+    <div className="w-full bg-white rounded-xl shadow px-5 py-4 space-y-2 text-[#0B0829] cursor-pointer"
+      onClick={handleCardClick}>
       {/* Header */}
       <MainFeedHeader
         noteTitle={noteTitle}
         nickname={user.nickname}
         image={user.image}
         createdAt={createdAt}
+        onProfileClick={handleProfileClick}
       />
 
       {/* Content */}

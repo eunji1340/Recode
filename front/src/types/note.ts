@@ -17,7 +17,6 @@ export interface Note {
   isPublic: boolean;
   createdAt: string;
 }
-
 // note 생성 api에 전달되는 DTO
 export interface noteGenerateRequestDTO {
   problemId: number;

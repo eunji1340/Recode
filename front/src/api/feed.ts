@@ -1,12 +1,14 @@
 import api from './axiosInstance';
 import type {
-  ApiFeedCard,
+  ApiFeed,
   ExploreFeedCardData,
   MainFeedData,
+  CommentFeedCardData
 } from '@/types/feed';
 import {
   mapApiFeedCardToMainFeedData,
   mapApiFeedCardToExploreData,
+  mapApiCommentToCardData,
 } from '../utils/mapApiFeed';
 
 /**
@@ -79,7 +81,7 @@ export async function fetchExploreFeeds({
     },
   });
 
-  const apiFeeds: ApiFeedCard[] = res.data.data.details;
+  const apiFeeds: ApiFeed[] = res.data.data.details;
 
   return {
     items: apiFeeds.map(mapApiFeedCardToExploreData),
@@ -117,10 +119,112 @@ export async function fetchMainFeeds({
     },
   });
 
-  const apiFeeds: ApiFeedCard[] = res.data.data.details;
+  const apiFeeds: ApiFeed[] = res.data.data.details;
 
   return {
     items: apiFeeds.map(mapApiFeedCardToMainFeedData),
     last: res.data.data.last,
   };
+}
+
+/**
+ * 특정 사용자의 오답노트 목록 조회
+ */
+export async function fetchUserFeeds({
+  userId,
+  page,
+  size,
+  search = '',
+  tag = '',
+}: {
+  userId: number;
+  page: number;
+  size: number;
+  search?: string;
+  tag?: string;
+}): Promise<{ items: ExploreFeedCardData[]; last: boolean }> {
+  const res = await api.get(`/feeds/${userId}`, {
+    params: {
+      page,
+      size,
+      search,
+      tag,
+    },
+  });
+
+  const apiFeeds: ApiFeed[] = res.data.data.details;
+
+  return {
+    items: apiFeeds.map(mapApiFeedCardToExploreData),
+    last: res.data.data.last,
+  };
+}
+
+/**
+ * 사용자가 좋아요한 노트 목록 조회
+ */
+export async function fetchLikedFeeds({
+  userId,
+  page,
+  size,
+  sortType,
+  search = '',
+  tag = '',
+}: {
+  userId: number;
+  page: number;
+  size: number;
+  sortType: number;
+  search?: string;
+  tag?: string;
+}): Promise<{ items: ExploreFeedCardData[]; last: boolean }> {
+  const res = await api.get(`/feeds/${userId}/liked-notes`, {
+    params: {
+      page,
+      size,
+      sortType,
+      search,
+      tag,
+    },
+  });
+
+  const apiFeeds = res.data.data.details;
+
+  return {
+    items: apiFeeds.map(mapApiFeedCardToExploreData),
+    last: res.data.data.last,
+  };
+}
+
+/**
+ * 특정 유저의 전체 댓글 조회
+ */
+export async function fetchUserComments({
+  userId,
+  page,
+  size,
+}: {
+  userId: number;
+  page: number;
+  size: number;
+}): Promise<{ items: CommentFeedCardData[]; last: boolean }> {
+  try {
+    const res = await api.get(`/feeds/comments/${userId}`, {
+      params: {
+        page,
+        size,
+      },
+    });
+
+    const apiComments = res.data.data.details;
+    const lastPage = res.data.data.last;
+
+    return {
+      items: apiComments.map(mapApiCommentToCardData),
+      last: lastPage,
+    };
+  } catch (error) {
+    console.error("댓글 목록을 불러오는 데 실패했습니다.", error);
+    return { items: [], last: true };
+  }
 }

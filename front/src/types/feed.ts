@@ -1,29 +1,30 @@
 /**
  * 백엔드에서 받아오는 API 피드 데이터 원형
  */
-export interface ApiFeedCard {
+export interface ApiFeed {
   noteId: number;
-  noteTitle: string | null;
+  noteTitle: string;
   content: string;
-  createdAt: string;
-  viewcount: number;
-  likeCount: number;
-  commentCount: number;
-  liked: boolean;
-  following: boolean;
   successCode: string;
-  failCode: string;
   successCodeStart: number;
   successCodeEnd: number;
+  successLanguage: string;
+  failCode: string;
   failCodeStart: number;
   failCodeEnd: number;
-  successLanguage: string;
   failLanguage: string;
+  isPublic: boolean,
+  createdAt: string;
+  updatedAt: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
   user: {
     userId: number;
-    nickname: string;
     bojId: string;
+    nickname: string;
     userTier: number;
+    image?: string;
   };
   problem: {
     problemId: number;
@@ -34,6 +35,9 @@ export interface ApiFeedCard {
     tagId: number;
     tagName: string;
   }[];
+  deleted: boolean,
+  liked: boolean;
+  following: boolean;
 }
 
 /**
@@ -43,33 +47,36 @@ export interface MainFeedData {
   noteId: number;
   noteTitle: string;
   content: string;
-  createdAt: string;
-  viewcount: number;
-  likeCount: number;
-  commentCount: number;
-  isLiked: boolean;
-  isFollowing: boolean;
-
   successCode: string;
-  failCode: string;
   successCodeStart: number;
   successCodeEnd: number;
+  successLanguage: string;
+  failCode: string;
   failCodeStart: number;
   failCodeEnd: number;
-  successLanguage: string;
+  failLanguage: string;
+  isPublic: boolean,
+  createdAt: string;
+  updatedAt: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
   user: {
     userId: number;
+    bojId: string;
     nickname: string;
+    userTier: number;
     image?: string;
   };
-
   problem: {
     problemId: number;
     problemName: string;
     problemTier: number;
   };
-
-  tags: string[]; // tagName만 사용
+  tags: string[];
+  deleted: boolean;
+  liked: boolean;
+  following: boolean;
 }
 
 /**
@@ -78,16 +85,51 @@ export interface MainFeedData {
 export interface ExploreFeedCardData {
   noteId: number;
   noteTitle: string;
+  successLanguage: string;
+  isPublic: boolean,
   createdAt: string;
-  viewcount: number;
+  viewCount: number;
   likeCount: number;
   commentCount: number;
-  isLiked: boolean;
-  isFollowing: boolean;
-  successLanguage: string;
   user: {
     userId: number;
+    bojId: string;
     nickname: string;
+    userTier: number;
+    image?: string;
+  };
+  problem: {
+    problemId: number;
+    problemName: string;
+    problemTier: number;
+  };
+  tags: string[];
+  deleted: boolean;
+  liked: boolean;
+  following: boolean;
+}
+
+/**
+
+ * 댓글 피드 카드 구조
+
+ */
+
+export interface CommentFeedCardData {
+  noteId: number;
+  noteTitle: string;
+  commentWriter: string;
+  content: string;
+  isPublic: boolean,
+  createdAt: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  user: {
+    userId: number;
+    bojId: string;
+    nickname: string;
+    userTier: number;
     image?: string;
   };
 
@@ -96,8 +138,10 @@ export interface ExploreFeedCardData {
     problemName: string;
     problemTier: number;
   };
-
   tags: string[];
+  deleted: boolean;
+  liked: boolean;
+  following: boolean;
 }
 
 /**

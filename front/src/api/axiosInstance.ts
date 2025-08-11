@@ -5,7 +5,7 @@ import { useUserStore } from '../stores/userStore';
 const REISSUE_PATH = '/users/reissue';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_REST_API_URL, // API 기본 경로
   withCredentials: true, // ★ HttpOnly 쿠키 전송
 });
 

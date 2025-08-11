@@ -1,0 +1,24 @@
+# 개발용 dockerfile 분리 
+# Stage 1: 빌드 환경 설정 (개발용)
+FROM node:20-alpine AS development
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Stage 2: 실행 환경 설정
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 빌드 단계에서 설치한 node_modules와 package.json 복사
+COPY --from=development /app/node_modules ./node_modules
+COPY --from=development /app/package*.json ./
+
+EXPOSE 5173
+
+# 컨테이너 실행 시 개발 서버를 바로 실행
+CMD ["npm", "run", "dev"]

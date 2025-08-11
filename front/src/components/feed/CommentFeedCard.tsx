@@ -1,163 +1,101 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProblemTitle from './ProblemTitle';
 import HeartIcon from '../common/HeartIcon';
 import CommentIcon from '../common/CommentIcon';
-import Tag from '../common/Tag';
-import UserProfile from '../user/UserProfile';
-
+import TagList from '../common/TagList';
+import UserProfile from '../user/UserImage';
 import { useLike } from '../../hooks/useLike';
-import type { ExploreFeedCardData } from '../../types/feed';
+import type { CommentFeedCardData } from '../../types/feed';
+import { useUserStore } from '../../stores/userStore';
 
-interface CommentFeedCardProps extends ExploreFeedCardData {
-  comment: string;
-}
+/**
+ * 댓글 피드 카드
+ * - 노트 제목을 주제(큰 타이포)
+ * - 문제 정보는 보조(작은 타이포)
+ */
+const CommentCard: React.FC<CommentFeedCardData> = (props) => {
+  const currentUserId = useUserStore((s) => s.userId);
 
-const CommentFeedCard: React.FC<CommentFeedCardProps> = ({
-  noteId,
-  isLiked,
-  likeCount,
-  noteTitle,
-  createdAt,
-  user,
-  successLanguage,
-  problem,
-  tags,
-  commentCount,
-  comment,
-}) => {
   const {
-    liked,
-    likeCount: currentLikeCount,
-    toggleLike,
-  } = useLike(noteId, isLiked, likeCount);
+    noteId,
+    noteTitle,
+    commentWriter, // 사용 시 표시 고려
+    content,
+    createdAt,
+    viewCount,
+    likeCount,
+    commentCount,
+    user,
+    problem,
+    tags,
+    liked: isLiked,
+  } = props;
 
-  const tagContainerRef = useRef<HTMLDivElement>(null);
-  const [visibleCount, setVisibleCount] = useState(tags.length);
+  const { liked, likeCount: currentLikeCount, toggleLike } = useLike(
+    noteId,
+    isLiked,
+    likeCount
+  );
 
-  useEffect(() => {
-    const updateVisibleTags = () => {
-      const container = tagContainerRef.current;
-      if (!container) return;
+  const navigate = useNavigate();
 
-      if (tags.length === 0) {
-        setVisibleCount(0);
-        return;
-      }
-
-      const tagWidths = tags.map((tag) => {
-        const temp = document.createElement('span');
-        temp.style.visibility = 'hidden';
-        temp.style.position = 'absolute';
-        temp.className =
-          'inline-flex items-center gap-[2px] border border-[#A0BACC] bg-[#E6EEF4] text-[#13233D] rounded-full px-2 py-[2px] text-xs font-medium flex-shrink-0';
-        temp.innerText = `# ${tag}`;
-        document.body.appendChild(temp);
-        const width = temp.offsetWidth + 4;
-        document.body.removeChild(temp);
-        return width;
-      });
-
-      const plusTag = document.createElement('span');
-      plusTag.style.visibility = 'hidden';
-      plusTag.style.position = 'absolute';
-      plusTag.className =
-        'text-[10px] text-zinc-400 font-medium whitespace-nowrap';
-      plusTag.innerText = '+99'; // dummy
-      document.body.appendChild(plusTag);
-      const plusWidth = plusTag.offsetWidth + 4;
-      document.body.removeChild(plusTag);
-
-      const max = container.offsetWidth;
-      let total = 0;
-      let showCount = 0;
-
-      for (let i = 0; i < tagWidths.length; i++) {
-        const nextWidth = total + tagWidths[i];
-        const remaining = tagWidths.length - (i + 1);
-        const needPlus = remaining > 0;
-
-        if (needPlus && nextWidth + plusWidth > max) break;
-        if (!needPlus && nextWidth > max) break;
-
-        total = nextWidth;
-        showCount++;
-      }
-
-      setVisibleCount(Math.max(1, showCount));
-    };
-
-    updateVisibleTags();
-    window.addEventListener('resize', updateVisibleTags);
-    return () => window.removeEventListener('resize', updateVisibleTags);
-  }, [tags]);
-
-  const getTimeAgo = (dateStr: string): string => {
-    const now = new Date();
-    const created = new Date(dateStr);
-    const diffMin = Math.floor(
-      (now.getTime() - created.getTime()) / (1000 * 60),
-    );
-    if (diffMin < 1) return '방금 전';
-    if (diffMin < 60) return `${diffMin}분 전`;
-    const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return `${diffHr}시간 전`;
-    return `${Math.floor(diffHr / 24)}일 전`;
+  const handleProfileClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/user/${user.userId}`);
   };
+  const handleCardClick = () => navigate(`/note/${noteId}`);
 
   return (
-    <div className="w-[330px] h-[300px] bg-white rounded-xl shadow p-6 overflow-hidden flex flex-col justify-between hover:shadow-md transition cursor-pointer text-[#0B0829]">
-      {/* 헤더 */}
-      <div className="w-full">
-        <ProblemTitle
-          problemId={problem.problemId}
-          problemName={problem.problemName}
-          problemTier={problem.problemTier}
-          size={12}
-          fontSize="text-xs"
-        />
-        <div className="flex items-center justify-between text-xs">
-          <div className="text-base font-semibold mt-1">{noteTitle}</div>
-          <div className="flex items-center justify-between text-xs text-zinc-500 mt-2">
-            <UserProfile
-              nickname={user.nickname}
-              image={user.image}
-              size={20}
-            />
-          </div>
+    <div
+      className="w-[330px] h-[250px] bg-white rounded-2xl shadow p-5 overflow-hidden flex flex-col hover:shadow-md transition cursor-pointer text-[#0B0829]"
+      onClick={handleCardClick}
+    >
+      {/* Top: 문제 정보(보조) + 작성자 */}
+      <div className="flex items-center justify-between">
+        <div className="shrink min-w-0">
+          <ProblemTitle
+            problemId={problem.problemId}
+            problemName={problem.problemName}
+            problemTier={problem.problemTier}
+            size={16}
+            fontSize="text-xs"
+          />
         </div>
-        <div className="my-2 h-px bg-zinc-200" />
+        <div className="flex items-center gap-1 text-xs text-[#A0BACC]"
+          onClick={handleProfileClick}>
+          <UserProfile image={user.image} size={20} />
+          <span className="text-[#0B0829] font-medium">{user.nickname}</span>
+        </div>
       </div>
 
-      {/* 본문 */}
-      <div className="text-center  text-xl mb-2 line-clamp-2">{comment}</div>
+      {/* 노트 제목(주제) */}
+      <h3 className="mt-2 text-lg font-semibold text-[#13233D] line-clamp-1">
+        {noteTitle}
+      </h3>
+
+      <div className="mt-2 h-px bg-zinc-200" />
+
+      {/* 본문(댓글 내용) */}
+      <div className="flex-1 flex items-center justify-center px-2">
+        <p className="text-lg text-zinc-700 text-center leading-7 line-clamp-4">
+          {content}
+        </p>
+      </div>
 
       {/* Footer */}
-      <div className="text-sm space-y-2">
+      <div className="pt-2">
         <div className="border-t border-zinc-200" />
-        <div className="flex items-center justify-between w-full">
-          {/* 태그 */}
-          <div
-            ref={tagContainerRef}
-            className="flex items-center gap-1 overflow-hidden max-w-[230px]"
-          >
-            {tags.length > 0 && (
-              <>
-                {tags.slice(0, visibleCount).map((tag, idx) => (
-                  <Tag key={idx} tagName={tag} />
-                ))}
-                {visibleCount < tags.length && (
-                  <span className="text-[10px] text-zinc-400 font-medium whitespace-nowrap">
-                    +{tags.length - visibleCount}
-                  </span>
-                )}
-              </>
-            )}
-          </div>
+        <div className="mt-2 flex items-center justify-between">
+          <TagList tags={tags} maxWidth={230} />
           <div className="flex gap-2 text-xs items-center shrink-0 min-w-[64px]">
             <HeartIcon
               liked={liked}
               likeCount={currentLikeCount}
-              onClick={toggleLike}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleLike();
+              }}
             />
             <CommentIcon count={commentCount} />
           </div>
@@ -167,4 +105,4 @@ const CommentFeedCard: React.FC<CommentFeedCardProps> = ({
   );
 };
 
-export default CommentFeedCard;
+export default CommentCard;

@@ -1,5 +1,5 @@
 // 댓글 user interface
-interface User {
+export interface User {
   userId: number;
   bojId: string;
   nickname: string;
@@ -7,16 +7,15 @@ interface User {
 }
 
 // 댓글 type
-interface Comment {
+export interface CommentResponseDTO {
   commentId: number;
   user: User;
   noteId: number;
   content: string;
   createdAt: number;
-  updatedAt: number | null;
+  updatedAt?: number | null;
 }
 
-// api 내 comment 전체 목록
-export interface CommentResponse {
-  details: Comment[];
+export interface CommentApiResponse {
+  details: CommentResponseDTO[];
 }

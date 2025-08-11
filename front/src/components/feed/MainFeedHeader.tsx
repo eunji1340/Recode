@@ -1,10 +1,14 @@
 import React from 'react';
+import { getTimeAgo } from '../../utils/date';
+import { User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface MainFeedHeaderProps {
   noteTitle: string;
   nickname: string;
   image?: string;
   createdAt: string;
+  onProfileClick?: () => void;
 }
 
 /**
@@ -16,17 +20,9 @@ const MainFeedHeader: React.FC<MainFeedHeaderProps> = ({
   nickname,
   image,
   createdAt,
+  onProfileClick,
 }) => {
-  const getTimeAgo = (dateStr: string): string => {
-    const now = new Date();
-    const created = new Date(dateStr);
-    const diffMin = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
-    if (diffMin < 1) return '방금 전';
-    if (diffMin < 60) return `${diffMin}분 전`;
-    const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return `${diffHr}시간 전`;
-    return `${Math.floor(diffHr / 24)}일 전`;
-  };
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -36,14 +32,26 @@ const MainFeedHeader: React.FC<MainFeedHeaderProps> = ({
             {noteTitle}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {image ? (
-            <img src={image} alt="profile" className="w-8 h-8 rounded-full object-cover" />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
-              {nickname[0]}
-            </div>
-          )}
+        <div className="flex items-center gap-2"
+          onClick={(e) => {
+            e.stopPropagation(); // 카드 클릭 이벤트 방지
+            onProfileClick?.();
+          }}>
+          {/* 프로필 이미지 */}
+          <div className="h-8 w-8 flex-shrink-0">
+            {image && image !== "null" && image !== "" ? (
+              <img
+                src={image}
+                alt="profile"
+                className="h-full w-full rounded-full object-cover ring-2 ring-zinc-100"
+              />
+            ) : (
+              <div className="h-8 w-8 border-2 border-[#13233D] rounded-full flex items-center justify-center text-[#13233D]">
+                <User className="w-8 h-8" />
+              </div>
+            )}
+          </div>
+
           <div className="text-base font-semibold">{nickname}</div>
         </div>
       </div>

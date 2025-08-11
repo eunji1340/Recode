@@ -1,0 +1,18 @@
+# @format
+
+# monorepo-root/docker-compose.yml
+version: "3.8"
+
+services:
+  frontend:
+    container_name: front-dev
+    # fe 개발용 dockerfile
+    build:
+      context: ./front
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173" # vite 기본 포트
+    volumes:
+      # hot reload 위함
+      - ./front:/app # 로컬의 root 디렉토리(.)를 컨테이너의 /app 디렉토리와 동기화
+      # node_modules를 컨테이너 내부에 설치

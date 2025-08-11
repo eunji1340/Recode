@@ -1,20 +1,18 @@
+// UserProfile.tsx
 import React from 'react';
+import { User } from 'lucide-react';
 
 interface UserProfileProps {
-  nickname: string;
   image?: string;
   size?: number; // 기본 크기(px)
 }
 
 /**
- * 사용자 프로필 이미지 또는 닉네임 이니셜
- *
- * @param nickname - 유저 닉네임
+ * 사용자 프로필 이미지
  * @param image - 유저 프로필 이미지 (옵션)
  * @param size - 아이콘 크기 (px), 기본 20
  */
 export default function UserProfile({
-  nickname,
   image,
   size = 20,
 }: UserProfileProps) {
@@ -26,7 +24,10 @@ export default function UserProfile({
     fontSize: `${fontSize}px`,
   };
 
-  return image ? (
+  // image가 존재하고 "null" 문자열이 아닐 경우에만 img 태그 렌더링
+  const shouldRenderImage = image && image !== "null";
+
+  return shouldRenderImage ? (
     <img
       src={image}
       alt="profile"
@@ -34,11 +35,6 @@ export default function UserProfile({
       style={style}
     />
   ) : (
-    <div
-      className="rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold"
-      style={style}
-    >
-      {nickname[0]}
-    </div>
+    <User className="border-2 border-[#13233D] rounded-full flex items-center justify-center text-[#13233D]" style={style}/>
   );
 }
