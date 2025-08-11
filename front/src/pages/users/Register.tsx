@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/axiosInstance"
 import logo from "../../assets/images/logo_black.png"; 
 
 
@@ -16,7 +16,6 @@ export default function Register() {
     bio: "",
   });
 
-  const API_URL = "http://localhost:8080"; // 백엔드 서버의 기본 URL
 
   // 중복 체크 상태
   const [isDuplicate, setIsDuplicate] = useState({
@@ -47,7 +46,7 @@ export default function Register() {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/${apiEndpoint}`,{[field]: value});
+      const response = await api.post(`${apiEndpoint}`,{[field]: value});
       if (response.data.data) {
         setIsDuplicate((prev) => ({ ...prev, [field]: true }));
         alert(`${field}이(가) 이미 존재합니다.`);
@@ -72,7 +71,7 @@ export default function Register() {
       const payload = { bojId };
       console.log("백엔드로 보낼 값:", payload); // ✅ 이 줄 추가
 
-      const response = await axios.post(`${API_URL}/users/bojId_check`, { bojId });
+      const response = await api.post(`users/bojId_check`, { bojId });
       console.log(response.data)
       if (response.data.data) {
         alert("존재하는 백준 아이디입니다.");
@@ -102,7 +101,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   console.log("회원가입 데이터:", form);
   
   try {
-    const response = await axios.post(`${API_URL}/users/register`, form);
+    const response = await api.post(`/users/register`, form);
     console.log("회원가입 성공:", response.data);
     // 회원가입 성공 후 처리 (예: 로그인 페이지로 리디렉션)
     alert("회원가입이 완료되었습니다.");
