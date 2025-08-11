@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { UserProfile } from '../../../types/user';
 import InfoRow from './InfoRow';
 import Button from '../../../components/common/Button';
+import { useUserStore } from '../../../stores/userStore';
+import { updateNickname, checkNicknameDuplicate } from '../../../api/user';
+import { CgProfile } from "react-icons/cg";
+import UserImage from '../../../components/user/UserImage';
 
 interface ProfileSummaryProps {
   me: UserProfile;
@@ -14,60 +18,170 @@ export default function ProfileSummary({
   isEditing,
   onEditToggle,
 }: ProfileSummaryProps) {
+  const { userId } = useUserStore();
+
+  const [nickname, setNickname] = useState(me.nickname);
+  const [bio, setBio] = useState(me.bio);
+  const [displayNickname, setDisplayNickname] = useState(me.nickname);
+  const [isLoading, setIsLoading] = useState(false);
+  const [nicknameError, setNicknameError] = useState('');
+  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
+
+  // me 변경 시 동기화
+  useEffect(() => {
+    setNickname(me.nickname);
+    setBio(me.bio);
+    setDisplayNickname(me.nickname);
+    setNicknameError('');
+  }, [me.nickname, me.bio]);
+
+  /**
+   * 닉네임 중복 체크
+   */
+const checkNickname = async (targetNickname: string) => {
+  if (!targetNickname.trim() || targetNickname === me.nickname) {
+    setNicknameError('');
+    return true; // 사용 가능
+  }
+
+  setIsCheckingDuplicate(true);
+  try {
+    const res = await checkNicknameDuplicate(targetNickname); // { data: boolean }
+    const isDuplicate = res.data;
+
+    if (isDuplicate) {
+      setNicknameError('이미 사용 중인 닉네임입니다.');
+      return false;
+    } else {
+      setNicknameError('');
+      return true;
+    }
+  } catch (error) {
+    console.error('닉네임 중복 체크 오류:', error);
+    setNicknameError('닉네임 확인 중 오류가 발생했습니다.');
+    return false;
+  } finally {
+    setIsCheckingDuplicate(false);
+  }
+};
+
+
+  /**
+   * 저장
+   */
+  const handleSave = async () => {
+    // 저장 시에도 중복 체크
+    const isValid = await checkNickname(nickname);
+    if (!isValid) return;
+
+    if (!nickname.trim()) {
+      alert('닉네임을 입력해주세요.');
+      return;
+    }
+    if (!userId) {
+      alert('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+    if (nickname === me.nickname) {
+      onEditToggle?.();
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await updateNickname(Number(userId), nickname);
+      setDisplayNickname(nickname);
+      onEditToggle?.();
+    } catch (error) {
+      console.error('닉네임 변경 오류:', error);
+      alert('닉네임 변경에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * 취소
+   */
+  const handleCancel = () => {
+    setNickname(me.nickname);
+    setBio(me.bio);
+    setNicknameError('');
+    onEditToggle?.();
+  };
+
   return (
-    <section className="relative rounded-lg border border-zinc-200 bg-white p-6">
+    <section className="relative rounded-lg border border-zinc-200 bg-white py-6 px-10">
+      {/* 헤더 */}
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold text-zinc-800">내 프로필</h3>
-        <div className='space-x-2'>
+        <div className="space-x-2">
           {onEditToggle && (
-            <Button variant="outline" onClick={onEditToggle}>
+            <Button
+              variant="outline"
+              onClick={isEditing ? handleCancel : onEditToggle}
+              disabled={isLoading}
+            >
               {isEditing ? '취소' : '수정'}
             </Button>
           )}
           {isEditing && (
-            <Button variant="filled" onClick={onEditToggle}>
-              저장
+            <Button
+              variant="filled"
+              onClick={handleSave}
+              disabled={isLoading || isCheckingDuplicate}
+            >
+              {isLoading ? '저장 중...' : '저장'}
             </Button>
           )}
         </div>
       </div>
 
+      {/* 본문 */}
       <div className="flex items-center gap-6">
-        <div className="h-20 w-20 flex-shrink-0">
-          <img
-            src={me.image ?? '/src/assets/images/profile_default.jpg'}
-            alt="profile"
-            className="h-full w-full rounded-full object-cover ring-2 ring-zinc-100"
-          />
-        </div>
+        {/* 프로필 이미지 */}
+        <UserImage image={me.image} size={100} />
 
+        {/* 정보 */}
         <div className="flex flex-col ml-10">
+          <InfoRow label="아이디" value={me.recodeId} />
           <InfoRow
             label="닉네임"
             value={
               isEditing ? (
-                <input
-                  type="text"
-                  defaultValue={me.nickname}
-                  className="border rounded-md p-1"
-                />
+                <div className="w-full">
+                  <input
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    onBlur={(e) => checkNickname(e.target.value)} // 최신 값으로 검사
+                    className={`border rounded-md p-1 w-full ${nicknameError ? 'border-red-500' : ''}`}
+                    placeholder="닉네임을 입력하세요"
+                    disabled={isLoading}
+                  />
+                  {nicknameError && (
+                    <div className="text-sm text-red-500 mt-1">{nicknameError}</div>
+                  )}
+                </div>
               ) : (
-                me.nickname
+                displayNickname
               )
             }
           />
-          <InfoRow label="아이디" value={me.recodeId} />
           <InfoRow
             label="한마디"
             value={
               isEditing ? (
                 <input
                   type="text"
-                  defaultValue={me.bio}
-                  className="border rounded-md p-1"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  className="border rounded-md p-1 w-full"
+                  placeholder="한마디를 입력하세요"
+                  disabled={isLoading}
                 />
               ) : (
-                me.bio
+                me.bio || '등록된 한마디가 없습니다.'
               )
             }
           />

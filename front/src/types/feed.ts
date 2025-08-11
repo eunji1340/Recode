@@ -110,6 +110,41 @@ export interface ExploreFeedCardData {
 }
 
 /**
+
+ * 댓글 피드 카드 구조
+
+ */
+
+export interface CommentFeedCardData {
+  noteId: number;
+  noteTitle: string;
+  commentWriter: string;
+  content: string;
+  isPublic: boolean,
+  createdAt: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  user: {
+    userId: number;
+    bojId: string;
+    nickname: string;
+    userTier: number;
+    image?: string;
+  };
+
+  problem: {
+    problemId: number;
+    problemName: string;
+    problemTier: number;
+  };
+  tags: string[];
+  deleted: boolean;
+  liked: boolean;
+  following: boolean;
+}
+
+/**
  * 피드 정렬 옵션
  */
 export type SortOption = 'latest' | 'views' | 'likes' | 'comments';

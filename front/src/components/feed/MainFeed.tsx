@@ -39,6 +39,11 @@ const MainFeedCard: React.FC<MainFeedData> = ({
     isLiked,
     likeCount
   );
+  
+  // 유저 디테일 페이지 이동
+  const handleProfileClick = () => {
+    navigate(`/user/${user.userId}`);
+  };
 
   const handleCardClick = () => {
     navigate(`/note/${noteId}`);
@@ -53,6 +58,7 @@ const MainFeedCard: React.FC<MainFeedData> = ({
         nickname={user.nickname}
         image={user.image}
         createdAt={createdAt}
+        onProfileClick={handleProfileClick}
       />
 
       {/* Content */}

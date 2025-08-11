@@ -11,7 +11,7 @@ interface BasicInfoListProps {
 
 export default function BasicInfoList({ me, isEditing }: BasicInfoListProps) {
   return (
-    <section className="rounded-lg border border-zinc-200 bg-white p-6">
+    <section className="rounded-lg border border-zinc-200 bg-white py-6 px-10">
       <h3 className="mb-4 text-lg font-semibold text-zinc-800">기본 정보</h3>
       <div className="divide-y divide-zinc-100">
         <InfoRow

@@ -3,10 +3,12 @@ import type {
   ApiFeed,
   ExploreFeedCardData,
   MainFeedData,
+  CommentFeedCardData
 } from '@/types/feed';
 import {
   mapApiFeedCardToMainFeedData,
   mapApiFeedCardToExploreData,
+  mapApiCommentToCardData,
 } from '../utils/mapApiFeed';
 
 /**
@@ -192,4 +194,37 @@ export async function fetchLikedFeeds({
     items: apiFeeds.map(mapApiFeedCardToExploreData),
     last: res.data.data.last,
   };
+}
+
+/**
+ * 특정 유저의 전체 댓글 조회
+ */
+export async function fetchUserComments({
+  userId,
+  page,
+  size,
+}: {
+  userId: number;
+  page: number;
+  size: number;
+}): Promise<{ items: CommentFeedCardData[]; last: boolean }> {
+  try {
+    const res = await api.get(`/feeds/comments/${userId}`, {
+      params: {
+        page,
+        size,
+      },
+    });
+
+    const apiComments = res.data.data.details;
+    const lastPage = res.data.data.last;
+
+    return {
+      items: apiComments.map(mapApiCommentToCardData),
+      last: lastPage,
+    };
+  } catch (error) {
+    console.error("댓글 목록을 불러오는 데 실패했습니다.", error);
+    return { items: [], last: true };
+  }
 }

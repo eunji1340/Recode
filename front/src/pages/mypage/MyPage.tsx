@@ -1,29 +1,36 @@
-// MyPage.tsx
 import { Outlet, useParams, Navigate } from "react-router-dom";
 import { useUserStore } from "../../stores/userStore";
 import UserTabBar from "../../components/user/UserTabBar";
+import React from "react";
 
 export default function MyPage() {
-  const { userId : urlUserId } = useParams<{ userId: string }>(); // /users/:userId 경로에서 userId 가져오기
-  const authUserId = useUserStore( state => state.userId );
+  const { userId: urlUserId } = useParams<{ userId: string }>();
+  const authUserId = useUserStore(state => state.userId);
   
-  // 혹시라도 userId가 없으면 렌더링 막기
-  if (!authUserId) return null; 
-
-  // 로그인한 유저 Id 값아니면 원하는 경로로 보내기(추후 타인 디테일로)
-  if (authUserId !== urlUserId) {
-    return <Navigate to="/"/>
+  if (!authUserId) {
+    return null;
   }
+  
+  if (authUserId !== urlUserId) {
+    return <Navigate to="/" />;
+  }
+
   return (
-    <div className="py-8 max-w-5xl mx-auto">
-      <h1 className="text-4xl font-bold mb-5">마이페이지</h1>
+    <div className="min-h-screen bg-[#F8F9FA] p-4 sm:p-6 md:p-8 text-[#0B0829]">
+      <div className="max-w-screen-xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-[#13233D]">
+          마이페이지
+        </h1>
 
-      {/* 공통 탭 바 */}
-      <UserTabBar userId={urlUserId} />
+        {/* 탭 바 */}
+        <div className="overflow-hidden mb-2">
+          <UserTabBar userId={urlUserId} />
+        </div>
 
-      {/* 하위 라우트 (대시보드/오답노트/설정 등) */}
-      <div className="mt-3">
-        <Outlet />
+        {/* 하위 라우트 내용 */}
+        <div className="">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import HeartIcon from '../common/HeartIcon';
 import CommentIcon from '../common/CommentIcon';
 import TagList from '../common/TagList';
 import LanguageIcon from '../common/LanguageIcon';
-import UserProfile from '../user/UserProfile';
+import UserProfile from '../user/UserImage';
 import { getTimeAgo } from '../../utils/date'
 import { useLike } from '../../hooks/useLike';
 import { useFollow } from '../../hooks/useFollow';
@@ -50,6 +50,11 @@ const FeedCard: React.FC<ExploreFeedCardData> = (props) => {
 
   const navigate = useNavigate();
 
+  const handleProfileClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/user/${user.userId}`);
+  };
+
   const handleCardClick = () => {
     navigate(`/note/${props.noteId}`);
   };
@@ -70,9 +75,9 @@ const FeedCard: React.FC<ExploreFeedCardData> = (props) => {
         <div className="flex items-center justify-between text-xs text-[#A0BACC]">
           <span>{getTimeAgo(createdAt)}</span>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1"
+              onClick={handleProfileClick}>
               <UserProfile
-                nickname={user.nickname}
                 image={user.image}
                 size={20}
               />
