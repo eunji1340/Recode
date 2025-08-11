@@ -19,8 +19,14 @@ export default function StatsSection({ totalCount, tagCounts, nickname }: Props)
   const sortedTags = [...tagCounts].sort((a, b) => b.count - a.count);
   const isScrollable = sortedTags.length > 5;
   
-  const mostFrequent = sortedTags[0];
-  const leastFrequent = sortedTags[sortedTags.length - 1];
+// 가장 많이 작성한 태그들
+const maxCount = sortedTags.length > 0 ? sortedTags[0].count : 0;
+const mostFrequentTags = sortedTags.filter(t => t.count === maxCount);
+
+// 가장 적게 작성한 태그들
+const minCount = sortedTags.length > 0 ? sortedTags[sortedTags.length - 1].count : 0;
+const leastFrequentTags = sortedTags.filter(t => t.count === minCount);
+
   return (
     <div className="p-6 bg-white rounded-2xl shadow-md">
       {totalCount === 0 ? (
@@ -96,10 +102,10 @@ export default function StatsSection({ totalCount, tagCounts, nickname }: Props)
                  {nickname}님은
               </h3>
               <div>
-                # { mostFrequent.tagName } 유형의 오답노트를 가장 많이 작성했어요.
+                # {mostFrequentTags.map(t => t.tagName).join(', ')} 유형의 오답노트를 가장 많이 작성했어요.
               </div>
               <div>
-                # { leastFrequent.tagName } 유형의 오답노트를 가장 적게 작성했어요.
+                # {leastFrequentTags.map(t => t.tagName).join(', ')} 유형의 오답노트를 가장 적게 작성했어요.
               </div>
             </div>
             

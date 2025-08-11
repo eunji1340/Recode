@@ -1,5 +1,4 @@
 // src/pages/mypage/FollowModal.tsx
-import React from 'react';
 import { tierImageMap } from '../../../data/tierMap';
 
 export interface FollowDetail {

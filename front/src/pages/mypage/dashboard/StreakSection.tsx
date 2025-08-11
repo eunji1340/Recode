@@ -1,6 +1,5 @@
 // src/pages/mypage/StreakSection.tsx
 // src/pages/mypage/dashboard/StreakSection.tsx
-import React from 'react';
 import { toKey } from '../../../utils/date';
 
 type WeekItem = { date: Date; count: number };

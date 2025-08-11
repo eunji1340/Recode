@@ -1,5 +1,4 @@
 // src/pages/mypage/dashboard/StreakCalendarModal.tsx
-import React from 'react';
 import { monthMatrix, toKey } from '../../../utils/date';
 
 interface Props {

@@ -1,5 +1,4 @@
 // src/pages/mypage/ProfileHeader.tsx
-import React from 'react';
 import profile_img from '../../../assets/images/profile_derault.jpg';
 import { tierImageMap } from '../../../data/tierMap';
 

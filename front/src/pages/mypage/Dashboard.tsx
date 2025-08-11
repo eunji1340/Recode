@@ -1,5 +1,5 @@
 // src/pages/mypage/dashboard/Dashboard.tsx
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api/axiosInstance';
 import ProfileHeader from './dashboard/ProfileHeader';
@@ -7,7 +7,7 @@ import FollowModal from './dashboard/FollowModal';
 import StatsSection from './dashboard/StatsSection';
 import StreakSection from './dashboard/StreakSection';
 import StreakCalendarModal from './dashboard/StreakCalendarModal';
-import { getWeekDays, toKey, buildCountMap, addMonths, startOfMonth, addDays } from '../../utils/date';
+import { getWeekDays, toKey, buildCountMap, addMonths, startOfMonth } from '../../utils/date';
 
 
 
