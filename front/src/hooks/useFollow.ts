@@ -29,5 +29,6 @@ export function useFollow(initialFollowing: boolean, targetUserId: number) {
   return {
     isFollowing,
     toggleFollow,
+    setIsFollowing,
   };
 }

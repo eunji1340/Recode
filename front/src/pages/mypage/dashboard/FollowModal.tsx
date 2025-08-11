@@ -2,12 +2,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tierImageMap } from '../../../data/tierMap';
+import FollowButton from '../../../components/common/FollowButton';
 
 export interface FollowDetail {
   userId: number;
   bojId: string;
   nickname: string;
   userTier: number;
+  isFollowing?: boolean;
+  onToggleFollow?: (userId: number) => void;
 }
 
 interface Props {

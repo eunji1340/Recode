@@ -1,27 +1,23 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { useUserStore } from '../stores/userStore';
 import ProfileHeader from './mypage/dashboard/ProfileHeader';
 import SearchBox from '../components/search/SearchBox';
 import FeedCard from '../components/feed/FeedCard';
 import EmptyState from '../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../hooks/useInfiniteFeeds';
+import { useFollow } from '../hooks/useFollow';
 import { fetchUserFeeds } from '../api/feed';
+import { fetchAllUserDashboardData, fetchFollowDetails } from '../api/user';
 import type { UserDashboardData } from '../api/user';
-import {
-  fetchAllUserDashboardData,
-  fetchFollowDetails,
-} from '../api/user';
 import type { ExploreFeedCardData, SortOption } from '../types/feed';
 import type { FollowDetail } from './mypage/dashboard/FollowModal';
 import FollowModal from './mypage/dashboard/FollowModal';
 
-/**
- * 타인 상세 페이지
- * - 프로필 영역 + 팔로우 모달
- * - 검색/정렬 + 해당 유저의 피드 목록
- */
 export default function UserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
+  const myUserId = useUserStore(state => state.userId);
+
   const [user, setUser] = useState<UserDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,16 +33,30 @@ export default function UserDetailPage() {
   const [tagForQuery, setTagForQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('latest');
 
-  // 유저 정보 로드
+  const { isFollowing, toggleFollow, setIsFollowing } = useFollow(false, Number(userId));
+
+  // 유저 정보 + 팔로잉 여부 로드
   useEffect(() => {
     if (!userId) return;
+
     setLoading(true);
     setError(null);
+
     fetchAllUserDashboardData(userId)
       .then(userData => setUser(userData))
       .catch(() => setError('유저 정보를 불러오는 중 오류가 발생했습니다.'))
       .finally(() => setLoading(false));
-  }, [userId]);
+
+    // 내 팔로잉 목록 가져와서 userId 포함 여부 확인
+    if (myUserId && Number(myUserId) !== Number(userId)) {
+    fetchFollowDetails(String(myUserId), 'followings')
+      .then(list => {
+        const exists = list.some(f => f.userId === Number(userId));
+        setIsFollowing(exists);
+      })
+      .catch(() => setIsFollowing(false));
+  }
+  }, [userId, myUserId, setIsFollowing]);
 
   // 팔로우 모달 열릴 때 상세 정보 로드
   const handleOpenFollowModal = useCallback(async (type: 'followers' | 'followings') => {
@@ -74,9 +84,7 @@ export default function UserDetailPage() {
   const {
     dataList: feeds,
     isLoading: feedsLoading,
-    error: feedError,
     observerRef,
-    retry,
   } = useInfiniteFeeds<ExploreFeedCardData>(
     (params) => fetchUserFeeds({ ...params, userId: Number(userId) }),
     searchParams,
@@ -87,11 +95,12 @@ export default function UserDetailPage() {
   if (error) return <div>{error}</div>;
   if (!user) return null;
 
+  const isMyPage = Number(myUserId) === Number(userId);
+
   return (
     <main className="min-h-screen bg-[#F8F9FA] p-4 sm:p-6 md:p-8 text-[#0B0829]">
       <div className="max-w-screen-xl mx-auto space-y-6">
         {/* 프로필 헤더 */}
-
         <ProfileHeader
           nickname={user.nickname}
           bojId={user.bojId}
@@ -100,9 +109,10 @@ export default function UserDetailPage() {
           image={user.image}
           followerCount={user.followerCount}
           followingCount={user.followingCount}
+          isFollowing={!isMyPage && isFollowing} // 내 페이지면 버튼 안보임
+          onToggleFollow={!isMyPage ? toggleFollow : undefined}
           onOpenModal={handleOpenFollowModal}
         />
-
 
         {/* 팔로우 모달 */}
         <FollowModal
@@ -130,6 +140,7 @@ export default function UserDetailPage() {
           sortBy={sortBy}
           onSortChange={setSortBy}
         />
+
         {feedsLoading && feeds.length === 0 ? (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8400] mx-auto mb-4"></div>
