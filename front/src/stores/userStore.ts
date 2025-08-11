@@ -1,27 +1,41 @@
+// src/stores/userStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { jwtDecode } from 'jwt-decode';
-import api, { REISSUE_PATH } from '../api/axiosInstance';
+import axios from 'axios';
 
-interface JwtPayload { exp: number; [k: string]: any }
+const REISSUE_PATH = '/users/reissue';
+
+interface JwtPayload {
+  exp: number; userId?: string; nickname?: string;
+}
 
 interface UserState {
-  token: string | null; // access only
+  token: string | null;
   isAuthenticated: boolean;
   userId: string | null;
   nickname: string | null;
 
-  isRefreshing: boolean;
-  refreshPromise: Promise<string> | null;
-
   setToken: (token: string) => void;
   clearToken: () => void;
-  checkAuth: () => void;
   setUserInfo: (userId: number | string, nickname: string) => void;
 
-  getAccessExp: () => number | null;
-  refreshTokens: () => Promise<string>;
+  // 이미 있으시면 유지
+  getAccessExp?: () => number | null;
+  refreshTokens?: () => Promise<string>;
+  refreshFailed?: boolean;
+
+  // [추가] 토큰만으로 현재 인증 상태를 동기 체크
+  checkAuth: () => boolean;
 }
+
+// 로그인/재발급 전용 인스턴스 (이미 있으면 유지)
+const authApi = axios.create({
+  baseURL: import.meta.env.VITE_REST_API_URL,
+  withCredentials: true,
+});
+
+let refreshing: Promise<string> | null = null;
 
 export const useUserStore = create(
   persist<UserState>(
@@ -30,32 +44,14 @@ export const useUserStore = create(
       isAuthenticated: false,
       userId: null,
       nickname: null,
-
-      isRefreshing: false,
-      refreshPromise: null,
+      refreshFailed: false,
 
       setToken: (token) => {
-        try { jwtDecode<JwtPayload>(token); } catch {}
         set({ token, isAuthenticated: true });
       },
-
       clearToken: () => {
-        set({
-          token: null,
-          isAuthenticated: false,
-          userId: null,
-          nickname: null,
-          isRefreshing: false,
-          refreshPromise: null,
-        });
+        set({ token: null, isAuthenticated: false, userId: null, nickname: null });
       },
-
-      checkAuth: () => {
-        const exp = get().getAccessExp();
-        if (exp && exp > Date.now() / 1000) set({ isAuthenticated: true });
-        else get().clearToken();
-      },
-
       setUserInfo: (userId, nickname) => {
         set({ userId: String(userId), nickname });
       },
@@ -65,36 +61,51 @@ export const useUserStore = create(
         if (!t) return null;
         try {
           const { exp } = jwtDecode<JwtPayload>(t);
-          return typeof exp === 'number' ? exp : null;
-        } catch { return null; }
+          return exp ?? null;
+        } catch {
+          return null;
+        }
       },
 
-      // 쿠키 기반 재발급: api 인스턴스 사용 (요청 인터셉터에서 reissue 우회)
       refreshTokens: async () => {
-        const state = get();
-        if (state.isRefreshing && state.refreshPromise) {
-          return state.refreshPromise; // 단일 비행
+        const { refreshFailed } = get();
+        if (refreshFailed) return Promise.reject(new Error('refresh already failed'));
+        if (refreshing) return refreshing;
+
+        refreshing = authApi.post(REISSUE_PATH, null)
+          .then((res) => {
+            const data = res.data?.data ?? res.data;
+            const newAccess = data?.accessToken;
+            if (!newAccess) throw new Error('no accessToken');
+            set({ token: newAccess, isAuthenticated: true, refreshFailed: false });
+            return newAccess;
+          })
+          .catch((e) => {
+            set({ refreshFailed: true });
+            get().clearToken();
+            throw e;
+          })
+          .finally(() => { refreshing = null; });
+
+        return refreshing;
+      },
+
+
+      checkAuth: () => {
+        const t = get().token;
+        if (!t) { set({ isAuthenticated: false }); return false; }
+        try {
+          const { exp } = jwtDecode<JwtPayload>(t);
+          const now = Math.floor(Date.now() / 1000);
+          const ok = typeof exp === 'number' ? exp > now : false;
+          set({ isAuthenticated: ok });
+          return ok;
+        } catch {
+          set({ isAuthenticated: false });
+          return false;
         }
-
-        const doRefresh = async () => {
-          const res = await api.post(REISSUE_PATH, null, {
-            withCredentials: true,
-            headers: {}, // 방어: Authorization 섞임 방지
-          });
-          const newAccess = res.data?.data?.accessToken ?? res.data?.accessToken ?? null;
-          if (!newAccess) throw new Error('No access token in reissue response');
-          get().setToken(newAccess);
-          return newAccess as string;
-        };
-
-        const p = doRefresh()
-          .catch((e) => { get().clearToken(); throw e; })
-          .finally(() => set({ isRefreshing: false, refreshPromise: null }));
-
-        set({ isRefreshing: true, refreshPromise: p });
-        return p;
       },
     }),
-    { name: 'user-storage' }
+    { name: 'user-store' }
   )
 );
