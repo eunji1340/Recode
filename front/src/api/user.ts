@@ -54,6 +54,48 @@ export const checkNicknameDuplicate = async (nickname: string) => {
 };
 
 /**
+ * 비밀번호 변경 API
+ * @param userId - 변경할 유저의 ID
+ * @param currPassword - 현재 비밀번호
+ * @param newPassword - 새 비밀번호
+ */
+export const updatePassword = async (
+  userId: number,
+  currPassword: string,
+  newPassword: string
+): Promise<void> => {
+  try {
+    await api.patch(`/users/${userId}/password`, {
+      currPassword,
+      newPassword,
+    });
+  } catch (error) {
+    console.error('비밀번호 변경 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 비밀번호 변경 API
+ * @param userId - 변경할 유저의 ID
+ * @param currPassword - 현재 비밀번호
+ * @param newPassword - 새 비밀번호
+ */
+export const updateEmail = async (
+  userId: number,
+  email: string,
+): Promise<void> => {
+  try {
+    await api.patch(`/users/${userId}/email`, {
+      email
+    });
+  } catch (error) {
+    console.error('이메일 변경 실패:', error);
+    throw error;
+  }
+};
+
+/**
  * 특정 사용자의 프로필 정보를 가져옵니다.
  * @param userId - 조회할 사용자의 ID
  * @returns 사용자의 프로필 정보
@@ -103,9 +145,12 @@ export const fetchFollowDetails = async (
   userId: string,
   tab: 'followers' | 'followings'
 ): Promise<FollowDetail[]> => {
-  const { data } = await api.get<{ data: { details: FollowDetail[] } }>(
-    `/follow/${tab}?userId=${userId}`
-  );
+  const endpoint =
+    tab === 'followers'
+      ? `/follow/followers/${userId}`
+      : `/follow/followings/${userId}`;
+
+  const { data } = await api.get<{ data: { details: FollowDetail[] } }>(endpoint);
   return data.data.details;
 };
 

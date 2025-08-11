@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import ProfileSummary from '../mypage/settings/ProfileSummary';
 import BasicInfoList from '../mypage/settings/BasicInfoList';
 import Button from '../../components/common/Button';
-import { fetchMyInfo, deleteUser } from '../../api/user';
+import { fetchMyInfo, deleteUser, updatePassword, updateEmail } from '../../api/user';
 import type { UserProfile } from '../../types/user';
 import { useUserStore } from '../../stores/userStore';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import PasswordModal from './settings/PasswordModal';
 
 export default function SettingsPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -18,7 +19,10 @@ export default function SettingsPage() {
   const navigate = useNavigate();
 
   const [isProfileEditing, setIsProfileEditing] = useState(false);
-  const [isInfoEditing] = useState(false); // 기본 정보 수정 여부
+  const [emailValue, setEmailValue] = useState(''); // 이메일 입력 필드 상태 추가
+  
+  // 비밀번호 변경 상태
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   /** 사용자 정보 로드 */
   const loadMyInfo = useCallback(async () => {
@@ -32,6 +36,7 @@ export default function SettingsPage() {
       setError(null);
       const myInfo = await fetchMyInfo();
       setProfile(myInfo);
+      setEmailValue(myInfo.email); // 로드 시 이메일 상태 초기화
     } catch (err) {
       console.error(err);
       setError('정보를 불러오는데 실패했습니다.');
@@ -56,6 +61,20 @@ export default function SettingsPage() {
       setError('회원 탈퇴에 실패했습니다.');
     } finally {
       setIsModalOpen(false);
+    }
+  };
+
+  /** 이메일 변경 핸들러 */
+  const handleEmailSave = async () => {
+    if (!userId || !emailValue) return;
+    try {
+      // TODO: 여기서 중복 검사 로직을 추가할 수 있습니다.
+      await updateEmail(Number(userId), emailValue);
+      alert('이메일이 성공적으로 변경되었습니다.');
+      setProfile(prev => prev ? { ...prev, email: emailValue } : null);
+      setIsProfileEditing(false); // 변경 후 수정 모드 종료
+    } catch (err) {
+      alert('이메일 변경에 실패했습니다.');
     }
   };
 
@@ -94,11 +113,31 @@ export default function SettingsPage() {
       <ProfileSummary
         me={profile}
         isEditing={isProfileEditing}
-        onEditToggle={() => setIsProfileEditing(!isProfileEditing)}
+        onEditToggle={() => {
+          setIsProfileEditing(!isProfileEditing);
+          if (isProfileEditing) {
+            // 수정 모드 종료 시 emailValue를 원래 값으로 되돌립니다.
+            setEmailValue(profile.email);
+          }
+        }}
       />
 
       {/* 기본 정보 */}
-      <BasicInfoList me={profile} isEditing={isInfoEditing} />
+      <BasicInfoList
+        me={profile}
+        isEditing={isProfileEditing}
+        onPasswordChangeClick={() => setIsPasswordModalOpen(true)}
+        onEmailValue={emailValue}
+        onEmailChange={(e) => setEmailValue(e.target.value)}
+        onEmailSave={handleEmailSave}
+      />
+
+      {/* 비밀번호 변경 모달 */}
+      <PasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        onSubmit={(curr, next) => updatePassword(Number(userId), curr, next)}
+      />
 
       {/* 회원탈퇴 버튼 */}
       <div className="flex justify-end">

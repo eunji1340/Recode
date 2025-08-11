@@ -120,7 +120,7 @@ export default function ExplorePage() {
             <p className="text-[#13233D]/70">피드를 불러오는 중...</p>
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-8">
+          <div className="max-w-[1200px] mx-auto space-y-6">
             {sortedFeeds.length === 0 ? (
               <EmptyState
                 title="표시할 피드가 없습니다"
