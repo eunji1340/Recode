@@ -1,22 +1,26 @@
-// src/api/axiosInstance.ts
 import axios, { AxiosError } from 'axios';
 import { useUserStore } from '../stores/userStore';
 
 const REISSUE_PATH = '/users/reissue';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_REST_API_URL, // API 기본 경로
-  withCredentials: true, // ★ HttpOnly 쿠키 전송
+  baseURL: import.meta.env.VITE_REST_API_URL, // env 기반
+  withCredentials: true, // 쿠키 전송
 });
 
-// 무한루프 방지(요청 단위 1회만 재시도)
 const retriedOnce = new WeakSet<object>();
+const isAuthExpired = (s?: number) => s === 401 || s === 403 || s === 419;
 
-// 요청 전: 만료 임박 선제 갱신 + Authorization 주입
+// 요청 인터셉터: reissue 우회 + 만료 임박 선제 갱신 + Authorization 주입
 api.interceptors.request.use(async (config) => {
+  const url = (config.url || '').toString();
+  if (url.includes(REISSUE_PATH)) {
+    // reissue 호출은 절대 손대지 않음(순환/헤더오염 방지)
+    return config;
+  }
+
   const { token, getAccessExp, refreshTokens } = useUserStore.getState();
 
-  // 만료 임박(30초) 시 선제 갱신
   const exp = getAccessExp?.();
   if (exp) {
     const now = Math.floor(Date.now() / 1000);
@@ -27,12 +31,11 @@ api.interceptors.request.use(async (config) => {
         (config.headers as any).Authorization = `Bearer ${newAccess}`;
         return config;
       } catch {
-        // 실패 시 응답에서 401 처리
+        // 실패 시 응답 인터셉터에서 처리
       }
     }
   }
 
-  // 기존 토큰 주입
   if (token) {
     (config.headers ??= {} as any);
     (config.headers as any).Authorization = `Bearer ${token}`;
@@ -40,24 +43,21 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// 응답: 401 → 재발급 → 1회 재시도
+// 응답 인터셉터: 만료(401/403/419) → reissue → 1회 재시도
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
     const original: any = error.config;
+    const status = error?.response?.status;
 
-    if (!original || error.response?.status !== 401) {
-      throw error;
-    }
+    if (!original || !isAuthExpired(status)) throw error;
 
-    // 재발급 요청 자체가 401이면 중단
     const urlPath = (original.url || '').toString();
     if (urlPath.includes(REISSUE_PATH)) {
       useUserStore.getState().clearToken();
       throw error;
     }
 
-    // 이미 재시도한 요청이면 중단
     if (retriedOnce.has(original)) {
       useUserStore.getState().clearToken();
       throw error;
@@ -70,7 +70,7 @@ api.interceptors.response.use(
       (original.headers ??= {} as any);
       (original.headers as any).Authorization = `Bearer ${newAccess}`;
 
-      return api(original); // 1회 재시도
+      return api(original);
     } catch (e) {
       useUserStore.getState().clearToken();
       throw e;
@@ -79,3 +79,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+export { REISSUE_PATH };

@@ -1,21 +1,16 @@
-// src/stores/userStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { jwtDecode } from 'jwt-decode';
-import api from '../api/axiosInstance'
+import api, { REISSUE_PATH } from '../api/axiosInstance';
 
-interface JwtPayload {
-  exp: number; // seconds
-  [k: string]: any;
-}
+interface JwtPayload { exp: number; [k: string]: any }
 
 interface UserState {
-  token: string | null;              // access only
+  token: string | null; // access only
   isAuthenticated: boolean;
   userId: string | null;
   nickname: string | null;
 
-  // 동시 재발급 방지
   isRefreshing: boolean;
   refreshPromise: Promise<string> | null;
 
@@ -57,11 +52,8 @@ export const useUserStore = create(
 
       checkAuth: () => {
         const exp = get().getAccessExp();
-        if (exp && exp > Date.now() / 1000) {
-          set({ isAuthenticated: true });
-        } else {
-          get().clearToken();
-        }
+        if (exp && exp > Date.now() / 1000) set({ isAuthenticated: true });
+        else get().clearToken();
       },
 
       setUserInfo: (userId, nickname) => {
@@ -74,43 +66,35 @@ export const useUserStore = create(
         try {
           const { exp } = jwtDecode<JwtPayload>(t);
           return typeof exp === 'number' ? exp : null;
-        } catch {
-          return null;
-        }
+        } catch { return null; }
       },
 
-      //  쿠키 기반 재발급
+      // 쿠키 기반 재발급: api 인스턴스 사용 (요청 인터셉터에서 reissue 우회)
       refreshTokens: async () => {
         const state = get();
         if (state.isRefreshing && state.refreshPromise) {
-          return state.refreshPromise; // 단일 비행 (이미 진행 중이면 그 결과를 함께 사용)
+          return state.refreshPromise; // 단일 비행
         }
 
         const doRefresh = async () => {
-          // api 인스턴스를 사용하면 baseURL이 env에 따라 자동 적용됨
-          const res = await api.post('/users/reissue', null, {
-            withCredentials: true, // 쿠키 전송
+          const res = await api.post(REISSUE_PATH, null, {
+            withCredentials: true,
+            headers: {}, // 방어: Authorization 섞임 방지
           });
-;
-          const newAccess =
-            res.data?.data?.accessToken ?? res.data?.accessToken ?? null;
+          const newAccess = res.data?.data?.accessToken ?? res.data?.accessToken ?? null;
           if (!newAccess) throw new Error('No access token in reissue response');
-
           get().setToken(newAccess);
           return newAccess as string;
         };
 
         const p = doRefresh()
-          .catch((e) => {
-            get().clearToken();
-            throw e;
-          })
+          .catch((e) => { get().clearToken(); throw e; })
           .finally(() => set({ isRefreshing: false, refreshPromise: null }));
 
         set({ isRefreshing: true, refreshPromise: p });
         return p;
       },
     }),
-    { name: 'user-storage' },
-  ),
+    { name: 'user-storage' }
+  )
 );
