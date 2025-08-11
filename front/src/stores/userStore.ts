@@ -1,22 +1,26 @@
-// src/stores/userStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { jwtDecode } from 'jwt-decode';
+import api, { REISSUE_PATH } from '../api/axiosInstance';
 
-interface JwtPayload {
-  exp: number;
-}
+interface JwtPayload { exp: number; [k: string]: any }
 
 interface UserState {
-  token: string | null;
+  token: string | null; // access only
   isAuthenticated: boolean;
   userId: string | null;
   nickname: string | null;
+
+  isRefreshing: boolean;
+  refreshPromise: Promise<string> | null;
+
   setToken: (token: string) => void;
   clearToken: () => void;
   checkAuth: () => void;
+  setUserInfo: (userId: number | string, nickname: string) => void;
 
-  setUserInfo: (userId: number, nickname: string) => void;
+  getAccessExp: () => number | null;
+  refreshTokens: () => Promise<string>;
 }
 
 export const useUserStore = create(
@@ -26,43 +30,71 @@ export const useUserStore = create(
       isAuthenticated: false,
       userId: null,
       nickname: null,
-      // 로그인 시 토큰 저장 & 인증 상태 업데이트
+
+      isRefreshing: false,
+      refreshPromise: null,
 
       setToken: (token) => {
-        const { exp } = jwtDecode<JwtPayload>(token);
+        try { jwtDecode<JwtPayload>(token); } catch {}
         set({ token, isAuthenticated: true });
       },
 
-      // 로그아웃 시 토큰 제거 & 인증 상태 업데이트
       clearToken: () => {
         set({
           token: null,
           isAuthenticated: false,
           userId: null,
           nickname: null,
+          isRefreshing: false,
+          refreshPromise: null,
         });
       },
 
-      // 토큰 유효성 검사: 만료 시간(exp) 비교
       checkAuth: () => {
-        const token = get().token;
-        if (!token) return set({ isAuthenticated: false });
-        try {
-          const { exp } = jwtDecode<JwtPayload>(token);
-          if (exp > Date.now() / 1000) {
-            set({ isAuthenticated: true });
-          } else {
-            get().clearToken();
-          }
-        } catch {
-          get().clearToken();
-        }
+        const exp = get().getAccessExp();
+        if (exp && exp > Date.now() / 1000) set({ isAuthenticated: true });
+        else get().clearToken();
       },
+
       setUserInfo: (userId, nickname) => {
         set({ userId: String(userId), nickname });
       },
-    }),
-    { name: 'user-storage' },
-  ),
-);
 
+      getAccessExp: () => {
+        const t = get().token;
+        if (!t) return null;
+        try {
+          const { exp } = jwtDecode<JwtPayload>(t);
+          return typeof exp === 'number' ? exp : null;
+        } catch { return null; }
+      },
+
+      // 쿠키 기반 재발급: api 인스턴스 사용 (요청 인터셉터에서 reissue 우회)
+      refreshTokens: async () => {
+        const state = get();
+        if (state.isRefreshing && state.refreshPromise) {
+          return state.refreshPromise; // 단일 비행
+        }
+
+        const doRefresh = async () => {
+          const res = await api.post(REISSUE_PATH, null, {
+            withCredentials: true,
+            headers: {}, // 방어: Authorization 섞임 방지
+          });
+          const newAccess = res.data?.data?.accessToken ?? res.data?.accessToken ?? null;
+          if (!newAccess) throw new Error('No access token in reissue response');
+          get().setToken(newAccess);
+          return newAccess as string;
+        };
+
+        const p = doRefresh()
+          .catch((e) => { get().clearToken(); throw e; })
+          .finally(() => set({ isRefreshing: false, refreshPromise: null }));
+
+        set({ isRefreshing: true, refreshPromise: p });
+        return p;
+      },
+    }),
+    { name: 'user-storage' }
+  )
+);
