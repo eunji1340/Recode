@@ -8,7 +8,7 @@ export default function MyPage() {
   const authUserId = useUserStore(state => state.userId);
   
   if (!authUserId) {
-    return null;
+    return <Navigate to="/users/login" />;
   }
   
   if (authUserId !== urlUserId) {

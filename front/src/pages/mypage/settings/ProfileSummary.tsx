@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { UserProfile } from '../../../types/user';
 import InfoRow from './InfoRow';
 import Button from '../../../components/common/Button';
 import { useUserStore } from '../../../stores/userStore';
 import { updateNickname, checkNicknameDuplicate } from '../../../api/user';
-import { CgProfile } from "react-icons/cg";
 import UserImage from '../../../components/user/UserImage';
 
 interface ProfileSummaryProps {
