@@ -2,12 +2,14 @@
 import React from 'react';
 import profile_img from '../../../assets/images/profile_derault.jpg';
 import { tierImageMap } from '../../../data/tierMap';
+import UserProfile from '../../../components/user/UserImage';
 
 interface Props {
   nickname: string;
   bojId: string;
   bio: string;
   userTier: number;
+  image?: string;
   followerCount: number;
   followingCount: number;
   onOpenModal: (type: 'followers' | 'followings') => void;
@@ -18,6 +20,7 @@ export default function ProfileHeader({
   bojId,
   bio,
   userTier,
+  image,
   followerCount,
   followingCount,
   onOpenModal,
@@ -25,7 +28,8 @@ export default function ProfileHeader({
   return (
     <div className="bg-white rounded-lg shadow p-6 flex items-center justify-between">
       <div className="flex items-center space-x-4">
-        <img src={profile_img} alt="프로필" className="w-20 h-20 rounded-full bg-gray-100" />
+        <UserProfile image={image} size={80}/>
+        {/* <img src={profile_img} alt="프로필" className="w-20 h-20 rounded-full bg-gray-100" /> */}
         <img src={tierImageMap[userTier]} alt={`티어 ${userTier}`} className="w-5 h-6" />
         <div>
           <div className="flex items-baseline space-x-2">

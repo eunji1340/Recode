@@ -1,4 +1,4 @@
-import type { ApiFeed, ExploreFeedCardData, MainFeedData } from '../types/feed';
+import type { ApiFeed, ExploreFeedCardData, MainFeedData, CommentFeedCardData } from '../types/feed';
 
 /**
  * ApiFeedCard → ExploreFeedCardData로 변환하는 매핑 함수
@@ -77,3 +77,26 @@ export function mapApiFeedCardToMainFeedData(apiFeed: ApiFeed): MainFeedData {
     following: apiFeed.following,
   };
 }
+
+/**
+ * API 응답을 CommentFeedCardData 타입으로 매핑하는 함수
+ */
+export function mapApiCommentToCardData(apiComment: any): CommentFeedCardData {
+  return {
+    noteId: apiComment.noteId,
+    noteTitle: apiComment.noteTitle,
+    commentWriter: apiComment.commentWriter,
+    content: apiComment.content,
+    isPublic: apiComment.isPublic,
+    createdAt: apiComment.createdAt,
+    viewCount: apiComment.viewCount,
+    likeCount: apiComment.likeCount,
+    commentCount: apiComment.commentCount,
+    user: apiComment.user,
+    problem: apiComment.problem,
+    tags: apiComment.tags.map((tag: { tagName: string }) => tag.tagName), // 태그 배열을 문자열 배열로 변환
+    deleted: apiComment.deleted,
+    liked: apiComment.liked,
+    following: apiComment.following,
+  };
+};

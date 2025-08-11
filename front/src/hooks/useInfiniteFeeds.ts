@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 type InfiniteParams = { page: number; size: number } & Record<string, any>;
 
@@ -18,52 +18,101 @@ export function useInfiniteFeeds<T>(
   const [page, setPage] = useState(0);
   const [isLastPage, setIsLastPage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const observerInstance = useRef<IntersectionObserver | null>(null);
 
-  const loadPage = async (targetPage: number) => {
-    setIsLoading(true);
-    try {
-      const res = await fetchFn({ page: targetPage, size: pageSize, ...searchParams });
-      if (targetPage === 0) {
-        setDataList(res.items);
-      } else {
-        const existingIds = new Set(dataList.map((item: any) => item.noteId));
-        const newItems = res.items.filter((item: any) => !existingIds.has(item.noteId));
-        setDataList((prev) => [...prev, ...newItems]);
+  /**
+   * 특정 페이지의 데이터를 로드하는 함수
+   */
+  const loadPage = useCallback(
+    async (targetPage: number) => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const res = await fetchFn({ page: targetPage, size: pageSize, ...searchParams });
+
+        if (targetPage === 0) {
+          setDataList(res.items);
+        } else {
+          const existingIds = new Set((dataList as any[]).map((item) => item.noteId));
+          const newItems = res.items.filter((item: any) => !existingIds.has(item.noteId));
+          setDataList((prev) => [...prev, ...newItems]);
+        }
+
+        setIsLastPage(res.last);
+        setPage(targetPage + 1);
+      } catch (e) {
+        console.error('피드 로딩 실패:', e);
+        setError(e instanceof Error ? e.message : '데이터를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
       }
-      setIsLastPage(res.last);
-      setPage(targetPage + 1);
-    } catch (e) {
-      console.error('피드 로딩 실패:', e);
-    } finally {
-      setIsLoading(false);
+    },
+    [fetchFn, pageSize, searchParams, dataList]
+  );
+
+  /**
+   * 옵저버 연결
+   */
+  const attachObserver = useCallback(() => {
+    if (isLastPage || isLoading || error) return;
+
+    // 기존 옵저버 정리
+    if (observerInstance.current) {
+      observerInstance.current.disconnect();
     }
-  };
 
-  useEffect(() => {
-    loadPage(0);
-  }, [JSON.stringify(searchParams)]);
-
-  useEffect(() => {
-    if (isLastPage || isLoading) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
+    observerInstance.current = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         loadPage(page);
       }
     });
 
     const el = observerRef.current;
-    if (el) observer.observe(el);
+    if (el) observerInstance.current.observe(el);
+  }, [isLastPage, isLoading, error, page, loadPage]);
+
+  /**
+   * 에러 상태 초기화 후 첫 페이지 로드
+   */
+  const retry = () => {
+    setError(null);
+    loadPage(0);
+  };
+
+  /**
+   * searchParams 변경 시 첫 페이지부터 로드 + 옵저버 재연결
+   */
+  useEffect(() => {
+    if (observerInstance.current) {
+      observerInstance.current.disconnect();
+    }
+    setPage(0);
+    setIsLastPage(false);
+    setDataList([]);
+    loadPage(0).then(() => {
+      attachObserver();
+    });
+  }, [JSON.stringify(searchParams)]);
+
+  /**
+   * 최초 마운트 시 옵저버 연결
+   */
+  useEffect(() => {
+    attachObserver();
     return () => {
-      if (el) observer.unobserve(el);
+      if (observerInstance.current) observerInstance.current.disconnect();
     };
-  }, [observerRef.current, page, isLastPage, isLoading]);
+  }, [attachObserver]);
 
   return {
     dataList,
     isLoading,
+    error,
     observerRef,
     reset: () => loadPage(0),
+    retry,
   };
 }

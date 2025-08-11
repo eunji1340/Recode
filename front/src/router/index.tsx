@@ -13,6 +13,7 @@ import CommentsPage from '../pages/mypage/CommentsPage';
 import SettingPage from '../pages/mypage/SettingPage';
 import NoteDetailPage from '../pages/NoteDetailPage';
 import ProblemSelectPage from '../pages/ProblemSelectPage';
+import UserDetailPage from '../pages/UserDetailPage';
 
 const AppRouter = () => (
   <Routes>
@@ -32,6 +33,7 @@ const AppRouter = () => (
     <Route path="/note/:id" element={<NoteDetailPage />} />
     <Route path="/note/generate" element={<ProblemSelectPage />} />
     <Route path="/note/generate/:id" element={<NoteGeneratePage />} />
+    <Route path="/user/:userId" element={<UserDetailPage />} />
   </Routes>
 );
 

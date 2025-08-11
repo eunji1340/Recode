@@ -1,11 +1,13 @@
 import React from 'react';
 import ProblemTitle from '../feed/ProblemTitle';
+import LanguageIcon from '../common/LanguageIcon';
 
 interface MainFeedProblemInfoProps {
   problemId: number;
   problemName: string;
   problemTier: number;
-  problemLanguage?: string; // 언어는 optional 처리
+  problemLanguage?: string; // 언어는 optional
+  languageIconSize?: number; // 아이콘 크기 조절
 }
 
 /**
@@ -17,20 +19,8 @@ const MainFeedProblemInfo: React.FC<MainFeedProblemInfoProps> = ({
   problemName,
   problemTier,
   problemLanguage,
+  languageIconSize = 22,
 }) => {
-  /**
-   * 언어명에 따라 devicon 아이콘 URL 생성
-   * 예외 처리: C++, C# 등
-   */
-  const getLanguageIconUrl = (lang: string): string => {
-    const exceptions: Record<string, string> = {
-      'C++': 'cplusplus',
-      'C#': 'csharp',
-    };
-    const key = exceptions[lang] ?? lang.toLowerCase();
-    return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${key}/${key}-original.svg`;
-  };
-
   return (
     <div className="flex justify-between items-center">
       <ProblemTitle
@@ -41,14 +31,10 @@ const MainFeedProblemInfo: React.FC<MainFeedProblemInfoProps> = ({
       />
 
       {problemLanguage && (
-        <div className="flex items-center gap-1 text-sm">
-          <img
-            src={getLanguageIconUrl(problemLanguage)}
-            alt={`${problemLanguage} icon`}
-            className="w-5 h-5"
-          />
-          <span className="font-mono">{problemLanguage}</span>
-        </div>
+        <LanguageIcon
+          language={problemLanguage}
+          size={languageIconSize}
+        />
       )}
     </div>
   );

@@ -1,21 +1,22 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import SearchBox from '../../components/search/SearchBox';
 import FeedCard from '../../components/feed/FeedCard';
+import EmptyState from '../../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../../hooks/useInfiniteFeeds';
-import { fetchLikedFeeds } from '../../api/feed'; // 새로운 API 함수를 임포트
-import type { ExploreFeedCardData, SortOption } from '../../types/feed';
+import { fetchLikedFeeds } from '../../api/feed';
 import { useUserStore } from '../../stores/userStore';
-import EmptyFeedState from '../../components/feed/EmptyFeedState'; // 빈 상태 컴포넌트 추가
-import { useNavigate } from 'react-router-dom';
+import type { ExploreFeedCardData, SortOption } from '../../types/feed';
 
+/**
+ * 사용자가 좋아요한 피드 목록을 표시하는 페이지
+ * 검색, 태그 필터링, 정렬 기능 포함
+ */
 export default function HeartsPage() {
-  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagForQuery, setTagForQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('latest');
 
-  // 현재 로그인한 사용자 정보 가져오기
   const { userId } = useUserStore();
 
   // API 요청용 정렬 타입 매핑
@@ -26,17 +27,20 @@ export default function HeartsPage() {
     comments: 3,
   };
 
-  // API 요청용 파라미터
+  // API 요청 파라미터
   const searchParams = useMemo(
     () => ({
       search,
       tag: tagForQuery,
-      sortType: sortTypeMap[sortBy], // API 명세에 맞게 sortType으로 변경
+      sortType: sortTypeMap[sortBy],
     }),
-    [search, tagForQuery, sortBy],
+    [search, tagForQuery, sortBy]
   );
 
-  // userId가 변경될 때마다 fetch 함수를 재정의
+  /**
+   * userId를 포함한 좋아요 피드 fetch 함수
+   * userId가 없으면 빈 배열을 반환하여 불필요한 API 호출 방지
+   */
   const fetchLikedFeedsWithUserId = useMemo(
     () => (params: any) => {
       if (!userId) {
@@ -44,37 +48,35 @@ export default function HeartsPage() {
       }
       return fetchLikedFeeds({ ...params, userId: Number(userId) });
     },
-    [userId],
+    [userId]
   );
 
-  // 무한스크롤 훅
   const {
     dataList: feeds,
     isLoading,
+    error,
     observerRef,
-    reset,
+    retry,
   } = useInfiniteFeeds<ExploreFeedCardData>(
     fetchLikedFeedsWithUserId,
     searchParams,
-    15,
+    15
   );
 
-  // SearchBox 핸들러
+  // 검색 핸들러들
   const handleKeywordChange = useCallback(
     (val: string) => {
       setSearch(val);
-      reset();
     },
-    [reset],
+    []
   );
 
   const handleAddTag = useCallback(
     (tag: string) => {
       setTags((prev) => [...prev, tag]);
       setTagForQuery(tag);
-      reset();
     },
-    [reset],
+    []
   );
 
   const handleRemoveTag = useCallback(
@@ -82,31 +84,60 @@ export default function HeartsPage() {
       const newTags = tags.filter((t) => t !== tag);
       setTags(newTags);
       setTagForQuery(newTags.at(-1) ?? '');
-      reset();
     },
-    [tags, reset],
+    [tags]
   );
 
   const handleSortChange = useCallback(
     (val: SortOption) => {
       setSortBy(val);
-      reset();
     },
-    [reset],
+    []
   );
 
-  // 로그인하지 않은 경우 처리
+  // 로그인하지 않은 경우
   if (!userId) {
     return (
       <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-center py-20">
-            <h2 className="text-xl font-semibold text-zinc-600 mb-4">
+            <h2 className="text-xl font-semibold text-[#13233D] mb-4">
               로그인이 필요합니다
             </h2>
-            <p className="text-zinc-500 mb-8">
+            <p className="text-[#13233D]/70 mb-8">
               좋아요한 오답노트를 보려면 로그인해주세요.
             </p>
+            <button 
+              onClick={() => window.location.href = '/login'}
+              className="px-6 py-2 bg-[#FF8400] text-white rounded-lg hover:bg-[#FF8400]/90 transition-colors"
+            >
+              로그인하기
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // API 에러 발생시
+  if (error) {
+    return (
+      <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center py-20">
+            <div className="text-red-500 text-4xl mb-4">!</div>
+            <h2 className="text-xl font-semibold text-[#13233D] mb-4">
+              좋아요한 피드를 불러오는데 실패했습니다
+            </h2>
+            <p className="text-[#13233D]/70 mb-8">
+              잠시 후 다시 시도해주세요.
+            </p>
+            <button 
+              onClick={retry}
+              className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            >
+              다시 시도
+            </button>
           </div>
         </div>
       </main>
@@ -114,22 +145,55 @@ export default function HeartsPage() {
   }
 
   return (
-    <div className="flex-1 bg-[#F8F9FA] max-w-[1200px] mx-auto space-y-6">
-      <SearchBox
-        selectedTags={tags}
-        onAddTag={handleAddTag}
-        onRemoveTag={handleRemoveTag}
-        onKeywordChange={handleKeywordChange}
-        sortBy={sortBy}
-        onSortChange={handleSortChange}
-      />
+    <main className="flex-1 bg-[#F8F9FA]">
+      <div className="mx-auto space-y-3">
+        {/* 검색 및 필터 */}
+        <SearchBox
+          selectedTags={tags}
+          onAddTag={handleAddTag}
+          onRemoveTag={handleRemoveTag}
+          onKeywordChange={handleKeywordChange}
+          sortBy={sortBy}
+          onSortChange={handleSortChange}
+        />
 
-      <div className="flex flex-wrap justify-center gap-x-3 gap-y-8">
-        {feeds.map((feed) => (
-          <FeedCard key={feed.noteId} {...feed} />
-        ))}
-        <div ref={observerRef} className="h-1" />
+        {/* 초기 로딩 상태 */}
+        {isLoading && feeds.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8400] mx-auto mb-4"></div>
+            <p className="text-[#13233D]/70">좋아요한 피드를 불러오는 중...</p>
+          </div>
+        ) : (
+          <>
+            {/* 피드가 없는 경우 */}
+            {feeds.length === 0 ? (
+              <EmptyState
+                title="좋아요한 오답노트가 없습니다"
+                description="마음에 드는 오답노트에 좋아요를 눌러보세요!"
+                buttonText="피드 둘러보기"
+                onButtonClick={() => window.location.href = '/'}
+              />
+            ) : (
+              /* 피드 목록 */
+              <div className="flex flex-wrap justify-center gap-x-6 gap-y-6">
+                {feeds.map((feed) => (
+                  <FeedCard key={feed.noteId} {...feed} />
+                ))}
+                
+                {/* 무한 스크롤 트리거 */}
+                <div ref={observerRef} className="h-1" />
+                
+                {/* 추가 로딩 중 표시 */}
+                {isLoading && feeds.length > 0 && (
+                  <div className="w-full text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF8400] mx-auto"></div>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
-    </div>
+    </main>
   );
 }

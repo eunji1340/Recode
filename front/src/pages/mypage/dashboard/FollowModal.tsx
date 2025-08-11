@@ -1,5 +1,6 @@
 // src/pages/mypage/FollowModal.tsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { tierImageMap } from '../../../data/tierMap';
 
 export interface FollowDetail {
@@ -26,7 +27,16 @@ export default function FollowModal({
   onClose,
   onTabChange,
 }: Props) {
+  
+  const navigate = useNavigate()
+
   if (!open) return null;
+
+  const handleClickUser = (userId: number) => {
+    onClose(); // 모달 닫기
+    navigate(`/user/${userId}`); // UserDetailPage로 이동
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow w-96 h-96 flex flex-col">
@@ -64,6 +74,7 @@ export default function FollowModal({
                 <li
                   key={d.userId}
                   className="py-2 border-b last:border-b-0 flex items-center relative"
+                  onClick={() => handleClickUser(d.userId)}
                 >
                   {/* 좌측 티어 이미지 */}
                   <img

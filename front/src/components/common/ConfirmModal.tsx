@@ -1,34 +1,63 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
 
 interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   title: string;
-  message: string;
+  message: React.ReactNode;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose, onConfirm, title, message }) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+}) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm mx-auto">
-        <div className="text-center">
-          <h3 className="text-lg font-bold">{title}</h3>
-          <p className="py-4">{message}</p>
-        </div>
-        <div className="flex justify-center gap-4">
-          <button onClick={onConfirm} className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+        <h3 className="text-lg font-bold text-center text-[#13233D]">{title}</h3>
+        <div className="mt-3 text-center text-sm text-zinc-600">{message}</div>
+        <div className="mt-6 flex justify-center gap-3">
+          <button
+            onClick={onConfirm}
+            className="px-5 py-2 rounded-md bg-[#13233D] text-white hover:bg-[#0f1b30]"
+          >
             예
           </button>
-          <button onClick={onClose} className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300"
+          >
             아니오
           </button>
         </div>
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 };
 
 export default ConfirmModal;

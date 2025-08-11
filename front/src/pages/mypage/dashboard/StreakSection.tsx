@@ -1,7 +1,5 @@
-// src/pages/mypage/StreakSection.tsx
-// src/pages/mypage/dashboard/StreakSection.tsx
 import React from 'react';
-import { toKey } from '../../../utils/date';
+import { toKey } from '../../../utils/date'; // 경로 수정
 
 type WeekItem = { date: Date; count: number };
 
@@ -19,7 +17,7 @@ function badgeClassByCount(c: number) {
   return 'bg-gray-200 text-gray-600';
 }
 
-const wdays = ['일','월','화','수','목','금','토'];
+const wdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 export default function StreakSection({ todayStreak, maxStreak, week, onOpenCalendar }: Props) {
   return (
