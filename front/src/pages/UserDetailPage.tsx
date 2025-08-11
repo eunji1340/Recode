@@ -49,13 +49,13 @@ export default function UserDetailPage() {
 
     // 내 팔로잉 목록 가져와서 userId 포함 여부 확인
     if (myUserId && Number(myUserId) !== Number(userId)) {
-    fetchFollowDetails(String(myUserId), 'followings')
-      .then(list => {
-        const exists = list.some(f => f.userId === Number(userId));
-        setIsFollowing(exists);
-      })
-      .catch(() => setIsFollowing(false));
-  }
+      fetchFollowDetails(String(myUserId), 'followings')
+        .then(list => {
+          const exists = list.some(f => f.userId === Number(userId));
+          setIsFollowing(exists);
+        })
+        .catch(() => setIsFollowing(false));
+    }
   }, [userId, myUserId, setIsFollowing]);
 
   // 팔로우 모달 열릴 때 상세 정보 로드
@@ -75,12 +75,15 @@ export default function UserDetailPage() {
     }
   }, [userId]);
 
+  // 검색 및 정렬 파라미터를 메모이제이션하여 불필요한 리렌더링 방지
   const searchParams = useMemo(() => ({
     search,
     tag: tagForQuery,
     sortType: sortBy,
   }), [search, tagForQuery, sortBy]);
 
+  // useInfiniteFeeds 훅에 정렬 파라미터가 정확히 전달되고 있는지 확인
+  // sortBy가 변경되면 searchParams가 새로 생성되어 훅이 데이터를 다시 불러와야 합니다.
   const {
     dataList: feeds,
     isLoading: feedsLoading,
