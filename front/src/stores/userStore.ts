@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { jwtDecode } from 'jwt-decode';
+import api from '../api/axiosInstance'
 
 interface JwtPayload {
   exp: number; // seconds
@@ -86,16 +87,13 @@ export const useUserStore = create(
         }
 
         const doRefresh = async () => {
-          const res = await fetch('http://localhost:8080/users/reissue', {
-            method: 'POST',
-            credentials: 'include', //  쿠키 전송
-            headers: { 'Content-Type': 'application/json' },
+          // api 인스턴스를 사용하면 baseURL이 env에 따라 자동 적용됨
+          const res = await api.post('/users/reissue', null, {
+            withCredentials: true, // 쿠키 전송
           });
-          if (!res.ok) throw new Error('Failed to reissue');
-
-          const data = await res.json();
+;
           const newAccess =
-            data?.data?.accessToken ?? data?.accessToken ?? null;
+            res.data?.data?.accessToken ?? res.data?.accessToken ?? null;
           if (!newAccess) throw new Error('No access token in reissue response');
 
           get().setToken(newAccess);
