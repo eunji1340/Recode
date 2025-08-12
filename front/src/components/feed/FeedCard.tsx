@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProblemTitle from './ProblemTitle';
 import FollowButton from '../common/FollowButton';
@@ -7,45 +7,35 @@ import CommentIcon from '../common/CommentIcon';
 import TagList from '../common/TagList';
 import LanguageIcon from '../common/LanguageIcon';
 import UserProfile from '../user/UserImage';
-import { getTimeAgo } from '../../utils/date'
+import { getTimeAgo } from '../../utils/date';
 import { useLike } from '../../hooks/useLike';
-import { useFollow } from '../../hooks/useFollow';
 import type { ExploreFeedCardData } from '../../types/feed';
-import { useUserStore } from '../../stores/userStore'
+import { useUserStore } from '../../stores/userStore';
 
-/**
- * 피드 카드 단일 항목 컴포넌트 (ExplorePage용)
- * @param props - ExploreFeedCardData 타입의 피드 카드 정보
- */
-const FeedCard: React.FC<ExploreFeedCardData> = (props) => {
+interface FeedCardProps extends ExploreFeedCardData {
+  onToggleFollow?: () => void; // 상위 컴포넌트에서 팔로우 토글 로직 받기
+}
+
+const FeedCard: React.FC<FeedCardProps> = ({
+  noteId,
+  noteTitle,
+  successLanguage,
+  createdAt,
+  likeCount,
+  commentCount,
+  user,
+  problem,
+  tags,
+  liked: isLiked,
+  following,
+  onToggleFollow,
+}) => {
   const currentUserId = useUserStore((state) => state.userId);
-  
-  const {
+
+  const { liked, likeCount: currentLikeCount, toggleLike } = useLike(
     noteId,
-    noteTitle,
-    successLanguage,
-    isPublic,
-    createdAt,
-    viewCount,
-    likeCount,
-    commentCount,
-    user,
-    problem,
-    tags,
-    deleted,
-    liked: isLiked,
-    following: isFollowing,
-  } = props;
-
-  const {
-    liked,
-    likeCount: currentLikeCount,
-    toggleLike,
-  } = useLike(noteId, isLiked, likeCount);
-
-  const { isFollowing: currentFollowing, toggleFollow } = useFollow(
-    isFollowing,
-    user.userId,
+    isLiked,
+    likeCount
   );
 
   const navigate = useNavigate();
@@ -56,11 +46,14 @@ const FeedCard: React.FC<ExploreFeedCardData> = (props) => {
   };
 
   const handleCardClick = () => {
-    navigate(`/note/${props.noteId}`);
+    navigate(`/note/${noteId}`);
   };
 
   return (
-    <div className="w-[330px] h-[300px] bg-white rounded-xl shadow p-6 overflow-hidden flex flex-col justify-between hover:shadow-md transition cursor-pointer text-[#0B0829]" onClick={handleCardClick}>
+    <div
+      className="w-[330px] h-[300px] bg-white rounded-xl shadow p-6 overflow-hidden flex flex-col justify-between hover:shadow-md transition cursor-pointer text-[#0B0829]"
+      onClick={handleCardClick}
+    >
       {/* Header */}
       <div className="w-full">
         <ProblemTitle
@@ -75,20 +68,21 @@ const FeedCard: React.FC<ExploreFeedCardData> = (props) => {
         <div className="flex items-center justify-between text-xs text-[#A0BACC]">
           <span>{getTimeAgo(createdAt)}</span>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1"
-              onClick={handleProfileClick}>
-              <UserProfile
-                image={user.image}
-                size={20}
-              />
+            <div
+              className="flex items-center gap-1"
+              onClick={handleProfileClick}
+            >
+              <UserProfile image={user.image} size={20} />
               <span className="text-[#0B0829] font-medium">
                 {user.nickname}
               </span>
             </div>
             {currentUserId !== null && user.userId !== Number(currentUserId) && (
               <FollowButton
-                isFollowing={currentFollowing}
-                onToggle={toggleFollow}
+                following={following}
+                onToggle={() => {
+                  onToggleFollow?.();
+                }}
                 onClick={(e) => e.stopPropagation()}
               />
             )}
@@ -97,7 +91,10 @@ const FeedCard: React.FC<ExploreFeedCardData> = (props) => {
       </div>
 
       {/* Content */}
-      <div className="text-center font-bold text-2xl mb-2 line-clamp-2" onClick={handleCardClick}>
+      <div
+        className="text-center font-bold text-2xl mb-2 line-clamp-2"
+        onClick={handleCardClick}
+      >
         {noteTitle}
       </div>
 

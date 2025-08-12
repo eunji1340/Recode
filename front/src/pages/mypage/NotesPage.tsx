@@ -4,38 +4,28 @@ import FeedCard from '../../components/feed/FeedCard';
 import EmptyState from '../../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../../hooks/useInfiniteFeeds';
 import { fetchUserFeeds } from '../../api/feed';
-import type { ExploreFeedCardData, SortOption } from '../../types/feed';
+import type { ExploreFeedCardData } from '../../types/feed';
 import { useUserStore } from '../../stores/userStore';
-
 
 /**
  * 내 오답노트 목록 페이지
- * - 검색/태그/정렬 + 무한스크롤
+ * - 검색/태그 + 무한스크롤
  * - HeartsPage와 동일한 UX 패턴(에러/빈상태/로딩)
  */
 export default function MyNotesPage() {
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagForQuery, setTagForQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('latest');
 
   const { userId } = useUserStore();
 
-  const sortTypeMap: Record<SortOption, number> = {
-    latest: 0,
-    views: 1,
-    likes: 2,
-    comments: 3,
-  };
-
-  // API 요청 파라미터
+  // API 요청 파라미터 (정렬 제거)
   const searchParams = useMemo(
     () => ({
       search,
       tag: tagForQuery,
-      sortType: sortTypeMap[sortBy],
     }),
-    [search, tagForQuery, sortBy]
+    [search, tagForQuery]
   );
 
   /**
@@ -64,7 +54,7 @@ export default function MyNotesPage() {
     15
   );
 
-  // 검색/정렬 콜백들
+  // 검색/태그 콜백들
   const handleKeywordChange = useCallback((val: string) => setSearch(val), []);
   const handleAddTag = useCallback((tag: string) => {
     setTags(prev => [...prev, tag]);
@@ -75,7 +65,6 @@ export default function MyNotesPage() {
     setTags(newTags);
     setTagForQuery(newTags.at(-1) ?? '');
   }, [tags]);
-  const handleSortChange = useCallback((val: SortOption) => setSortBy(val), []);
 
   // 비로그인
   if (!userId) {
@@ -127,14 +116,12 @@ export default function MyNotesPage() {
   return (
     <main className="flex-1 bg-[#F8F9FA]">
       <div className="mx-auto space-y-3">
-        {/* 검색/필터 */}
+        {/* 검색/필터 (정렬 props 제거) */}
         <SearchBox
           selectedTags={tags}
           onAddTag={handleAddTag}
           onRemoveTag={handleRemoveTag}
           onKeywordChange={handleKeywordChange}
-          sortBy={sortBy}
-          onSortChange={handleSortChange}
         />
 
         {/* 초기 로딩 */}

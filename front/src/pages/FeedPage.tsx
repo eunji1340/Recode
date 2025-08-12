@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 export default function FeedPage() {
   const navigate = useNavigate();
-  const [sortBy, setSortBy] = useState<'latest' | 'likes' | 'views' | 'comments'>('latest');
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagForQuery, setTagForQuery] = useState('');
@@ -17,9 +16,8 @@ export default function FeedPage() {
     () => ({
       search,
       tag: tagForQuery,
-      sort: sortBy,
     }),
-    [search, tagForQuery, sortBy]
+    [search, tagForQuery]
   );
 
   const {
@@ -40,7 +38,6 @@ export default function FeedPage() {
     setTags(newTags);
     setTagForQuery(newTags.at(-1) ?? '');
   }, [tags]);
-  const handleSortChange = useCallback((val: typeof sortBy) => setSortBy(val), []);
 
   // 에러 상태
   if (error) {
@@ -75,8 +72,6 @@ export default function FeedPage() {
             onAddTag={handleAddTag}
             onRemoveTag={handleRemoveTag}
             onKeywordChange={handleKeywordChange}
-            sortBy={sortBy}
-            onSortChange={handleSortChange}
           />
         </div>
       </div>

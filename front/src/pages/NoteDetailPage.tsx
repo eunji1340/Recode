@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Tag from '../components/common/Tag';
 import HeartIcon from '../components/common/HeartIcon';
 import { useEffect, useState } from 'react';
@@ -22,19 +22,18 @@ import ProtectedOverlay from '../components/common/ProtectedOverlay';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
-
+  const navigate = useNavigate();
+  
   const [note, setNote] = useState<NoteDetailResponseDTO | null>(null);
-  //   새로 작성하는 댓글
   const [commentText, setCommentText] = useState('');
-  //    기존 작성된 댓글
   const [comments, setComments] = useState<CommentApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [writer, setWriter] = useState<User>(); // note 작성한 user
+  const [writer, setWriter] = useState<User>();
   const [isSuccessCodeExpanded, setIsSuccessCodeExpanded] = useState(false);
   const [isFailCodeExpanded, setIsFailCodeExpanded] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-
+  
   const { userId } = useUserStore();
   const loginUserId = parseInt(userId ?? '0', 10);
 
@@ -47,8 +46,8 @@ export default function NoteDetailPage() {
   if (!id) {
     return <div>Invalid note ID</div>;
   }
-
-  const noteId = parseInt(id, 10); // 10진수 정수로 parse
+  
+  const noteId = parseInt(id, 10);
 
   const fetchComments = async () => {
     try {
@@ -68,7 +67,7 @@ export default function NoteDetailPage() {
         `/notes/${noteId}`,
       );
       setNote(noteResponse.data);
-      setIsFollowing(noteResponse.data.following); // 팔로우 상태 초기화
+      setIsFollowing(noteResponse.data.following);
       console.log(noteResponse.data);
       setError(null);
       setWriter(noteResponse.data.user);
@@ -83,12 +82,11 @@ export default function NoteDetailPage() {
   useEffect(() => {
     fetchPost();
     fetchComments();
-  }, [noteId]); // noteId가 변경될 때만 실행
+  }, [noteId]);
 
   const handleLikeToggle = async () => {
     if (!note) return;
 
-    // 좋아요 UI: API 호출 전 미리 변경 (optimistic update)
     const originalNote = note;
     const newLikedStatus = !note.liked;
     const newLikeCount = note.liked ? note.likeCount - 1 : note.likeCount + 1;
@@ -108,7 +106,6 @@ export default function NoteDetailPage() {
     } catch (err) {
       console.error('Failed to update like status:', err);
       setNote(originalNote);
-      // TODO: 사용자에게 에러 알림 (예: toast message)
     }
   };
 
@@ -116,7 +113,6 @@ export default function NoteDetailPage() {
     if (!note || !note.user) return;
 
     const originalFollowingState = isFollowing;
-    // Optimistic UI update
     setIsFollowing(!isFollowing);
 
     try {
@@ -127,14 +123,12 @@ export default function NoteDetailPage() {
       }
     } catch (err) {
       console.error('Failed to toggle follow:', err);
-      // Revert UI on error
       setIsFollowing(originalFollowingState);
     }
   };
 
-  //   댓글 작성 API
   const handleWriteComment = async () => {
-    if (!commentText.trim()) return; // 빈 댓글 방지
+    if (!commentText.trim()) return;
 
     const commentRequest = {
       content: commentText,
@@ -143,9 +137,30 @@ export default function NoteDetailPage() {
     try {
       await api.post(`/feeds/${noteId}/comments`, commentRequest);
       setCommentText('');
-      fetchComments(); // 댓글 목록 새로고침
+      fetchComments();
     } catch (err) {
       console.log('Failed to write comment:', err);
+    }
+  };
+
+  // 수정 버튼 클릭 핸들러
+  const handleEditClick = () => {
+    if (note) {
+      // note의 problemId를 URL에 포함시키고, note 데이터를 state로 전달
+      navigate(`/note/generate/${note.problem.problemId}`, { state: { note } });
+    }
+  };
+
+  // 삭제 버튼 클릭 핸들러
+  const handleDeleteClick = async () => {
+    const confirmed = window.confirm('정말로 노트를 삭제하시겠습니까?');
+    if (confirmed) {
+      try {
+        await api.delete(`/notes/${noteId}`);
+        navigate('/');
+      } catch (err) {
+        console.error('노트 삭제에 실패했습니다:', err);
+      }
     }
   };
 
@@ -160,10 +175,10 @@ export default function NoteDetailPage() {
   if (!note) {
     return <div>노트 데이터를 찾을 수 없습니다.</div>;
   }
-
-  // timestamp Date String으로 변환
+  
   const date = new Date(note.createdAt).toLocaleDateString('ko-KR');
   const image = '';
+  const isMyNote = writer?.userId === loginUserId;
 
   return (
     <div className="flex flex-col justify-center items-start p-6 gap-6">
@@ -175,7 +190,6 @@ export default function NoteDetailPage() {
               <div>{note.noteTitle}</div>
               <div className="text-sm font-bold">작성일: {date} </div>
             </div>
-
             <div className="flex items-center gap-2">
               {image ? (
                 <img
@@ -191,13 +205,11 @@ export default function NoteDetailPage() {
               <div className="text-base font-semibold">
                 {note.user.nickname}
               </div>
-              {/* user 본인이면 숨기기 */}
-              {loginUserId !== note.user.userId ? (
+              {!isMyNote ? (
                 <div>
                   <FollowButton
                     isFollowing={isFollowing}
                     onToggle={handleToggleFollow}
-                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               ) : (
@@ -299,14 +311,18 @@ export default function NoteDetailPage() {
                   </div>
                 </div>
               </div>
-
-              {/* 작성자 본인일때만 버튼 보여주기 */}
-              {writer?.userId === loginUserId ? (
+              {isMyNote ? (
                 <div className="flex gap-2 mt-4">
-                  <button className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                  <button
+                    onClick={handleEditClick}
+                    className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  >
                     수정
                   </button>
-                  <button className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                  <button
+                    onClick={handleDeleteClick}
+                    className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                  >
                     삭제
                   </button>
                 </div>
@@ -348,7 +364,7 @@ export default function NoteDetailPage() {
                     createdAt={item.createdAt}
                     noteId={note.noteId}
                     key={item.commentId}
-                    onCommentChange={fetchComments} // 댓글 변경 시 새로고침
+                    onCommentChange={fetchComments}
                   ></Comment>
                 ))
               ) : (

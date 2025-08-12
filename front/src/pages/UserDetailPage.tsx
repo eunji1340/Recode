@@ -10,7 +10,7 @@ import { useFollow } from '../hooks/useFollow';
 import { fetchUserFeeds } from '../api/feed';
 import { fetchAllUserDashboardData, fetchFollowDetails } from '../api/user';
 import type { UserDashboardData } from '../api/user';
-import type { ExploreFeedCardData, SortOption } from '../types/feed';
+import type { ExploreFeedCardData } from '../types/feed';
 import type { FollowDetail } from './mypage/dashboard/FollowModal';
 import FollowModal from './mypage/dashboard/FollowModal';
 
@@ -31,7 +31,6 @@ export default function UserDetailPage() {
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagForQuery, setTagForQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('latest');
 
   const { isFollowing, toggleFollow, setIsFollowing } = useFollow(false, Number(userId));
 
@@ -75,15 +74,13 @@ export default function UserDetailPage() {
     }
   }, [userId]);
 
-  // 검색 및 정렬 파라미터를 메모이제이션하여 불필요한 리렌더링 방지
+  // 검색 파라미터 (정렬 제거)
   const searchParams = useMemo(() => ({
     search,
     tag: tagForQuery,
-    sortType: sortBy,
-  }), [search, tagForQuery, sortBy]);
+  }), [search, tagForQuery]);
 
-  // useInfiniteFeeds 훅에 정렬 파라미터가 정확히 전달되고 있는지 확인
-  // sortBy가 변경되면 searchParams가 새로 생성되어 훅이 데이터를 다시 불러와야 합니다.
+  // 피드 데이터 로드
   const {
     dataList: feeds,
     isLoading: feedsLoading,
@@ -112,7 +109,7 @@ export default function UserDetailPage() {
           image={user.image}
           followerCount={user.followerCount}
           followingCount={user.followingCount}
-          isFollowing={!isMyPage && isFollowing} // 내 페이지면 버튼 안보임
+          isFollowing={!isMyPage && isFollowing}
           onToggleFollow={!isMyPage ? toggleFollow : undefined}
           onOpenModal={handleOpenFollowModal}
         />
@@ -140,8 +137,6 @@ export default function UserDetailPage() {
             setTagForQuery(newTags.at(-1) ?? '');
           }}
           onKeywordChange={setSearch}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
         />
 
         {feedsLoading && feeds.length === 0 ? (

@@ -7,19 +7,19 @@ import { addFollow, removeFollow } from '../api/feed';
  * @param targetUserId 팔로우 대상 유저의 ID
  */
 export function useFollow(initialFollowing: boolean, targetUserId: number) {
-  const [isFollowing, setIsFollowing] = useState(initialFollowing);
+  const [following, setFollowing] = useState(initialFollowing);
 
   /**
    * 팔로우 상태 토글
    */
   const toggleFollow = async (): Promise<void> => {
     try {
-      if (isFollowing) {
+      if (following) {
         await removeFollow(targetUserId);
-        setIsFollowing(false);
+        setFollowing(false);
       } else {
         await addFollow(targetUserId);
-        setIsFollowing(true);
+        setFollowing(true);
       }
     } catch (error) {
       console.error('팔로우 토글 실패:', error);
@@ -27,8 +27,8 @@ export function useFollow(initialFollowing: boolean, targetUserId: number) {
   };
 
   return {
-    isFollowing,
+    following,
     toggleFollow,
-    setIsFollowing,
+    setFollowing,
   };
 }
