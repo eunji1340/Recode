@@ -19,12 +19,14 @@ export default function SettingsPage() {
   const navigate = useNavigate();
 
   const [isProfileEditing, setIsProfileEditing] = useState(false);
-  const [emailValue, setEmailValue] = useState(''); // 이메일 입력 필드 상태 추가
+  const [emailValue, setEmailValue] = useState('');
   
   // 비밀번호 변경 상태
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-  /** 사용자 정보 로드 */
+  /**
+   * 사용자 정보 로드
+   */
   const loadMyInfo = useCallback(async () => {
     if (!userId) {
       setError('로그인이 필요합니다.');
@@ -36,7 +38,7 @@ export default function SettingsPage() {
       setError(null);
       const myInfo = await fetchMyInfo();
       setProfile(myInfo);
-      setEmailValue(myInfo.email); // 로드 시 이메일 상태 초기화
+      setEmailValue(myInfo.email);
     } catch (err) {
       console.error(err);
       setError('정보를 불러오는데 실패했습니다.');
@@ -49,7 +51,9 @@ export default function SettingsPage() {
     loadMyInfo();
   }, [loadMyInfo]);
 
-  /** 회원탈퇴 */
+  /**
+   * 회원탈퇴
+   */
   const handleDelete = async () => {
     if (!userId) return;
     try {
@@ -64,18 +68,29 @@ export default function SettingsPage() {
     }
   };
 
-  /** 이메일 변경 핸들러 */
+  /**
+   * 이메일 변경 핸들러
+   */
   const handleEmailSave = async () => {
     if (!userId || !emailValue) return;
     try {
       // TODO: 여기서 중복 검사 로직을 추가할 수 있습니다.
       await updateEmail(Number(userId), emailValue);
       alert('이메일이 성공적으로 변경되었습니다.');
+      // 이메일 변경 후 프로필 상태 업데이트
       setProfile(prev => prev ? { ...prev, email: emailValue } : null);
       setIsProfileEditing(false); // 변경 후 수정 모드 종료
     } catch (err) {
       alert('이메일 변경에 실패했습니다.');
     }
+  };
+
+  /**
+   * 자식 컴포넌트에서 프로필 업데이트를 요청할 때 호출되는 함수
+   * @param updatedFields 변경된 프로필 필드 (예: { nickname: '새닉네임', bio: '새로운 한마디' })
+   */
+  const handleProfileUpdate = (updatedFields: Partial<UserProfile>) => {
+    setProfile(prev => prev ? { ...prev, ...updatedFields } : null);
   };
 
   /** 로딩 상태 */
@@ -116,10 +131,10 @@ export default function SettingsPage() {
         onEditToggle={() => {
           setIsProfileEditing(!isProfileEditing);
           if (isProfileEditing) {
-            // 수정 모드 종료 시 emailValue를 원래 값으로 되돌립니다.
             setEmailValue(profile.email);
           }
         }}
+        onProfileUpdate={handleProfileUpdate} // 새로 추가된 프로필 업데이트 핸들러를 전달
       />
 
       {/* 기본 정보 */}

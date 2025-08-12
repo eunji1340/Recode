@@ -13,7 +13,8 @@ import type { ExploreFeedCardData } from '../../types/feed';
 import { useUserStore } from '../../stores/userStore';
 
 interface FeedCardProps extends ExploreFeedCardData {
-  onToggleFollow?: () => void; // 상위 컴포넌트에서 팔로우 토글 로직 받기
+  /** 상위 컴포넌트에서 팔로우 토글 로직 받기 */
+  onToggleFollow?: (targetUserId: number, newState: boolean) => void;
 }
 
 const FeedCard: React.FC<FeedCardProps> = ({
@@ -32,11 +33,11 @@ const FeedCard: React.FC<FeedCardProps> = ({
 }) => {
   const currentUserId = useUserStore((state) => state.userId);
 
-  const { liked, likeCount: currentLikeCount, toggleLike } = useLike(
-    noteId,
-    isLiked,
-    likeCount
-  );
+  const {
+    liked,
+    likeCount: currentLikeCount,
+    toggleLike,
+  } = useLike(noteId, isLiked, likeCount);
 
   const navigate = useNavigate();
 
@@ -47,6 +48,12 @@ const FeedCard: React.FC<FeedCardProps> = ({
 
   const handleCardClick = () => {
     navigate(`/note/${noteId}`);
+  };
+
+  /** 팔로우 버튼 클릭 시 이벤트 전파 차단 + 상위 콜백 호출 */
+  const handleFollowClick = () => {
+    const newState = !following;
+    onToggleFollow?.(user.userId, newState);
   };
 
   return (
@@ -77,15 +84,16 @@ const FeedCard: React.FC<FeedCardProps> = ({
                 {user.nickname}
               </span>
             </div>
-            {currentUserId !== null && user.userId !== Number(currentUserId) && (
-              <FollowButton
-                following={following}
-                onToggle={() => {
-                  onToggleFollow?.();
-                }}
-                onClick={(e) => e.stopPropagation()}
-              />
-            )}
+            {currentUserId !== null &&
+              user.userId !== Number(currentUserId) && (
+                <FollowButton
+                  following={following}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 카드 클릭 방지
+                  }}
+                  onToggle={handleFollowClick} // 매개변수 없는 함수
+                />
+              )}
           </div>
         </div>
       </div>

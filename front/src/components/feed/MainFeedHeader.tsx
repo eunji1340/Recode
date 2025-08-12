@@ -1,7 +1,7 @@
 import React from 'react';
 import { getTimeAgo } from '../../utils/date';
-import { User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import UserImage from '../user/UserImage';
 
 interface MainFeedHeaderProps {
   noteTitle: string;
@@ -37,19 +37,12 @@ const MainFeedHeader: React.FC<MainFeedHeaderProps> = ({
             e.stopPropagation(); // 카드 클릭 이벤트 방지
             onProfileClick?.();
           }}>
-          {/* 프로필 이미지 */}
+          {/* UserImage 컴포넌트 사용 */}
           <div className="h-8 w-8 flex-shrink-0">
-            {image && image !== "null" && image !== "" ? (
-              <img
-                src={image}
-                alt="profile"
-                className="h-full w-full rounded-full object-cover ring-2 ring-zinc-100"
-              />
-            ) : (
-              <div className="h-8 w-8 border-2 border-[#13233D] rounded-full flex items-center justify-center text-[#13233D]">
-                <User className="w-8 h-8" />
-              </div>
-            )}
+            <UserImage
+              image={image}
+              size={32}
+            />
           </div>
 
           <div className="text-base font-semibold">{nickname}</div>

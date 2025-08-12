@@ -1,104 +1,119 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { FiSearch, FiHash, FiRotateCcw } from 'react-icons/fi';
 
 interface SearchBoxProps {
+  keyword: string;
   onKeywordChange: (keyword: string) => void;
-  onAddTag: (tag: string) => void;
-  onRemoveTag: (tag: string) => void;
-  selectedTags: string[];
+  tag: string; // 하나만 검색
+  onTagChange: (tag: string) => void;
+  onSearch: (nextKeyword: string, nextTag: string) => void; // 최신값 전달
+  onClearAll?: () => void;
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({
+  keyword,
   onKeywordChange,
-  onAddTag,
-  onRemoveTag,
-  selectedTags,
+  tag,
+  onTagChange,
+  onSearch,
+  onClearAll,
 }) => {
-  const [keyword, setKeyword] = useState('');
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState(tag || '');
   const tagInputRef = useRef<HTMLInputElement>(null);
 
-  const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setKeyword(val);
-    onKeywordChange(val);
+  // tag props가 변경되면 tagInput도 동기화
+  useEffect(() => {
+    setTagInput(tag || '');
+  }, [tag]);
+
+  /** 검색 실행 */
+  const triggerSearch = (nextKeyword: string, nextTag: string) => {
+    onSearch(nextKeyword.trim(), nextTag.trim());
   };
 
+  /** 키워드 입력창 엔터 */
+  const handleKeywordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      // tagInput이 있으면 먼저 태그 상태를 업데이트하고 검색
+      const currentTag = tagInput.trim();
+      if (currentTag !== tag) {
+        onTagChange(currentTag);
+      }
+      triggerSearch(keyword, currentTag);
+    }
+  };
+
+  /** 태그 입력창 엔터 */
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       const trimmed = tagInput.trim();
-      if (trimmed && !selectedTags.includes(trimmed)) {
-        onAddTag(trimmed);
-        setTagInput('');
-      }
-    } else if (
-      e.key === 'Backspace' &&
-      tagInput === '' &&
-      selectedTags.length > 0
-    ) {
-      onRemoveTag(selectedTags[selectedTags.length - 1]);
+      onTagChange(trimmed); // state 업데이트
+      triggerSearch(keyword, trimmed); // 최신 값으로 바로 검색 실행
+    } else if (e.key === 'Backspace' && tagInput === '' && tag) {
+      onTagChange('');
     }
   };
 
+  /** 검색 버튼 클릭 */
+  const handleSearchClick = () => {
+    const currentTag = tagInput.trim();
+    if (currentTag !== tag) {
+      onTagChange(currentTag);
+    }
+    triggerSearch(keyword, currentTag);
+  };
+
+  /** 초기화 */
   const handleReset = () => {
-    setKeyword('');
+    if (onClearAll) {
+      onClearAll();
+    }
     setTagInput('');
-    onKeywordChange('');
-    selectedTags.forEach((tag) => onRemoveTag(tag));
   };
 
   return (
     <div className="w-full space-y-3">
-      {/* 키워드 검색창 */}
-      <div className="relative w-full">
-        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
-          <FiSearch />
-        </span>
-        <input
-          type="text"
-          placeholder="문제 제목, 사용자명, 노트 제목으로 검색"
-          className="w-full pl-10 pr-3 py-2 border border-zinc-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#13233D]"
-          value={keyword}
-          onChange={handleKeywordChange}
-        />
+      {/* 키워드 검색 */}
+      <div className="flex w-full">
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
+            <FiSearch />
+          </span>
+          <input
+            type="text"
+            placeholder="문제 제목, 사용자명, 노트 제목으로 검색"
+            className="w-full pl-10 pr-3 py-2 border border-zinc-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#13233D]"
+            value={keyword}
+            onChange={(e) => onKeywordChange(e.target.value)}
+            onKeyDown={handleKeywordKeyDown}
+          />
+        </div>
+        <button
+          onClick={handleSearchClick}
+          className="ml-2 px-4 bg-[#13233D] text-white rounded-md hover:bg-[#0f1b31] text-sm"
+        >
+          검색
+        </button>
       </div>
 
-      {/* 태그 검색창 */}
+      {/* 태그 검색 */}
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
         <div className="relative flex-1">
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
             <FiHash />
           </span>
-          <div className="flex flex-wrap items-center gap-2 px-10 py-2 border rounded-md text-sm bg-white min-h-[42px]">
-            {selectedTags.map((tag) => (
-              <span
-                key={tag}
-                className="flex items-center bg-zinc-100 px-2 py-1 rounded-full text-sm text-zinc-800"
-              >
-                #{tag}
-                <button
-                  onClick={() => onRemoveTag(tag)}
-                  className="ml-1 text-zinc-500 hover:text-red-500 transition"
-                  aria-label={`${tag} 제거`}
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-            <input
-              ref={tagInputRef}
-              type="text"
-              placeholder="태그 검색"
-              className="flex-1 border-none outline-none text-sm bg-transparent min-w-[80px]"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={handleTagKeyDown}
-            />
-          </div>
+          <input
+            ref={tagInputRef}
+            type="text"
+            placeholder="태그 검색"
+            className="w-full pl-10 pr-3 py-2 border rounded-md text-sm focus:outline-none bg-white"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+          />
         </div>
-
-        {/* 초기화 & 정렬 */}
+        {/* 초기화 버튼 */}
         <div className="flex gap-4 items-center mt-2 md:mt-0">
           <button
             onClick={handleReset}

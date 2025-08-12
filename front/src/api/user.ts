@@ -35,7 +35,7 @@ export const deleteUser = async (userId: string | number) => {
  * @param nickname - 새 닉네임
  */
 export const updateNickname = async (userId: number, nickname: string) => {
-  const res = await api.patch(`/users/${userId}/nickname`, {
+  const res = await api.put(`/users/${userId}/nickname`, {
     nickname: nickname.trim(),
   });
   if (res.status !== 200) throw new Error('닉네임 변경에 실패했습니다.');
@@ -76,21 +76,33 @@ export const updatePassword = async (
 };
 
 /**
- * 비밀번호 변경 API
- * @param userId - 변경할 유저의 ID
- * @param currPassword - 현재 비밀번호
- * @param newPassword - 새 비밀번호
+ * 이메일을 업데이트합니다.
+ * @param userId - 업데이트할 사용자의 ID
+ * @param email - 새 이메일
  */
-export const updateEmail = async (
-  userId: number,
-  email: string,
-): Promise<void> => {
+export const updateEmail = async (userId: number, email: string): Promise<void> => {
   try {
-    await api.patch(`/users/${userId}/email`, {
-      email
+    await api.put(`/users/${userId}/email`, {
+      email,
     });
   } catch (error) {
     console.error('이메일 변경 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 한마디를 업데이트합니다.
+ * @param userId - 업데이트할 사용자의 ID
+ * @param bio - 새 한마디
+ */
+export const updateBio = async (userId: number, bio: string): Promise<void> => {
+  try {
+    await api.put(`/users/${userId}/bio`, {
+      bio: bio.trim(),
+    });
+  } catch (error) {
+    console.error('한마디 변경 실패:', error);
     throw error;
   }
 };

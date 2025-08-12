@@ -4,6 +4,9 @@ import InfoRow from './InfoRow';
 import { tierImageMap, tierMap } from '../../../data/tierMap';
 import Button from '../../../components/common/Button';
 
+// 이메일 길이 제한 상수
+const MAX_EMAIL_LENGTH = 50;
+
 interface BasicInfoListProps {
   me: UserProfile;
   isEditing?: boolean;
@@ -54,12 +57,18 @@ export default function BasicInfoList({
           label="이메일"
           value={
             isEditing ? (
-              <input
-                type="email"
-                value={onEmailValue}
-                onChange={onEmailChange}
-                className="border rounded px-2 py-1"
-              />
+              <div className="flex items-center gap-2 w-full">
+                <input
+                  type="email"
+                  value={onEmailValue}
+                  onChange={onEmailChange}
+                  className="border rounded px-2 py-1 flex-1"
+                  maxLength={MAX_EMAIL_LENGTH}
+                />
+                <div className="text-xs text-gray-500">
+                  {onEmailValue.length}/{MAX_EMAIL_LENGTH}
+                </div>
+              </div>
             ) : (
               me.email
             )

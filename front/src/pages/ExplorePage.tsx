@@ -1,96 +1,83 @@
+// src/pages/ExplorePage.tsx
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import SearchBox from '../components/search/SearchBox';
 import SearchUserScopeTabs from '../components/search/SearchUserScopeTabs';
 import FeedCard from '../components/feed/FeedCard';
 import EmptyState from '../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../hooks/useInfiniteFeeds';
-import { fetchExploreFeeds, fetchMainFeeds } from '../api/feed'; // fetchMainFeeds 추가
+import { fetchExploreFeeds, fetchMainFeeds, addFollow, removeFollow } from '../api/feed';
 import type { ExploreFeedCardData } from '../types/feed';
-import { addFollow, removeFollow } from '../api/feed';
 
 export default function ExplorePage() {
-  const [search, setSearch] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagForQuery, setTagForQuery] = useState('');
-  const [userScope, setUserScope] = useState<'all' | 'following'>('all');
-  const [feeds, setFeeds] = useState<ExploreFeedCardData[]>([]);
+  // 입력 상태 (SearchBox에서 관리)
+  const [keyword, setKeyword] = useState('');
+  const [tag, setTag] = useState('');
 
+  // 실제 검색 파라미터 (검색 실행 시에만 업데이트)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [tagQuery, setTagQuery] = useState('');
+
+  // 사용자 범위 및 기타 상태
+  const [userScope, setUserScope] = useState<'all' | 'following'>('all');
+  const [resetKey, setResetKey] = useState(0);
+
+  // API 요청에 사용할 파라미터
   const searchParams = useMemo(
     () => ({
-      search,
-      tag: tagForQuery,
+      search: searchQuery,
+      tag: tagQuery,
       scope: userScope,
     }),
-    [search, tagForQuery, userScope],
+    [searchQuery, tagQuery, userScope]
   );
 
-  // userScope에 따라 다른 API 함수를 선택
-  const fetcher = useMemo(() => {
-    if (userScope === 'following') {
-      return fetchMainFeeds;
-    }
-    return fetchExploreFeeds;
-  }, [userScope]);
-
-  // 무한스크롤 훅
-  const {
-    dataList: rawFeeds,
-    isLoading,
-    error,
-    observerRef,
-    retry,
-    updateFollowState,
-  } = useInfiniteFeeds<ExploreFeedCardData>(
-    fetcher, // 조건에 따라 선택된 fetcher 함수 전달
-    searchParams,
-    15,
+  // 사용자 범위에 따른 API 함수 선택
+  const fetcher = useMemo(
+    () => (userScope === 'following' ? fetchMainFeeds : fetchExploreFeeds),
+    [userScope]
   );
 
-  // rawFeeds 변경 시 feeds state 업데이트
-  useEffect(() => {
-    setFeeds(rawFeeds);
-  }, [rawFeeds]);
+  const { dataList: feeds, isLoading, error, observerRef, retry, updateFollowState } =
+    useInfiniteFeeds<ExploreFeedCardData>(fetcher, searchParams, 15, resetKey);
 
-  /** 팔로우 토글 핸들러 - 동일 유저의 모든 카드 업데이트 */
-  const handleToggleFollow = async (
-    targetUserId: number,
-    newState: boolean,
-  ) => {
+  /** 검색 실행 - SearchBox의 onSearch 콜백 */
+  const handleSearch = useCallback((nextKeyword: string, nextTag: string) => {
+    setSearchQuery(nextKeyword);
+    setTagQuery(nextTag);
+    setResetKey((v) => v + 1); // 첫 페이지부터 다시 로드
+  }, []);
+
+  /** 사용자 범위 변경 */
+  const handleUserScopeChange = useCallback((newScope: 'all' | 'following') => {
+    setUserScope(newScope);
+    setResetKey((v) => v + 1); // 첫 페이지부터 다시 로드
+  }, []);
+
+  /** 팔로우 토글 */
+  const handleToggleFollow = useCallback(async (targetUserId: number, newState: boolean) => {
     try {
       if (newState) {
         await addFollow(targetUserId);
       } else {
         await removeFollow(targetUserId);
       }
-      updateFollowState(targetUserId, newState); // UI 즉시 반영
+      updateFollowState(targetUserId, newState);
     } catch (e) {
       console.error('팔로우 토글 실패:', e);
     }
-  };
+  }, [updateFollowState]);
 
-  /** 검색/태그 핸들러 */
-  const handleKeywordChange = useCallback((val: string) => setSearch(val), []);
-  const handleAddTag = useCallback((tag: string) => {
-    setTags((prev) => [...prev, tag]);
-    setTagForQuery(tag);
-  }, []);
-  const handleRemoveTag = useCallback(
-    (tag: string) => {
-      const newTags = tags.filter((t) => t !== tag);
-      setTags(newTags);
-      setTagForQuery(newTags.at(-1) ?? '');
-    },
-    [tags],
-  );
-
+  /** 초기화 */
   const resetFilters = useCallback(() => {
-    setSearch('');
-    setTags([]);
-    setTagForQuery('');
+    setKeyword('');
+    setTag('');
+    setSearchQuery('');
+    setTagQuery('');
     setUserScope('all');
+    setResetKey((v) => v + 1);
   }, []);
 
-  /** 에러 상태 */
+  // 에러 상태 렌더링
   if (error) {
     return (
       <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
@@ -116,32 +103,44 @@ export default function ExplorePage() {
   return (
     <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
       <div className="max-w-[1200px] mx-auto space-y-6">
-        <SearchUserScopeTabs value={userScope} onChange={setUserScope} />
-
-        <SearchBox
-          selectedTags={tags}
-          onAddTag={handleAddTag}
-          onRemoveTag={handleRemoveTag}
-          onKeywordChange={handleKeywordChange}
+        {/* 사용자 범위 탭 */}
+        <SearchUserScopeTabs
+          value={userScope}
+          onChange={handleUserScopeChange}
         />
 
-        {/* 초기 로딩 */}
+        {/* 검색 박스 */}
+        <SearchBox
+          keyword={keyword}
+          onKeywordChange={setKeyword}
+          tag={tag}
+          onTagChange={setTag}
+          onSearch={handleSearch}
+          onClearAll={resetFilters}
+        />
+
+        {/* 피드 컨텐츠 */}
         {isLoading && feeds.length === 0 ? (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8400] mx-auto mb-4"></div>
             <p className="text-[#13233D]/70">피드를 불러오는 중...</p>
           </div>
         ) : (
-          <div className="max-w-[1200px] mx-auto space-y-6">
+          <>
             {feeds.length === 0 ? (
               <EmptyState
                 title="표시할 피드가 없습니다"
-                description="검색어/태그 또는 팔로잉 범위를 확인해 주세요."
+                description={
+                  searchQuery || tagQuery || userScope === 'following'
+                    ? "검색 조건이나 팔로잉 범위에 맞는 피드가 없습니다."
+                    : "아직 등록된 피드가 없습니다."
+                }
                 buttonText="필터 초기화"
                 onButtonClick={resetFilters}
               />
             ) : (
               <>
+                {/* 피드 카드 그리드 */}
                 <div className="flex flex-wrap justify-center gap-x-6 gap-y-6">
                   {feeds.map((feed) => (
                     <FeedCard
@@ -165,7 +164,7 @@ export default function ExplorePage() {
                 )}
               </>
             )}
-          </div>
+          </>
         )}
       </div>
     </main>

@@ -1,4 +1,3 @@
-// src/pages/mypage/dashboard/Dashboard.tsx
 import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api/axiosInstance';
@@ -22,6 +21,8 @@ interface UserInfo {
   userTier: number;
   followerCount: number;
   followingCount: number;
+  // 이 부분을 추가했습니다.
+  image?: string; 
 }
 
 export default function Dashboard() {
@@ -143,6 +144,8 @@ export default function Dashboard() {
           userTier={user.userTier}
           followerCount={user.followerCount}
           followingCount={user.followingCount}
+          // 이 부분을 추가했습니다.
+          image={user.image}
           onOpenModal={(type) => {
             setFollowTab(type);
             setFollowOpen(true);
@@ -172,15 +175,15 @@ export default function Dashboard() {
           maxStreak={maxStreak}
           week={week}
           onOpenCalendar={() => setCalendarOpen(true)}
-         />
+          />
 
       <StreakCalendarModal
         open={calendarOpen}
         onClose={() => setCalendarOpen(false)}
-        monthBase={calendarMonth}         // 이번 달
+        monthBase={calendarMonth}          // 이번 달
         counts={monthCountMap}
         onPrevMonth={() => setCalendarMonth(m => addMonths(m, -1))} // 이전 달
-        onNextMonth={() => setCalendarMonth(m => addMonths(m,  1))} // 다음 달
+        onNextMonth={() => setCalendarMonth(m => addMonths(m, 1))} // 다음 달
       />
       </div>
     </>
