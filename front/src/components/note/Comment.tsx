@@ -64,15 +64,19 @@ export default function Comment({
     <div className="comment-container flex flex-row justify-between my-2 p-3 border-b">
       {/* <div>사진{profilePic}</div> */}
       <div className="flex-grow mx-4">
-        <div>{user.nickname}</div>
+        <div className="text-md">{user.nickname}</div>
         {loginUserId === user.userId && isEditing ? (
           // --- 수정 모드 UI ---
-          <textarea
-            className="w-full p-2 border border-gray-300 rounded-lg mt-2 resize-none"
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            rows={3}
-          />
+          <div>
+            <div className="text-sm">{editedContent.length}자 / 100자</div>
+            <textarea
+              className="w-full p-2 border border-gray-300 rounded-lg mt-2 resize-none"
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              rows={3}
+              maxLength={100}
+            />
+          </div>
         ) : (
           // --- 보기 모드 UI ---
           <div className="text-md font-bold my-3 text-left">{content}</div>
