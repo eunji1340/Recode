@@ -46,7 +46,7 @@ export default function ProfileHeader({
             {/* 팔로우 버튼: 타인 페이지에서만 */}
             {showFollowButton && (
               <FollowButton
-                isFollowing={isFollowing!}
+                following={isFollowing!}
                 onToggle={onToggleFollow!}
               />
             )}
