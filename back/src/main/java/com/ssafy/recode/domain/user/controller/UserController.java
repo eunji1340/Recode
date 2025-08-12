@@ -82,7 +82,7 @@ public class UserController {
 
     /** 7. 닉네임 변경 */
     @Operation(summary = "닉네임 변경", description = "특정 사용자의 닉네임을 변경합니다.")
-    @PatchMapping("/{userId}/nickname")
+    @PutMapping("/{userId}/nickname")
     public ResponseEntity<Void> updateNickname(@PathVariable Long userId,
                                                @RequestBody NicknameUpdateRequest dto) {
         userService.updateNickname(userId, dto.getNickname());
@@ -91,7 +91,7 @@ public class UserController {
 
     /** 8. 비밀번호 변경 */
     @Operation(summary = "비밀번호 변경", description = "특정 사용자의 비밀번호를 변경합니다.")
-    @PatchMapping("/{userId}/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<Void> updatePassword(@PathVariable Long userId,
                                                @RequestBody UpdatePasswordRequest dto) {
         userService.updatePassword(userId, dto.getCurrPassword(), dto.getNewPassword());
