@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @Configuration // 스프링 설정 클래스로 등록
 @EnableWebSecurity // Spring Security 활성화
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -61,7 +63,7 @@ public class SecurityConfig {
                                 "/users/bojId_check", "/users/recodeId_dupcheck",
                                 "/users/nickname_dupcheck", "/users/email_dupcheck",
                                 "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**",
-                                "/solvedac/suggestion"
+                                "/solvedac/suggestion", "/", "/index"
                         ).permitAll()
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()

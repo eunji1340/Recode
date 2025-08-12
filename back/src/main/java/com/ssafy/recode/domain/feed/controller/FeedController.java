@@ -4,10 +4,8 @@ import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.feed.dto.request.CommentRequest;
 import com.ssafy.recode.domain.feed.dto.response.CommentResponseDto;
 import com.ssafy.recode.domain.feed.dto.response.FeedResponseDto;
-import com.ssafy.recode.domain.feed.dto.response.UserCommentDto;
 import com.ssafy.recode.domain.feed.service.FeedService;
 import com.ssafy.recode.domain.user.entity.User;
-import com.ssafy.recode.domain.user.service.UserService;
 import com.ssafy.recode.global.dto.response.ApiListPagingResponse;
 import com.ssafy.recode.global.dto.response.ApiListResponse;
 import com.ssafy.recode.global.dto.response.ApiSingleResponse;
@@ -21,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -36,7 +33,6 @@ import java.util.Map;
 public class FeedController {
 
     private final FeedService feedService;
-    private final UserService userService;
 
     // 좋아요 수 조회
     @GetMapping("/{noteId}/hearts")
@@ -166,66 +162,20 @@ public class FeedController {
     // 특정 유저의 댓글 조회
     @GetMapping("/comments/{userId}")
     @Operation(summary = "특정 유저의 전체 댓글 조회")
-    public ResponseEntity<ApiListPagingResponse<UserCommentDto>> getCommentsByUserId(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size); // 정렬 없음
-
-        User viewer = (userDetails != null) ? userDetails.getUser() : null;
-
-        Page<UserCommentDto> result = feedService.getCommentsByUserId(userId, viewer, pageable);
-
-        return ResponseEntity.ok(
-                ApiListPagingResponse.from(
-                        result.getContent(),
-                        result.getTotalElements(),
-                        result.getTotalPages(),
-                        result.isLast()
-                )
-        );
+    public ResponseEntity<ApiListResponse<CommentResponseDto>> getCommentsByUserId(@PathVariable Long userId) {
+        List<CommentResponseDto> comments = feedService.getCommentsByUserId(userId);
+        return ResponseEntity.ok(ApiListResponse.from(comments));
     }
-
 
     @Operation(summary = "사용자가 좋아요한 노트 목록 조회", description = "userId가 좋아요한 노트들을 페이지네이션으로 조회합니다.")
     @GetMapping("/{userId}/liked-notes")
-    public ResponseEntity<ApiListPagingResponse<UserCommentDto>> getLikedNotesByUserId(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<Map<String, Object>> getLikedNotesByUserId(
             @PathVariable long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        Page<UserCommentDto> result = feedService.getLikedNotesByUserId(userId, userDetails.getUser(), page, size);
-        return ResponseEntity.ok(
-                ApiListPagingResponse.from(
-                        result.getContent(),
-                        result.getTotalElements(),
-                        result.getTotalPages(),
-                        result.isLast()
-                )
-        );
-    }
-
-    @Operation(summary = "userId로 노트 검색", description = "userId로 노트를 조회합니다.")
-    @GetMapping("/{userId}")
-    public ResponseEntity<ApiListPagingResponse<FeedResponseDto>> getNotesByUserId(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size,
-            @RequestParam(required = false) String tag,
-            @RequestParam(required = false) String search) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FeedResponseDto> feeds = feedService.getAllFeedsByUserId(userDetails.getUser(), userId, tag, search, pageable);
-
-        return ResponseEntity.ok(ApiListPagingResponse.from(
-                feeds.getContent(),
-                feeds.getTotalElements(),
-                feeds.getTotalPages(),
-                feeds.isLast()
-        ));
+        NoteResponseWrapper response = feedService.getLikedNotesByUserId(userId, page, size);
+        Map<String, Object> body = Map.of("data", response);
+        return ResponseEntity.ok(body);
     }
 }

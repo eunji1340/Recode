@@ -15,6 +15,15 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
+    /**
+     * Spring Security의 SpEL(@PreAuthorize)에서 principal.id로 접근 가능하도록 만든 메서드.
+     * - 예: @PreAuthorize("#userId == principal.id")
+     * - SpEL은 프로퍼티명을 getter 메서드로 변환하여 호출하므로 getId() 필요
+     */
+    public Long getId() {
+        return user.getUserId();
+    }
+
     // 사용자 ID(Long)를 반환 (내부 로직에서 사용하기 위함)
     public Long getUserId() {
         return user.getUserId();

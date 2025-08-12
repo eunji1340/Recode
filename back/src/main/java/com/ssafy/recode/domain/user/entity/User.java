@@ -1,5 +1,7 @@
 package com.ssafy.recode.domain.user.entity;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import lombok.*;
 import org.openqa.selenium.Cookie;
@@ -32,8 +34,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 255)
     private String nickname;
 
-    @Column(name = "image", length = 255)
-    private String image;
+    @Column(name = "image", length = 255, nullable = true)
+    private String image; // 예: "/uploads/user123.jpg"
 
     @Column(nullable = false, length = 255)
     private String password;
@@ -97,4 +99,9 @@ public class User {
         this.bojCookiesJson = json;
     }
 
+    public void updateEmail(String email) { this.email = email; }
+
+    public void updateBio(String bio) { this.bio = bio; }
 }
+
+

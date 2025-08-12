@@ -37,6 +37,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -106,7 +108,7 @@ public class UserService {
             JsonNode user = root.get("items").get(0);
             String handle = user.get("handle").asText();
             if (bojId.equals(handle)) {
-                int tier = user.get("tier").asInt();
+                int tier = user.get("tier").asInt(); // 여전히 tier 반환은 유지
                 String profileImageUrl = user.get("profileImageUrl").asText();
                 log.debug("[BOJ ID 유효] handle: {}, tier: {}", handle, tier);
                 return tier;
@@ -235,12 +237,10 @@ public class UserService {
     }
 
     /** 회원 탈퇴 */
-    @Transactional
     public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("존재하지 않는 유저입니다.");
-        }
-        userRepository.deleteById(userId);
+        User user = findUserById(userId);
+        user.markAsDeleted();
+        userRepository.save(user);
     }
 
     /** 유저 조회 공통 로직 */
@@ -311,4 +311,16 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /** 이메일 변경 */
+    public void updateEmail(Long userId, String newEmail) {
+        User user = findUserById(userId);
+        user.updateEmail(newEmail);
+    }
+
+    /** 한마디 변경 */
+    public void updateBio(Long userId, String newBio) {
+        User user = findUserById(userId);
+        user.updateBio(newBio);
+    }
 }
+

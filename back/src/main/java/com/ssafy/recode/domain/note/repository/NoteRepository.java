@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +24,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     Optional<Note> findByNoteIdAndIsDeletedFalse(Long noteId);
     Page<Note> findByUserIn(List<User> users, Pageable pageable);
     Page<Note> findByUserInAndIsPublicTrue(List<User> users, Pageable pageable);
-    List<Note> findAllByNoteIdIn(Collection<Long> noteIds);
     // 전체 조회
     Page<Note> findAllByIsPublicTrueAndIsDeletedFalse(Pageable pageable);
 
@@ -119,58 +117,5 @@ AND n.user IN :users AND t.tagName = :tag
     List<LocalDateTime> findAllNoteDateTimesByUserId(@Param("userId") Long userId);
 
     Page<Note> findAllByUser_UserId(long userId, Pageable pageable);
-
-    List<Note> findByUserUserIdAndIsDeletedFalse(Long userId);
-
-    // 특정 유저 + 전체(공개 & 삭제안됨)
-    Page<Note> findByUser_UserIdAndIsPublicTrueAndIsDeletedFalse(Long userId, Pageable pageable);
-
-    // 특정 유저 + 태그만
-    @Query("""
-SELECT DISTINCT n FROM Note n
-JOIN n.tags t
-WHERE n.isPublic = true AND n.isDeleted = false
-  AND n.user.userId = :userId
-  AND t.tagName = :tag
-""")
-    Page<Note> findByUserAndTag(@Param("userId") Long userId,
-                                @Param("tag") String tag,
-                                Pageable pageable);
-
-    // 특정 유저 + 검색어만
-    @Query("""
-SELECT n FROM Note n
-WHERE n.isPublic = true AND n.isDeleted = false
-  AND n.user.userId = :userId
-  AND (
-    LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
-    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
-    CAST(n.problemId AS string) LIKE %:search% OR
-    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
-  )
-""")
-    Page<Note> searchUserNotesOnly(@Param("userId") Long userId,
-                                   @Param("search") String search,
-                                   Pageable pageable);
-
-    // 특정 유저 + 태그 + 검색어
-    @Query("""
-SELECT DISTINCT n FROM Note n
-JOIN n.tags t
-WHERE n.isPublic = true AND n.isDeleted = false
-  AND n.user.userId = :userId
-  AND t.tagName = :tag
-  AND (
-    LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
-    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
-    CAST(n.problemId AS string) LIKE %:search% OR
-    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
-  )
-""")
-    Page<Note> searchUserNotesByTagAndKeyword(@Param("userId") Long userId,
-                                              @Param("tag") String tag,
-                                              @Param("search") String search,
-                                              Pageable pageable);
-
 }
 

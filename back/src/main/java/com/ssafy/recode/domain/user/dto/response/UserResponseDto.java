@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class UserResponseDto {
     private Long userId;        // user_id
-//    private String recodeId;    // recode_id
+    private String recodeId;    // recode_id
     private String bojId;       // boj_id
 //    private String email;       // email
     private String nickname;    // nickname
@@ -19,7 +19,7 @@ public class UserResponseDto {
     @Builder
     public UserResponseDto(User entity) {
         this.userId = entity.getUserId();
-//        this.recodeId = entity.getRecodeId();
+        this.recodeId = entity.getRecodeId();
         this.bojId = entity.getBojId();
 //        this.email = entity.getEmail();
         this.nickname = entity.getNickname();

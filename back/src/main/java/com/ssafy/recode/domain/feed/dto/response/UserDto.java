@@ -10,7 +10,6 @@ public class UserDto {
     private Long userId;
     private String bojId;
     private String nickname;
-    private String image;
     private int userTier;
 
     public static UserDto from(User user) {
@@ -18,7 +17,6 @@ public class UserDto {
                 .userId(user.getUserId())
                 .bojId(user.getBojId())
                 .nickname(user.getNickname())
-                .image(user.getImage())
                 .userTier(user.getUserTier())
                 .build();
     }
