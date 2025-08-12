@@ -23,7 +23,7 @@ import ProtectedOverlay from '../components/common/ProtectedOverlay';
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [note, setNote] = useState<NoteDetailResponseDTO | null>(null);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState<CommentApiResponse | null>(null);
@@ -33,7 +33,7 @@ export default function NoteDetailPage() {
   const [isSuccessCodeExpanded, setIsSuccessCodeExpanded] = useState(false);
   const [isFailCodeExpanded, setIsFailCodeExpanded] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-  
+
   const { userId } = useUserStore();
   const loginUserId = parseInt(userId ?? '0', 10);
 
@@ -46,7 +46,7 @@ export default function NoteDetailPage() {
   if (!id) {
     return <div>Invalid note ID</div>;
   }
-  
+
   const noteId = parseInt(id, 10);
 
   const fetchComments = async () => {
@@ -175,7 +175,7 @@ export default function NoteDetailPage() {
   if (!note) {
     return <div>노트 데이터를 찾을 수 없습니다.</div>;
   }
-  
+
   const date = new Date(note.createdAt).toLocaleDateString('ko-KR');
   const image = '';
   const isMyNote = writer?.userId === loginUserId;
@@ -208,7 +208,7 @@ export default function NoteDetailPage() {
               {!isMyNote ? (
                 <div>
                   <FollowButton
-                    isFollowing={isFollowing}
+                    following={isFollowing}
                     onToggle={handleToggleFollow}
                   />
                 </div>

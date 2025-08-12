@@ -65,6 +65,9 @@ export default function NoteGeneratePage() {
     isEditing ? noteToEdit.isPublic : true,
   );
 
+  const [successList, setSuccessList] = useState<SubmissionItem[]>([]);
+  const [failList, setFailList] = useState<SubmissionItem[]>([]);
+
   const [bojCookie, setBojCookie] = useState('');
 
   //   로그인 여부 확인
