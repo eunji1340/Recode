@@ -6,6 +6,7 @@ import { useInfiniteFeeds } from '../../hooks/useInfiniteFeeds';
 import { fetchLikedFeeds } from '../../api/feed';
 import { useUserStore } from '../../stores/userStore';
 import type { ExploreFeedCardData } from '../../types/feed';
+import { addFollow, removeFollow } from '../../api/feed'; // 팔로우 API import
 
 /**
  * 사용자가 좋아요한 피드 목록 페이지 (정렬 옵션 제거)
@@ -47,11 +48,29 @@ export default function HeartsPage() {
     error,
     observerRef,
     retry,
+    updateFollowState, // useInfiniteFeeds 훅에서 updateFollowState 함수를 받아옵니다.
   } = useInfiniteFeeds<ExploreFeedCardData>(
     fetchLikedFeedsWithUserId,
     searchParams,
     15
   );
+
+  /** 팔로우 토글 핸들러 - 동일 유저의 모든 카드 업데이트 */
+  const handleToggleFollow = async (
+    targetUserId: number,
+    newState: boolean,
+  ) => {
+    try {
+      if (newState) {
+        await addFollow(targetUserId);
+      } else {
+        await removeFollow(targetUserId);
+      }
+      updateFollowState(targetUserId, newState); // UI 즉시 반영
+    } catch (e) {
+      console.error('팔로우 토글 실패:', e);
+    }
+  };
 
   // 검색 핸들러들
   const handleKeywordChange = useCallback((val: string) => setSearch(val), []);
@@ -148,7 +167,13 @@ export default function HeartsPage() {
               /* 피드 목록 */
               <div className="flex flex-wrap justify-center gap-x-6 gap-y-6">
                 {feeds.map((feed) => (
-                  <FeedCard key={feed.noteId} {...feed} />
+                  <FeedCard
+                    key={feed.noteId}
+                    {...feed}
+                    onToggleFollow={() =>
+                      handleToggleFollow(feed.user.userId, !feed.following)
+                    }
+                  />
                 ))}
 
                 {/* 무한 스크롤 트리거 */}
