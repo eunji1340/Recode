@@ -4,6 +4,7 @@ export interface User {
   bojId: string;
   nickname: string;
   userTier: number;
+  image?: string;
 }
 
 // 댓글 type

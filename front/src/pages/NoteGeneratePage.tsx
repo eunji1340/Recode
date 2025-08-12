@@ -2,11 +2,12 @@ import CodeList from '../components/code/CodeList';
 import CodeEditor from '../components/code/CodeEditor';
 import CodePreview from '../components/code/CodePreview';
 import type { SubmissionItem } from '../types';
-import { useState } from 'react';
+import type { NoteDetailResponseDTO } from '../types/NoteDetail';
+import { useEffect, useState } from 'react';
+// import mockSubmissionApiResponse from '../data/MockSubmissionData';
 import api from '../api/axiosInstance';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import ProblemTitle from '../components/feed/ProblemTitle';
-import { useLocation } from 'react-router-dom';
 import type {
   AIGenerateRequestDTO,
   noteGenerateRequestDTO,
@@ -18,21 +19,51 @@ export default function NoteGeneratePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { problemName, problemTier } = location.state || {};
 
-  const problemId = parseInt(id ?? '0', 10);
+  // 수정 모드인지 확인하고, 노트 데이터를 가져옵니다.
+  const noteToEdit: NoteDetailResponseDTO | null = location.state?.note;
+  const isEditing = !!noteToEdit;
 
-  const [successList, setSuccessList] = useState<SubmissionItem[]>([]);
-  const [failList, setFailList] = useState<SubmissionItem[]>([]);
+  // 문제 정보는 수정/생성 모드에 따라 다르게 가져옵니다.
+  const problemId = isEditing
+    ? noteToEdit.problem.problemId
+    : parseInt(id ?? '0', 10);
+  const problemName = isEditing
+    ? noteToEdit.problem.problemName
+    : location.state?.problemName;
+  const problemTier = isEditing
+    ? noteToEdit.problem.problemTier
+    : location.state?.problemTier;
 
-  const [successCode, setSuccessCode] = useState<SubmissionItem | null>(null);
-  const [failCode, setFailCode] = useState<SubmissionItem | null>(null);
-  const [title, setTitle] = useState('새 노트 제목');
+  // 상태 초기값을 수정 모드인지에 따라 설정합니다.
+  const [successCode, setSuccessCode] = useState<SubmissionItem | null>(
+    isEditing
+      ? ({
+          code: noteToEdit.successCode,
+          language: noteToEdit.successLanguage,
+        } as SubmissionItem)
+      : null,
+  );
+  const [failCode, setFailCode] = useState<SubmissionItem | null>(
+    isEditing
+      ? ({
+          code: noteToEdit.failCode,
+          language: noteToEdit.failLanguage,
+        } as SubmissionItem)
+      : null,
+  );
+  const [title, setTitle] = useState(
+    isEditing ? noteToEdit.noteTitle : '새 노트 제목',
+  );
   const [noteContent, setNoteContent] = useState(
-    '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.',
+    isEditing
+      ? noteToEdit.content
+      : '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.',
   );
   const [isGenerating, setIsGenerating] = useState(false);
-  const [visibility, setVisibility] = useState(true);
+  const [visibility, setVisibility] = useState(
+    isEditing ? noteToEdit.isPublic : true,
+  );
 
   const [bojCookie, setBojCookie] = useState('');
 
@@ -103,7 +134,7 @@ export default function NoteGeneratePage() {
     }
   };
 
-  //   TODO: 중복 로직 통합
+  // TODO: 중복 로직 통합
   const handleSuccessCodeChange = (submission: SubmissionItem) => {
     setSuccessCode(submission);
   };
@@ -151,36 +182,68 @@ export default function NoteGeneratePage() {
     }
   };
 
-  const noteGenerateRequest: noteGenerateRequestDTO = {
-    problemId: problemId,
-    problemName: problemName,
-    problemTier: problemTier,
-    noteTitle: title,
-    content: noteContent,
-    successCode: successCode ? successCode.code : '',
-    successCodeStart: 0,
-    successCodeEnd: 0,
-    successLanguage: successCode ? successCode.language : '',
-    failCode: failCode ? failCode.code : '',
-    failCodeStart: 0,
-    failCodeEnd: 0,
-    failLanguage: failCode ? failCode.language : '',
-    isPublic: visibility,
-    isLiked: false,
-    isFollowing: false,
-  };
-
-  //   노트 생성
+  // 노트 저장 (생성/수정)
   const handleSave = async () => {
     try {
-      const resp = await api.post(`/notes`, noteGenerateRequest);
-      const res = resp.data;
-      const createdNoteId = res.noteId;
-      alert('노트 생성 완료');
-      navigate(`/note/${createdNoteId}`);
+      if (isEditing) {
+        // 수정 모드: PUT 요청
+        if (!noteToEdit) return; // 노트 데이터가 없으면 종료
+        const noteId = noteToEdit.noteId;
+        const noteUpdateRequest = {
+          problemId: noteToEdit.problem.problemId,
+          problemName: noteToEdit.problem.problemName,
+          problemTier: noteToEdit.problem.problemTier,
+          noteTitle: title ?? noteToEdit.noteTitle,
+          content: noteContent ?? noteToEdit.content,
+
+          successCode: successCode?.code ?? noteToEdit.successCode,
+          successCodeStart: noteToEdit.successCodeStart ?? 0,
+          successCodeEnd: noteToEdit.successCodeEnd ?? 0,
+          successLanguage: successCode?.language ?? noteToEdit.successLanguage,
+
+          failCode: failCode?.code ?? noteToEdit.failCode,
+          failCodeStart: noteToEdit.failCodeStart ?? 0,
+          failCodeEnd: noteToEdit.failCodeEnd ?? 0,
+          failLanguage: failCode?.language ?? noteToEdit.failLanguage,
+
+          isPublic: visibility ?? noteToEdit.isPublic,
+          isLiked: noteToEdit.liked,
+          isFollowing: noteToEdit.following,
+        };
+
+        const resp = await api.put(`/notes/${noteId}`, noteUpdateRequest);
+        console.log('노트 수정 완료', resp.data);
+        alert('노트가 성공적으로 수정되었습니다.');
+        navigate(`/note/${noteId}`);
+      } else {
+        // 생성 모드: POST 요청
+        const noteGenerateRequest: noteGenerateRequestDTO = {
+          problemId: problemId,
+          problemName: problemName,
+          problemTier: problemTier,
+          noteTitle: title,
+          content: noteContent,
+          successCode: successCode ? successCode.code : '',
+          successCodeStart: 0,
+          successCodeEnd: 0,
+          successLanguage: successCode ? successCode.language : '',
+          failCode: failCode ? failCode.code : '',
+          failCodeStart: 0,
+          failCodeEnd: 0,
+          failLanguage: failCode ? failCode.language : '',
+          isPublic: visibility,
+          isLiked: false,
+          isFollowing: false,
+        };
+        const resp = await api.post(`/notes`, noteGenerateRequest);
+        const createdNoteId = resp.data.noteId;
+        alert('노트가 성공적으로 생성되었습니다.');
+        navigate(`/note/${createdNoteId}`);
+      }
     } catch (err) {
       console.log('에러 발생');
       console.log(err);
+      alert('노트 저장에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -240,12 +303,12 @@ export default function NoteGeneratePage() {
         <div className="code-container basis-2/3">
           {/* 제출내역 list */}
           <div className="code-list flex">
-            {/* TODO: mockData success/fail 분해 */}
             <div className="success-code basis-1/2">
               <CodeList
                 list={successList}
                 name="success-code-selection"
                 onCodeSelect={handleSuccessCodeChange}
+                selectedCode={successCode}
               ></CodeList>
             </div>
             <div className="fail-code basis-1/2">
@@ -253,6 +316,7 @@ export default function NoteGeneratePage() {
                 list={failList}
                 name="fail-code-selection"
                 onCodeSelect={handleFailCodeChange}
+                selectedCode={failCode}
               ></CodeList>
             </div>
           </div>
@@ -354,7 +418,7 @@ export default function NoteGeneratePage() {
             onClick={handleSave}
             className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
           >
-            저장하기
+            {isEditing ? '수정하기' : '저장하기'}
           </button>
         </div>
       </div>
