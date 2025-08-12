@@ -10,13 +10,13 @@ import { useFollow } from '../hooks/useFollow';
 import { fetchUserFeeds } from '../api/feed';
 import { fetchAllUserDashboardData, fetchFollowDetails } from '../api/user';
 import type { UserDashboardData } from '../api/user';
-import type { ExploreFeedCardData, SortOption } from '../types/feed';
+import type { ExploreFeedCardData } from '../types/feed';
 import type { FollowDetail } from './mypage/dashboard/FollowModal';
 import FollowModal from './mypage/dashboard/FollowModal';
 
 export default function UserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
-  const myUserId = useUserStore(state => state.userId);
+  const myUserId = useUserStore((state) => state.userId);
 
   const [user, setUser] = useState<UserDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,16 +24,20 @@ export default function UserDetailPage() {
 
   // 팔로우 모달 상태
   const [followOpen, setFollowOpen] = useState(false);
-  const [followTab, setFollowTab] = useState<'followers' | 'followings'>('followers');
+  const [followTab, setFollowTab] = useState<'followers' | 'followings'>(
+    'followers',
+  );
   const [followDetails, setFollowDetails] = useState<FollowDetail[]>([]);
   const [followLoading, setFollowLoading] = useState(false);
 
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagForQuery, setTagForQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('latest');
 
-  const { isFollowing, toggleFollow, setIsFollowing } = useFollow(false, Number(userId));
+  const { following, toggleFollow, setFollowing } = useFollow(
+    false,
+    Number(userId),
+  );
 
   // 유저 정보 + 팔로잉 여부 로드
   useEffect(() => {
@@ -43,47 +47,51 @@ export default function UserDetailPage() {
     setError(null);
 
     fetchAllUserDashboardData(userId)
-      .then(userData => setUser(userData))
+      .then((userData) => setUser(userData))
       .catch(() => setError('유저 정보를 불러오는 중 오류가 발생했습니다.'))
       .finally(() => setLoading(false));
 
     // 내 팔로잉 목록 가져와서 userId 포함 여부 확인
     if (myUserId && Number(myUserId) !== Number(userId)) {
       fetchFollowDetails(String(myUserId), 'followings')
-        .then(list => {
-          const exists = list.some(f => f.userId === Number(userId));
-          setIsFollowing(exists);
+        .then((list) => {
+          const exists = list.some((f) => f.userId === Number(userId));
+          setFollowing(exists);
         })
-        .catch(() => setIsFollowing(false));
+        .catch(() => setFollowing(false));
     }
-  }, [userId, myUserId, setIsFollowing]);
+  }, [userId, myUserId, setFollowing]);
 
   // 팔로우 모달 열릴 때 상세 정보 로드
-  const handleOpenFollowModal = useCallback(async (type: 'followers' | 'followings') => {
-    if (!userId) return;
-    setFollowTab(type);
-    setFollowOpen(true);
-    setFollowLoading(true);
-    try {
-      const details = await fetchFollowDetails(userId, type);
-      setFollowDetails(details);
-    } catch (e) {
-      console.error(e);
-      setFollowDetails([]);
-    } finally {
-      setFollowLoading(false);
-    }
-  }, [userId]);
+  const handleOpenFollowModal = useCallback(
+    async (type: 'followers' | 'followings') => {
+      if (!userId) return;
+      setFollowTab(type);
+      setFollowOpen(true);
+      setFollowLoading(true);
+      try {
+        const details = await fetchFollowDetails(userId, type);
+        setFollowDetails(details);
+      } catch (e) {
+        console.error(e);
+        setFollowDetails([]);
+      } finally {
+        setFollowLoading(false);
+      }
+    },
+    [userId],
+  );
 
-  // 검색 및 정렬 파라미터를 메모이제이션하여 불필요한 리렌더링 방지
-  const searchParams = useMemo(() => ({
-    search,
-    tag: tagForQuery,
-    sortType: sortBy,
-  }), [search, tagForQuery, sortBy]);
+  // 검색 파라미터 (정렬 제거)
+  const searchParams = useMemo(
+    () => ({
+      search,
+      tag: tagForQuery,
+    }),
+    [search, tagForQuery],
+  );
 
-  // useInfiniteFeeds 훅에 정렬 파라미터가 정확히 전달되고 있는지 확인
-  // sortBy가 변경되면 searchParams가 새로 생성되어 훅이 데이터를 다시 불러와야 합니다.
+  // 피드 데이터 로드
   const {
     dataList: feeds,
     isLoading: feedsLoading,
@@ -91,7 +99,7 @@ export default function UserDetailPage() {
   } = useInfiniteFeeds<ExploreFeedCardData>(
     (params) => fetchUserFeeds({ ...params, userId: Number(userId) }),
     searchParams,
-    15
+    15,
   );
 
   if (loading) return <div>로딩 중...</div>;
@@ -112,7 +120,7 @@ export default function UserDetailPage() {
           image={user.image}
           followerCount={user.followerCount}
           followingCount={user.followingCount}
-          isFollowing={!isMyPage && isFollowing} // 내 페이지면 버튼 안보임
+          isFollowing={!isMyPage && following}
           onToggleFollow={!isMyPage ? toggleFollow : undefined}
           onOpenModal={handleOpenFollowModal}
         />
@@ -140,8 +148,6 @@ export default function UserDetailPage() {
             setTagForQuery(newTags.at(-1) ?? '');
           }}
           onKeywordChange={setSearch}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
         />
 
         {feedsLoading && feeds.length === 0 ? (
@@ -158,7 +164,7 @@ export default function UserDetailPage() {
               />
             ) : (
               <div className="flex flex-wrap justify-center gap-x-6 gap-y-6 mt-8">
-                {feeds.map(feed => (
+                {feeds.map((feed) => (
                   <FeedCard key={feed.noteId} {...feed} />
                 ))}
                 <div ref={observerRef} className="h-1" />

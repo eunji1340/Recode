@@ -65,7 +65,7 @@ export const updatePassword = async (
   newPassword: string
 ): Promise<void> => {
   try {
-    await api.patch(`/users/${userId}/password`, {
+    await api.put(`/users/${userId}/password`, {
       currPassword,
       newPassword,
     });
