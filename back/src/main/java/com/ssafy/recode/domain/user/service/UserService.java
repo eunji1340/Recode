@@ -228,6 +228,7 @@ public class UserService {
     }
 
     /** 특정 회원 조회 */
+    @Transactional(readOnly = true)
     public UserDetailDto getUserById(Long userId) {
         User user = findUserById(userId);
         return new UserDetailDto(user);
@@ -243,6 +244,7 @@ public class UserService {
     }
 
     /** 유저 조회 공통 로직 */
+    @Transactional(readOnly = true)
     private User findUserById(Long userId) {
         return userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 탈퇴한 유저입니다."));
@@ -291,4 +293,22 @@ public class UserService {
         // 새로 발급된 토큰과 사용자 정보를 반환
         return new TokenPair(user, newAccessToken, newRefreshToken);
     }
+
+    /** user_id로 boj_id 조회 */
+    public String getBaekjoonId(Long userId) {
+        User user = findUserById(userId);
+        return user.getBojId();
+    }
+
+    /** 사용자에게서 받은 쿠키를 User 엔티티에 저장 **/
+    @Transactional
+    public void saveBojCookieValue(Long userId, String cookieValue) {
+        User user = findUserById(userId);
+        user.setBojCookieValue(cookieValue);
+
+        String jsonString = "[{\"name\":\"OnlineJudge\",\"value\":\"" + cookieValue + "\",\"domain\":\".acmicpc.net\",\"path\":\"/\",\"secure\":true,\"httpOnly\":false}]";
+        user.setBojCookiesJson(jsonString);
+        userRepository.save(user);
+    }
+
 }

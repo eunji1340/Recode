@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -154,4 +155,14 @@ public class UserController {
         CookieUtil.deleteTestCookie(response, "refreshToken");
         return ResponseEntity.ok(ApiSingleResponse.from("성공적으로 로그아웃 되었습니다."));
     }
+
+    /** 14. 백준 쿠키 저장 **/
+    @Operation(summary = "백준 쿠키 저장", description = "백준에서 세션 쿠키를 추출하여 저장합니다.")
+    @PreAuthorize("#userId == principal.id")
+    @PostMapping("/{userId}/boj-cookies")
+    public ResponseEntity<?> saveBojCookies(@PathVariable Long userId, @RequestBody CookieRequestDto cookieRequestDto ) {
+        userService.saveBojCookieValue(userId, cookieRequestDto.getCookieValue());
+        return ResponseEntity.ok("백준 쿠키가 성공적으로 저장되었습니다.");
+    }
+
 }

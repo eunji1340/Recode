@@ -43,6 +43,12 @@ public class User {
     @Column(nullable = false)
     private boolean isDeleted;
 
+    @Column(length = 4096)
+    private String bojCookiesJson;
+
+    @Column(length = 4096)
+    private String bojCookieValue;
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
@@ -62,4 +68,29 @@ public class User {
     public void updateImage(String image) {
         this.image = image;
     }
+
+    public void setBojCookieValue(String cookieValue) {
+        this.bojCookieValue = cookieValue;
+    }
+
+    public Set<Cookie> getBojCookies() {
+        if (this.bojCookieValue == null || this.bojCookieValue.isEmpty()) {
+            return null;
+        }
+        Set<Cookie> cookies = new HashSet<>();
+        cookies.add(
+                new Cookie.Builder("OnlineJudge", this.bojCookieValue)
+                        .domain(".acmicpc.net")
+                        .path("/")
+                        .isSecure(true)
+                        .isHttpOnly(false)
+                        .build()
+        );
+        return cookies;
+    }
+
+    public void setBojCookiesJson(String json) {
+        this.bojCookiesJson = json;
+    }
+
 }
