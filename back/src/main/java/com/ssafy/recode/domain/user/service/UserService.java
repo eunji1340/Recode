@@ -213,10 +213,10 @@ public class UserService {
     /** 8. 비밀번호 변경 */
     public void updatePassword(Long userId, String currPassword, String newPassword) {
         User user = findUserById(userId);
-        if (!user.getPassword().equals(currPassword)) {
+        if (!passwordEncoder.matches(currPassword, user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
-        user.updatePassword(newPassword);
+        user.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     /** 전체 회원 조회 */
