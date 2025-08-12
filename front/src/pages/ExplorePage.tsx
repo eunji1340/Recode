@@ -1,29 +1,36 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import SearchBox from '../components/search/SearchBox';
 import SearchUserScopeTabs from '../components/search/SearchUserScopeTabs';
 import FeedCard from '../components/feed/FeedCard';
 import EmptyState from '../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../hooks/useInfiniteFeeds';
-import { fetchExploreFeeds } from '../api/feed';
-import type { ExploreFeedCardData, SortOption } from '../types/feed';
+import { fetchExploreFeeds, fetchMainFeeds } from '../api/feed'; // fetchMainFeeds 추가
+import type { ExploreFeedCardData } from '../types/feed';
+import { addFollow, removeFollow } from '../api/feed';
 
 export default function ExplorePage() {
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagForQuery, setTagForQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('latest');
   const [userScope, setUserScope] = useState<'all' | 'following'>('all');
+  const [feeds, setFeeds] = useState<ExploreFeedCardData[]>([]);
 
-  // API 요청용 파라미터
   const searchParams = useMemo(
     () => ({
       search,
       tag: tagForQuery,
-      sort: sortBy,
       scope: userScope,
     }),
-    [search, tagForQuery, sortBy, userScope],
+    [search, tagForQuery, userScope],
   );
+
+  // userScope에 따라 다른 API 함수를 선택
+  const fetcher = useMemo(() => {
+    if (userScope === 'following') {
+      return fetchMainFeeds;
+    }
+    return fetchExploreFeeds;
+  }, [userScope]);
 
   // 무한스크롤 훅
   const {
@@ -32,35 +39,36 @@ export default function ExplorePage() {
     error,
     observerRef,
     retry,
+    updateFollowState,
   } = useInfiniteFeeds<ExploreFeedCardData>(
-    fetchExploreFeeds,
+    fetcher, // 조건에 따라 선택된 fetcher 함수 전달
     searchParams,
     15,
   );
 
-  // 클라이언트 정렬/필터(팔로잉 탭 전용)
-  const sortedFeeds = useMemo(() => {
-    let feeds =
-      userScope === 'following'
-        ? rawFeeds.filter((f) => f.following)
-        : [...rawFeeds];
+  // rawFeeds 변경 시 feeds state 업데이트
+  useEffect(() => {
+    setFeeds(rawFeeds);
+  }, [rawFeeds]);
 
-    if (sortBy === 'latest') {
-      feeds.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-    } else if (sortBy === 'views') {
-      feeds.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
-    } else if (sortBy === 'likes') {
-      feeds.sort((a, b) => (b.likeCount ?? 0) - (a.likeCount ?? 0));
-    } else if (sortBy === 'comments') {
-      feeds.sort((a, b) => (b.commentCount ?? 0) - (a.commentCount ?? 0));
+  /** 팔로우 토글 핸들러 - 동일 유저의 모든 카드 업데이트 */
+  const handleToggleFollow = async (
+    targetUserId: number,
+    newState: boolean,
+  ) => {
+    try {
+      if (newState) {
+        await addFollow(targetUserId);
+      } else {
+        await removeFollow(targetUserId);
+      }
+      updateFollowState(targetUserId, newState); // UI 즉시 반영
+    } catch (e) {
+      console.error('팔로우 토글 실패:', e);
     }
-    return feeds;
-  }, [rawFeeds, userScope, sortBy]);
+  };
 
-  /** 핸들러 */
+  /** 검색/태그 핸들러 */
   const handleKeywordChange = useCallback((val: string) => setSearch(val), []);
   const handleAddTag = useCallback((tag: string) => {
     setTags((prev) => [...prev, tag]);
@@ -74,12 +82,11 @@ export default function ExplorePage() {
     },
     [tags],
   );
-  const handleSortChange = useCallback((val: SortOption) => setSortBy(val), []);
+
   const resetFilters = useCallback(() => {
     setSearch('');
     setTags([]);
     setTagForQuery('');
-    setSortBy('latest');
     setUserScope('all');
   }, []);
 
@@ -115,31 +122,35 @@ export default function ExplorePage() {
           selectedTags={tags}
           onAddTag={handleAddTag}
           onRemoveTag={handleRemoveTag}
-          onKeywordChange={setSearch}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
+          onKeywordChange={handleKeywordChange}
         />
 
         {/* 초기 로딩 */}
-        {isLoading && sortedFeeds.length === 0 ? (
+        {isLoading && feeds.length === 0 ? (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8400] mx-auto mb-4"></div>
             <p className="text-[#13233D]/70">피드를 불러오는 중...</p>
           </div>
         ) : (
           <div className="max-w-[1200px] mx-auto space-y-6">
-            {sortedFeeds.length === 0 ? (
+            {feeds.length === 0 ? (
               <EmptyState
                 title="표시할 피드가 없습니다"
-                description="검색어/태그/정렬 또는 팔로잉 범위를 확인해 주세요."
+                description="검색어/태그 또는 팔로잉 범위를 확인해 주세요."
                 buttonText="필터 초기화"
                 onButtonClick={resetFilters}
               />
             ) : (
               <>
                 <div className="flex flex-wrap justify-center gap-x-6 gap-y-6">
-                  {sortedFeeds.map((feed) => (
-                    <FeedCard key={feed.noteId} {...feed} />
+                  {feeds.map((feed) => (
+                    <FeedCard
+                      key={feed.noteId}
+                      {...feed}
+                      onToggleFollow={() =>
+                        handleToggleFollow(feed.user.userId, !feed.following)
+                      }
+                    />
                   ))}
                 </div>
 
@@ -147,7 +158,7 @@ export default function ExplorePage() {
                 <div ref={observerRef} className="h-1" />
 
                 {/* 추가 로딩 */}
-                {isLoading && sortedFeeds.length > 0 && (
+                {isLoading && feeds.length > 0 && (
                   <div className="w-full text-center py-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF8400] mx-auto"></div>
                   </div>

@@ -107,6 +107,17 @@ export function useInfiniteFeeds<T>(
     };
   }, [attachObserver]);
 
+  /** 특정 유저의 팔로우 상태를 전체 목록에서 즉시 반영 */
+  const updateFollowState = (targetUserId: number, following: boolean) => {
+    setDataList((prev) =>
+      prev.map((item: any) =>
+        item.user?.userId === targetUserId
+          ? { ...item, following }
+          : item
+      )
+    );
+  };
+
   return {
     dataList,
     isLoading,
@@ -114,5 +125,6 @@ export function useInfiniteFeeds<T>(
     observerRef,
     reset: () => loadPage(0),
     retry,
+    updateFollowState,
   };
 }

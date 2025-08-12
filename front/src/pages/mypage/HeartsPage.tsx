@@ -5,36 +5,26 @@ import EmptyState from '../../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../../hooks/useInfiniteFeeds';
 import { fetchLikedFeeds } from '../../api/feed';
 import { useUserStore } from '../../stores/userStore';
-import type { ExploreFeedCardData, SortOption } from '../../types/feed';
+import type { ExploreFeedCardData } from '../../types/feed';
 
 /**
- * 사용자가 좋아요한 피드 목록을 표시하는 페이지
- * 검색, 태그 필터링, 정렬 기능 포함
+ * 사용자가 좋아요한 피드 목록 페이지 (정렬 옵션 제거)
+ * 검색, 태그 필터링만 포함
  */
 export default function HeartsPage() {
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagForQuery, setTagForQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('latest');
 
   const { userId } = useUserStore();
 
-  // API 요청용 정렬 타입 매핑
-  const sortTypeMap = {
-    latest: 0,
-    views: 1,
-    likes: 2,
-    comments: 3,
-  };
-
-  // API 요청 파라미터
+  // API 요청 파라미터 (sort 제거)
   const searchParams = useMemo(
     () => ({
       search,
       tag: tagForQuery,
-      sortType: sortTypeMap[sortBy],
     }),
-    [search, tagForQuery, sortBy]
+    [search, tagForQuery]
   );
 
   /**
@@ -64,20 +54,12 @@ export default function HeartsPage() {
   );
 
   // 검색 핸들러들
-  const handleKeywordChange = useCallback(
-    (val: string) => {
-      setSearch(val);
-    },
-    []
-  );
+  const handleKeywordChange = useCallback((val: string) => setSearch(val), []);
 
-  const handleAddTag = useCallback(
-    (tag: string) => {
-      setTags((prev) => [...prev, tag]);
-      setTagForQuery(tag);
-    },
-    []
-  );
+  const handleAddTag = useCallback((tag: string) => {
+    setTags((prev) => [...prev, tag]);
+    setTagForQuery(tag);
+  }, []);
 
   const handleRemoveTag = useCallback(
     (tag: string) => {
@@ -86,13 +68,6 @@ export default function HeartsPage() {
       setTagForQuery(newTags.at(-1) ?? '');
     },
     [tags]
-  );
-
-  const handleSortChange = useCallback(
-    (val: SortOption) => {
-      setSortBy(val);
-    },
-    []
   );
 
   // 로그인하지 않은 경우
@@ -107,8 +82,8 @@ export default function HeartsPage() {
             <p className="text-[#13233D]/70 mb-8">
               좋아요한 오답노트를 보려면 로그인해주세요.
             </p>
-            <button 
-              onClick={() => window.location.href = '/login'}
+            <button
+              onClick={() => (window.location.href = '/login')}
               className="px-6 py-2 bg-[#FF8400] text-white rounded-lg hover:bg-[#FF8400]/90 transition-colors"
             >
               로그인하기
@@ -129,10 +104,8 @@ export default function HeartsPage() {
             <h2 className="text-xl font-semibold text-[#13233D] mb-4">
               좋아요한 피드를 불러오는데 실패했습니다
             </h2>
-            <p className="text-[#13233D]/70 mb-8">
-              잠시 후 다시 시도해주세요.
-            </p>
-            <button 
+            <p className="text-[#13233D]/70 mb-8">잠시 후 다시 시도해주세요.</p>
+            <button
               onClick={retry}
               className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
             >
@@ -147,14 +120,12 @@ export default function HeartsPage() {
   return (
     <main className="flex-1 bg-[#F8F9FA]">
       <div className="mx-auto space-y-3">
-        {/* 검색 및 필터 */}
+        {/* 검색 및 태그 필터 (정렬 props 제거) */}
         <SearchBox
           selectedTags={tags}
           onAddTag={handleAddTag}
           onRemoveTag={handleRemoveTag}
           onKeywordChange={handleKeywordChange}
-          sortBy={sortBy}
-          onSortChange={handleSortChange}
         />
 
         {/* 초기 로딩 상태 */}
@@ -171,7 +142,7 @@ export default function HeartsPage() {
                 title="좋아요한 오답노트가 없습니다"
                 description="마음에 드는 오답노트에 좋아요를 눌러보세요!"
                 buttonText="피드 둘러보기"
-                onButtonClick={() => window.location.href = '/'}
+                onButtonClick={() => (window.location.href = '/')}
               />
             ) : (
               /* 피드 목록 */
@@ -179,10 +150,10 @@ export default function HeartsPage() {
                 {feeds.map((feed) => (
                   <FeedCard key={feed.noteId} {...feed} />
                 ))}
-                
+
                 {/* 무한 스크롤 트리거 */}
                 <div ref={observerRef} className="h-1" />
-                
+
                 {/* 추가 로딩 중 표시 */}
                 {isLoading && feeds.length > 0 && (
                   <div className="w-full text-center py-4">

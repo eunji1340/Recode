@@ -1,15 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { FiSearch, FiHash, FiRotateCcw } from 'react-icons/fi';
-import SortDropdown from '../feed/SortDropdown';
-import type { SortOption } from '../../types/feed';
 
 interface SearchBoxProps {
   onKeywordChange: (keyword: string) => void;
   onAddTag: (tag: string) => void;
   onRemoveTag: (tag: string) => void;
   selectedTags: string[];
-  sortBy: SortOption;
-  onSortChange: (value: SortOption) => void;
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({
@@ -17,8 +13,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   onAddTag,
   onRemoveTag,
   selectedTags,
-  sortBy,
-  onSortChange,
 }) => {
   const [keyword, setKeyword] = useState('');
   const [tagInput, setTagInput] = useState('');
@@ -113,7 +107,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           >
             <FiRotateCcw className="w-4 h-4" /> 초기화
           </button>
-          <SortDropdown selected={sortBy} onChange={onSortChange} />
         </div>
       </div>
     </div>
