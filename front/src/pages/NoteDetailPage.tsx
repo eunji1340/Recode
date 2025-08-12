@@ -188,7 +188,10 @@ export default function NoteDetailPage() {
           <div className="container flex flex-row justify-between">
             <div className="text-2xl font-bold">
               <div>{note.noteTitle}</div>
-              <div className="text-sm font-bold">작성일: {date} </div>
+              <div className="text-sm font-bold flex gap-1">
+                <div>작성일: {date} </div>
+                <div>{note.isPublic ? '전체 공개' : '비공개'}</div>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {image ? (
@@ -291,12 +294,12 @@ export default function NoteDetailPage() {
             <div>
               <hr className="my-3 border-t-2 border-gray-300" />
               <div className="flex flex-row justify-between">
-                <div className="tags">
+                <div className="tags flex gap-1">
                   {note.tags.map((tag) => (
                     <Tag key={tag.tagId} tagName={tag.tagName}></Tag>
                   ))}
                 </div>
-                <div className="likes-and-comments flex flex-row">
+                <div className="likes-and-comments flex flex-row gap-2">
                   <div>
                     <HeartIcon
                       liked={note.liked}
