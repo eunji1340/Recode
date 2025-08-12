@@ -91,7 +91,7 @@ export default function MyCommentsPage() {
       <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8400] mx-auto mb-4"></div>
             <p className="text-zinc-500">댓글을 불러오는 중...</p>
           </div>
         </div>
@@ -117,26 +117,26 @@ export default function MyCommentsPage() {
 
   return (
     <main className="flex-1 bg-[#F8F9FA] py-2 px-10">
-      <div className="mx-auto">
+      <div className="max-w-[1200px] mx-auto">
         {/* 댓글 목록 */}
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-6">
+        <div className="flex flex-wrap justify-center gap-4">
           {comments.map((comment) => (
             <CommentCard
               key={`${comment.noteId}-${comment.createdAt}`}
               {...comment}
             />
           ))}
-
-          {/* 무한 스크롤 트리거 */}
-          <div ref={observerRef} className="h-1" />
-
-          {/* 추가 로딩 중 표시 */}
-          {isLoading && comments.length > 0 && (
-            <div className="w-full text-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-            </div>
-          )}
         </div>
+
+        {/* 무한 스크롤 트리거 */}
+        <div ref={observerRef} className="h-1" />
+
+        {/* 추가 로딩 중 표시 */}
+        {isLoading && comments.length > 0 && (
+          <div className="w-full text-center py-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+          </div>
+        )}
       </div>
     </main>
   );

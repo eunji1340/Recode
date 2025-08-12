@@ -1,37 +1,23 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import SearchBox from '../../components/search/SearchBox';
+import React, { useMemo } from 'react';
 import FeedCard from '../../components/feed/FeedCard';
 import EmptyState from '../../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../../hooks/useInfiniteFeeds';
-import { fetchLikedFeeds } from '../../api/feed';
+import { fetchLikedFeeds, addFollow, removeFollow } from '../../api/feed';
 import { useUserStore } from '../../stores/userStore';
 import type { ExploreFeedCardData } from '../../types/feed';
-import { addFollow, removeFollow } from '../../api/feed'; // 팔로우 API import
 
 /**
- * 사용자가 좋아요한 피드 목록 페이지 (정렬 옵션 제거)
- * 검색, 태그 필터링만 포함
+ * 사용자가 좋아요한 피드 목록 페이지
+ * - 검색/태그/정렬 제거 버전
+ * - 무한스크롤 + 팔로우 토글만 유지
  */
 export default function HeartsPage() {
-  const [search, setSearch] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagForQuery, setTagForQuery] = useState('');
-
   const { userId } = useUserStore();
 
-  // API 요청 파라미터 (sort 제거)
-  const searchParams = useMemo(
-    () => ({
-      search,
-      tag: tagForQuery,
-    }),
-    [search, tagForQuery]
-  );
+  /** 검색·태그 제거 → 훅에 전달할 파라미터는 빈 객체 */
+  const searchParams = useMemo(() => ({}), []);
 
-  /**
-   * userId를 포함한 좋아요 피드 fetch 함수
-   * userId가 없으면 빈 배열을 반환하여 불필요한 API 호출 방지
-   */
+  /** userId가 없으면 빈 결과를 반환하고, 있으면 userId 포함해 호출 */
   const fetchLikedFeedsWithUserId = useMemo(
     () => (params: any) => {
       if (!userId) {
@@ -48,48 +34,27 @@ export default function HeartsPage() {
     error,
     observerRef,
     retry,
-    updateFollowState, // useInfiniteFeeds 훅에서 updateFollowState 함수를 받아옵니다.
+    updateFollowState,
   } = useInfiniteFeeds<ExploreFeedCardData>(
     fetchLikedFeedsWithUserId,
     searchParams,
     15
   );
 
-  /** 팔로우 토글 핸들러 - 동일 유저의 모든 카드 업데이트 */
-  const handleToggleFollow = async (
-    targetUserId: number,
-    newState: boolean,
-  ) => {
+  /** 팔로우 토글 */
+  const handleToggleFollow = async (targetUserId: number, newState: boolean) => {
     try {
       if (newState) {
         await addFollow(targetUserId);
       } else {
         await removeFollow(targetUserId);
       }
-      updateFollowState(targetUserId, newState); // UI 즉시 반영
+      updateFollowState(targetUserId, newState);
     } catch (e) {
       console.error('팔로우 토글 실패:', e);
     }
   };
 
-  // 검색 핸들러들
-  const handleKeywordChange = useCallback((val: string) => setSearch(val), []);
-
-  const handleAddTag = useCallback((tag: string) => {
-    setTags((prev) => [...prev, tag]);
-    setTagForQuery(tag);
-  }, []);
-
-  const handleRemoveTag = useCallback(
-    (tag: string) => {
-      const newTags = tags.filter((t) => t !== tag);
-      setTags(newTags);
-      setTagForQuery(newTags.at(-1) ?? '');
-    },
-    [tags]
-  );
-
-  // 로그인하지 않은 경우
   if (!userId) {
     return (
       <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
@@ -113,7 +78,6 @@ export default function HeartsPage() {
     );
   }
 
-  // API 에러 발생시
   if (error) {
     return (
       <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
@@ -137,17 +101,8 @@ export default function HeartsPage() {
   }
 
   return (
-    <main className="flex-1 bg-[#F8F9FA]">
-      <div className="mx-auto space-y-3">
-        {/* 검색 및 태그 필터 (정렬 props 제거) */}
-        <SearchBox
-          selectedTags={tags}
-          onAddTag={handleAddTag}
-          onRemoveTag={handleRemoveTag}
-          onKeywordChange={handleKeywordChange}
-        />
-
-        {/* 초기 로딩 상태 */}
+    <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
+      <div className="max-w-[1200px] mx-auto">
         {isLoading && feeds.length === 0 ? (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8400] mx-auto mb-4"></div>
@@ -155,7 +110,6 @@ export default function HeartsPage() {
           </div>
         ) : (
           <>
-            {/* 피드가 없는 경우 */}
             {feeds.length === 0 ? (
               <EmptyState
                 title="좋아요한 오답노트가 없습니다"
@@ -164,8 +118,7 @@ export default function HeartsPage() {
                 onButtonClick={() => (window.location.href = '/')}
               />
             ) : (
-              /* 피드 목록 */
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-6">
+              <div className="flex flex-wrap justify-center gap-4">
                 {feeds.map((feed) => (
                   <FeedCard
                     key={feed.noteId}
@@ -175,19 +128,15 @@ export default function HeartsPage() {
                     }
                   />
                 ))}
-
-                {/* 무한 스크롤 트리거 */}
-                <div ref={observerRef} className="h-1" />
-
-                {/* 추가 로딩 중 표시 */}
-                {isLoading && feeds.length > 0 && (
-                  <div className="w-full text-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF8400] mx-auto"></div>
-                  </div>
-                )}
               </div>
             )}
           </>
+        )}
+        <div ref={observerRef} className="h-1" />
+        {isLoading && feeds.length > 0 && (
+          <div className="w-full text-center py-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF8400] mx-auto"></div>
+          </div>
         )}
       </div>
     </main>
