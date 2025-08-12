@@ -32,7 +32,11 @@ export default function ExplorePage() {
     error,
     observerRef,
     retry,
-  } = useInfiniteFeeds<ExploreFeedCardData>(fetchExploreFeeds, searchParams, 15);
+  } = useInfiniteFeeds<ExploreFeedCardData>(
+    fetchExploreFeeds,
+    searchParams,
+    15,
+  );
 
   // 클라이언트 정렬/필터(팔로잉 탭 전용)
   const sortedFeeds = useMemo(() => {
@@ -43,7 +47,8 @@ export default function ExplorePage() {
 
     if (sortBy === 'latest') {
       feeds.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     } else if (sortBy === 'views') {
       feeds.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
@@ -61,11 +66,14 @@ export default function ExplorePage() {
     setTags((prev) => [...prev, tag]);
     setTagForQuery(tag);
   }, []);
-  const handleRemoveTag = useCallback((tag: string) => {
-    const newTags = tags.filter((t) => t !== tag);
-    setTags(newTags);
-    setTagForQuery(newTags.at(-1) ?? '');
-  }, [tags]);
+  const handleRemoveTag = useCallback(
+    (tag: string) => {
+      const newTags = tags.filter((t) => t !== tag);
+      setTags(newTags);
+      setTagForQuery(newTags.at(-1) ?? '');
+    },
+    [tags],
+  );
   const handleSortChange = useCallback((val: SortOption) => setSortBy(val), []);
   const resetFilters = useCallback(() => {
     setSearch('');
@@ -111,7 +119,6 @@ export default function ExplorePage() {
           sortBy={sortBy}
           onSortChange={setSortBy}
         />
-
 
         {/* 초기 로딩 */}
         {isLoading && sortedFeeds.length === 0 ? (

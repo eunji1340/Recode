@@ -29,7 +29,8 @@ export default function Header() {
   // [추가] 로그인/회원가입 화면에서는 checkAuth() 스킵
   const pathname = location.pathname; // ex) '/users/login'
   const isAuthScreen =
-    pathname.startsWith('/users/login') || pathname.startsWith('/users/register');
+    pathname.startsWith('/users/login') ||
+    pathname.startsWith('/users/register');
 
   // 마운트 시 토큰 유효성 검사
   useEffect(() => {
@@ -79,7 +80,9 @@ export default function Header() {
 
       {/* 사이드바 열기/닫기 버튼 */}
       <HeaderItem
-        icon={collapsed ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
+        icon={
+          collapsed ? <ChevronRight size={24} /> : <ChevronLeft size={24} />
+        }
         label="사이드바 닫기"
         collapsed={collapsed}
         onClick={toggle}
