@@ -1,0 +1,25 @@
+/.metadata/
+
+### VisualStudioCode ###
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+.gradle/
+.idea/
+logs/
+
+.env
+.env.*
+*.env

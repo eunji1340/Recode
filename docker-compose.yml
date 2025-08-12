@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  backend:
+    # 이미지 빌드용 Dockerfile 경로 추가
+    build: ./back
+    image: recode-back
+    container_name: recode-back
+    env_file:
+      - ./back.env
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  frontend:
+    # 이미지 빌드용 Dockerfile 경로 추가
+    build: ./front
+    image: recode-front
+    container_name: recode-front
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    environment:
+      - VITE_REST_API_URL=http://backend:8080
+    depends_on:
+      - backend
+
+networks:
+  app-network:
+    driver: bridge
