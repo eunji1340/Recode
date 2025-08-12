@@ -165,4 +165,21 @@ public class UserController {
         return ResponseEntity.ok("백준 쿠키가 성공적으로 저장되었습니다.");
     }
 
+    /** 15. 이메일 변경 **/
+    @Operation(summary = "이메일 변경", description = "특정 사용자의 이메일을 변경합니다.")
+    @PutMapping("/{userId}/email")
+    public ResponseEntity<Void> updateEmail(@PathVariable Long userId,
+                                            @RequestBody EmailUpdateRequest dto) {
+        userService.updateEmail(userId, dto.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    /** 16. 한마디 변경 **/
+    @Operation(summary = "한마디 변경", description = "특정 사용자의 이메일을 변경합니다.")
+    @PutMapping("/{userId}/bio")
+    public ResponseEntity<Void> updateEmail(@PathVariable Long userId,
+                                            @RequestBody BioUpdateRequest dto) {
+        userService.updateBio(userId, dto.getBio());
+        return ResponseEntity.ok().build();
+    }
 }

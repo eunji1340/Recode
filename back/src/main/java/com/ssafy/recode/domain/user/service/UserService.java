@@ -311,4 +311,15 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /** 이메일 변경 */
+    public void updateEmail(Long userId, String newEmail) {
+        User user = findUserById(userId);
+        user.updateEmail(newEmail);
+    }
+
+    /** 한마디 변경 */
+    public void updateBio(Long userId, String newBio) {
+        User user = findUserById(userId);
+        user.updateBio(newBio);
+    }
 }

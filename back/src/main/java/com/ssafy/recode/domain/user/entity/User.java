@@ -73,6 +73,10 @@ public class User {
         this.image = image;
     }
 
+    public void updateEmail(String email) { this.email = email; }
+
+    public void updateBio(String bio) { this.bio = bio; }
+
     public void setBojCookieValue(String cookieValue) {
         this.bojCookieValue = cookieValue;
     }
