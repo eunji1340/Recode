@@ -171,6 +171,68 @@ WHERE n.isPublic = true AND n.isDeleted = false
                                               @Param("tag") String tag,
                                               @Param("search") String search,
                                               Pageable pageable);
+    // 특정 유저 전체 (비공개 포함: viewer==owner일 때 통과)
+    @Query("""
+    SELECT n FROM Note n
+    WHERE n.user.userId = :userId
+      AND n.isDeleted = false
+      AND (n.isPublic = true OR :viewerId = :userId)
+    """)
+    Page<Note> findByUserIncludePrivate(@Param("viewerId") Long viewerId,
+                                        @Param("userId") Long userId,
+                                        Pageable pageable);
 
+    // 특정 유저 + 태그만 (비공개 포함)
+    @Query("""
+    SELECT DISTINCT n FROM Note n
+    JOIN n.tags t
+    WHERE n.user.userId = :userId
+      AND n.isDeleted = false
+      AND (n.isPublic = true OR :viewerId = :userId)
+      AND t.tagName = :tag
+    """)
+    Page<Note> findByUserAndTagIncludePrivate(@Param("viewerId") Long viewerId,
+                                              @Param("userId") Long userId,
+                                              @Param("tag") String tag,
+                                              Pageable pageable);
+
+    // 특정 유저 + 검색어만 (비공개 포함)
+    @Query("""
+    SELECT n FROM Note n
+    WHERE n.user.userId = :userId
+      AND n.isDeleted = false
+      AND (n.isPublic = true OR :viewerId = :userId)
+      AND (
+        LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
+        LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+        CAST(n.problemId AS string) LIKE %:search% OR
+        LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+      )
+    """)
+    Page<Note> searchUserNotesOnlyIncludePrivate(@Param("viewerId") Long viewerId,
+                                                 @Param("userId") Long userId,
+                                                 @Param("search") String search,
+                                                 Pageable pageable);
+
+    // 특정 유저 + 태그 + 검색어 (비공개 포함)
+    @Query("""
+    SELECT DISTINCT n FROM Note n
+    JOIN n.tags t
+    WHERE n.user.userId = :userId
+      AND n.isDeleted = false
+      AND (n.isPublic = true OR :viewerId = :userId)
+      AND t.tagName = :tag
+      AND (
+        LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
+        LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+        CAST(n.problemId AS string) LIKE %:search% OR
+        LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+      )
+    """)
+    Page<Note> searchUserNotesByTagAndKeywordIncludePrivate(@Param("viewerId") Long viewerId,
+                                                            @Param("userId") Long userId,
+                                                            @Param("tag") String tag,
+                                                            @Param("search") String search, Pageable pageable);
 }
+
 

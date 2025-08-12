@@ -185,29 +185,36 @@ public class FeedService {
                 .orElseThrow(() -> BaseException.of(CommonErrorCode.USER_NOT_FOUND));
 
         Page<Note> notes;
-
+        boolean includePrivate = (viewer != null && Objects.equals(viewer.getUserId(), userId));
         boolean hasTag = tag != null && !tag.isBlank();
         boolean hasSearch = search != null && !search.isBlank();
 
         if (hasTag && hasSearch) {
-            // 특정 유저 + 태그 + 키워드
-            notes = noteRepository.searchUserNotesByTagAndKeyword(userId, tag, search, pageable);
+            notes = includePrivate
+                    ? noteRepository.searchUserNotesByTagAndKeywordIncludePrivate(viewer.getUserId(), userId, tag, search, pageable)
+                    : noteRepository.searchUserNotesByTagAndKeyword(userId, tag, search, pageable);
         } else if (hasTag) {
-            // 특정 유저 + 태그
-            notes = noteRepository.findByUserAndTag(userId, tag, pageable);
+            notes = includePrivate
+                    ? noteRepository.findByUserAndTagIncludePrivate(viewer.getUserId(), userId, tag, pageable)
+                    : noteRepository.findByUserAndTag(userId, tag, pageable);
         } else if (hasSearch) {
-            // 특정 유저 + 키워드
-            notes = noteRepository.searchUserNotesOnly(userId, search, pageable);
+            notes = includePrivate
+                    ? noteRepository.searchUserNotesOnlyIncludePrivate(viewer.getUserId(), userId, search, pageable)
+                    : noteRepository.searchUserNotesOnly(userId, search, pageable);
         } else {
-            // 특정 유저 전체 공개글
-            notes = noteRepository.findByUser_UserIdAndIsPublicTrueAndIsDeletedFalse(userId, pageable);
+            notes = includePrivate
+                    ? noteRepository.findByUserIncludePrivate(viewer.getUserId(), userId, pageable)
+                    : noteRepository.findByUser_UserIdAndIsPublicTrueAndIsDeletedFalse(userId, pageable);
         }
 
         return notes.map(note -> {
             int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
             int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
-            boolean isLiked = likeRepository.existsByUserAndNote(viewer, note);
-            boolean isFollowing = followRepository.existsByFollowerAndFollowing(viewer, note.getUser());
+            boolean isLiked = (viewer != null) && likeRepository.existsByUserAndNote(viewer, note);
+            boolean isFollowing = (viewer != null)
+                    && !Objects.equals(viewer.getUserId(), note.getUser().getUserId())
+                    && followRepository.existsByFollowerAndFollowing(viewer, note.getUser());
+
             ProblemEntity problem = new ProblemEntity(note.getProblemId(), note.getProblemName(), note.getProblemTier());
 
             return FeedResponseDto.builder()
