@@ -18,8 +18,7 @@ public class SolvedacApiClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public List<String> getTagsByProblemId(Long problemId) {
-        String url = UriComponentsBuilder
-                .fromHttpUrl("https://solved.ac/api/v3/problem/show")
+        String url = UriComponentsBuilder.fromUriString("https://solved.ac/api/v3/problem/show")
                 .queryParam("problemId", problemId)
                 .build()
                 .toUriString();

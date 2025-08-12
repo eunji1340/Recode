@@ -245,7 +245,7 @@ public class UserService {
 
     /** 유저 조회 공통 로직 */
     @Transactional(readOnly = true)
-    private User findUserById(Long userId) {
+    public User findUserById(Long userId) {
         return userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 탈퇴한 유저입니다."));
     }

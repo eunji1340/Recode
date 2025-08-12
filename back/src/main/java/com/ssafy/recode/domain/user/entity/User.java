@@ -2,6 +2,10 @@ package com.ssafy.recode.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.openqa.selenium.Cookie;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
