@@ -11,7 +11,9 @@ import { useLocation } from 'react-router-dom';
 import type {
   AIGenerateRequestDTO,
   noteGenerateRequestDTO,
-} from '@/types/note';
+} from '../types/note';
+import { useUserStore } from '../stores/userStore';
+import ProtectedOverlay from '../components/common/ProtectedOverlay';
 
 export default function NoteGeneratePage() {
   const location = useLocation();
@@ -29,6 +31,12 @@ export default function NoteGeneratePage() {
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [visibility, setVisibility] = useState(true);
+
+  //   로그인 여부 확인
+  const isLoggedIn = useUserStore((state) => state.isAuthenticated);
+  if (!isLoggedIn) {
+    return <ProtectedOverlay />;
+  }
 
   // TODO: 문제 가져오기는 추후에 대체
   const successList = mockSubmissionApiResponse.data.pass.detail;

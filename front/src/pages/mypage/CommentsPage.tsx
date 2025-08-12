@@ -23,7 +23,7 @@ export default function MyCommentsPage() {
       }
       return fetchUserComments({ ...params, userId: Number(userId) });
     },
-    [userId]
+    [userId],
   );
 
   const {
@@ -35,7 +35,7 @@ export default function MyCommentsPage() {
   } = useInfiniteFeeds<CommentFeedCardData>(
     fetchCommentsWithUserId,
     {}, // 댓글 페이지는 검색/정렬 파라미터 불필요
-    15
+    15,
   );
 
   // 로그인하지 않은 경우
@@ -50,8 +50,8 @@ export default function MyCommentsPage() {
             <p className="text-zinc-500 mb-8">
               내 댓글을 보려면 로그인해주세요.
             </p>
-            <button 
-              onClick={() => window.location.href = '/login'}
+            <button
+              onClick={() => (window.location.href = '/login')}
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               로그인하기
@@ -72,10 +72,8 @@ export default function MyCommentsPage() {
             <h2 className="text-xl font-semibold text-zinc-600 mb-4">
               댓글을 불러오는데 실패했습니다
             </h2>
-            <p className="text-zinc-500 mb-8">
-              잠시 후 다시 시도해주세요.
-            </p>
-            <button 
+            <p className="text-zinc-500 mb-8">잠시 후 다시 시도해주세요.</p>
+            <button
               onClick={retry}
               className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
             >
@@ -110,7 +108,7 @@ export default function MyCommentsPage() {
             title="아직 작성한 댓글이 없습니다"
             description="다른 사용자의 글에 댓글을 남겨보세요!"
             buttonText="피드 둘러보기"
-            onButtonClick={() => window.location.href = '/'}
+            onButtonClick={() => (window.location.href = '/')}
           />
         </div>
       </main>
@@ -123,15 +121,15 @@ export default function MyCommentsPage() {
         {/* 댓글 목록 */}
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-6">
           {comments.map((comment) => (
-            <CommentCard 
-              key={`${comment.noteId}-${comment.createdAt}`} 
-              {...comment} 
+            <CommentCard
+              key={`${comment.noteId}-${comment.createdAt}`}
+              {...comment}
             />
           ))}
-          
+
           {/* 무한 스크롤 트리거 */}
           <div ref={observerRef} className="h-1" />
-          
+
           {/* 추가 로딩 중 표시 */}
           {isLoading && comments.length > 0 && (
             <div className="w-full text-center py-4">
