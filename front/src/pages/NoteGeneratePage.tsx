@@ -3,7 +3,6 @@ import CodeEditor from '../components/code/CodeEditor';
 import CodePreview from '../components/code/CodePreview';
 import type { SubmissionItem } from '../types';
 import { useState } from 'react';
-import mockSubmissionApiResponse from '../data/MockSubmissionData';
 import api from '../api/axiosInstance';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProblemTitle from '../components/feed/ProblemTitle';
@@ -23,6 +22,9 @@ export default function NoteGeneratePage() {
 
   const problemId = parseInt(id ?? '0', 10);
 
+  const [successList, setSuccessList] = useState<SubmissionItem[]>([]);
+  const [failList, setFailList] = useState<SubmissionItem[]>([]);
+
   const [successCode, setSuccessCode] = useState<SubmissionItem | null>(null);
   const [failCode, setFailCode] = useState<SubmissionItem | null>(null);
   const [title, setTitle] = useState('새 노트 제목');
@@ -32,15 +34,74 @@ export default function NoteGeneratePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [visibility, setVisibility] = useState(true);
 
+  const [bojCookie, setBojCookie] = useState('');
+
   //   로그인 여부 확인
+  const { userId } = useUserStore();
+  const loginUserId = parseInt(userId ?? '0', 10);
+
   const isLoggedIn = useUserStore((state) => state.isAuthenticated);
   if (!isLoggedIn) {
     return <ProtectedOverlay />;
   }
 
-  // TODO: 문제 가져오기는 추후에 대체
-  const successList = mockSubmissionApiResponse.data.pass.detail;
-  const failList = mockSubmissionApiResponse.data.fail.detail;
+  //   chrome extension 미설치 가정, 사용자 cookie 직접 입력
+
+  const getUserCookie = async () => {
+    if (!bojCookie) {
+      alert('쿠키 값을 입력해주세요.');
+      return false;
+    }
+    try {
+      await api.post(`/users/${loginUserId}/boj-cookies`, {
+        cookieValue: bojCookie,
+      });
+      console.log('쿠키 저장 성공');
+      return true;
+    } catch (err) {
+      console.log('쿠키 저장 실패:', err);
+      alert('쿠키 저장에 실패했습니다. 다시 시도해주세요.');
+      return false;
+    }
+  };
+
+  //   사용자 문제 가져오기
+  const getSubmissionList = async () => {
+    console.log(`Requesting submissions for problemId: ${problemId}`);
+    try {
+      const getList = await api.get(`/problems/${problemId}/submissions`);
+      const list = getList.data;
+      setSuccessList(list.data.pass.detail);
+      setFailList(list.data.fail.detail);
+      console.log('제출 목록 로드 성공:', list);
+      alert('제출 목록을 성공적으로 불러왔습니다.');
+    } catch (err: any) {
+      console.error('제출 목록 로드 실패:', err);
+      if (err.response?.status === 403) {
+        console.error('403 Forbidden Error Response:', err.response);
+        alert(
+          '제출 목록을 가져올 권한이 없습니다. 입력하신 백준 쿠키 값이 정확한지, 만료되지 않았는지 다시 확인해주세요.',
+        );
+      } else {
+        const errorMessage =
+          err.response?.data?.message ||
+          '제출 목록을 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요.';
+        alert(errorMessage);
+      }
+    }
+  };
+
+  const handleSubmitCookieAndFetchList = async () => {
+    console.log(`Attempting to save cookie for userId: ${loginUserId}`);
+    const cookieSaved = await getUserCookie();
+    if (cookieSaved) {
+      // 서버가 쿠키를 처리할 시간을 주기 위해 약간의 딜레이를 추가합니다.
+      alert('쿠키 저장에 성공했습니다. 잠시 후 제출 목록을 불러옵니다.');
+      setTimeout(() => {
+        getSubmissionList();
+      }, 1500); // 1.5초 딜레이
+    }
+  };
 
   //   TODO: 중복 로직 통합
   const handleSuccessCodeChange = (submission: SubmissionItem) => {
@@ -159,7 +220,22 @@ export default function NoteGeneratePage() {
       </div>
 
       {/* body */}
-      <div className="p-4">언어 선택</div>
+      <div className="p-4 flex items-center">
+        <span className="font-semibold mr-2">백준 로그인 유저 쿠키 입력</span>
+        <input
+          type="text"
+          value={bojCookie}
+          onChange={(e) => setBojCookie(e.target.value)}
+          placeholder="OnlineJudge 쿠키 값을 입력하세요"
+          className="border rounded px-2 py-1 mr-2 w-80"
+        />
+        <button
+          onClick={handleSubmitCookieAndFetchList}
+          className="px-4 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
+        >
+          확인
+        </button>
+      </div>
       <div className="flex flex-row p-4">
         <div className="code-container basis-2/3">
           {/* 제출내역 list */}
