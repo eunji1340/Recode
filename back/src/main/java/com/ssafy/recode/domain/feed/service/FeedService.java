@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 public class FeedService {
 
     private final UserRepository userRepository;
-//    private final FeedRepository feedRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
