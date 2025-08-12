@@ -343,13 +343,9 @@ public class FeedService {
                     boolean isLiked = likedNoteIds.contains(n.getNoteId());
                     boolean isFollowing = followingUserIds.contains(n.getUser().getUserId());
 
-                    int likeCount = (n.getLikeCount() != null)
-                            ? n.getLikeCount()
-                            : likeRepository.countByNote_NoteId(n.getNoteId());
+                    int likeCount = likeRepository.countByNote_NoteId(n.getNoteId());
+                    int commentCount = commentRepository.countByFeed_NoteId(n.getNoteId());
 
-                    int commentCount = (n.getCommentCount() != null)
-                            ? n.getCommentCount()
-                            : commentRepository.countByFeed_NoteId(n.getNoteId());
 
                     return UserCommentDto.builder()
                             .noteId(n.getNoteId())
@@ -398,13 +394,8 @@ public class FeedService {
                 .map(Like::getNote)
                 .filter(Objects::nonNull)
                 .map(n -> {
-                    int likeCount = (n.getLikeCount() != null)
-                            ? n.getLikeCount()
-                            : likeRepository.countByNote_NoteId(n.getNoteId());
-
-                    int commentCount = (n.getCommentCount() != null)
-                            ? n.getCommentCount()
-                            : commentRepository.countByFeed_NoteId(n.getNoteId());
+                    int likeCount = likeRepository.countByNote_NoteId(n.getNoteId());
+                    int commentCount = commentRepository.countByFeed_NoteId(n.getNoteId());
 
                     boolean isFollowing = followingUserIds.contains(n.getUser().getUserId());
 
