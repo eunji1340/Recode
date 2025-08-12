@@ -76,9 +76,7 @@ const MainFeedCard: React.FC<MainFeedData> = ({
           successCode={successCode}
           failCode={failCode}
           successCodeStart={successCodeStart}
-          successCodeEnd={successCodeEnd}
           failCodeStart={failCodeStart}
-          failCodeEnd={failCodeEnd}
           problemLanguage={successLanguage}
         />
 

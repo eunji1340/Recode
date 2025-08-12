@@ -4,6 +4,8 @@ interface CodeListProps {
   list: SubmissionItem[];
   name: string;
   onCodeSelect: (item: SubmissionItem) => void;
+  // 기존에 선택된 코드 아이템을 받기 위해 추가
+  selectedCode: SubmissionItem | null; 
 }
 
 /**
@@ -11,8 +13,9 @@ interface CodeListProps {
  * @param list - 출력할 코드 리스트
  * @param name - 성공/실패 코드 구분 파라미터
  * @param onCodeSelect - 코드 변경 prop 전달받을 인수
+ * @param selectedCode - 현재 선택된 코드 아이템 (수정 모드에서 초기값 설정용)
  */
-export default function CodeList({ list, name, onCodeSelect }: CodeListProps) {
+export default function CodeList({ list, name, onCodeSelect, selectedCode }: CodeListProps) {
   return (
     <div className="container w-full">
       <table className="w-full table-fixed border-collapse">
@@ -27,13 +30,17 @@ export default function CodeList({ list, name, onCodeSelect }: CodeListProps) {
         </thead>
         <tbody>
           {list.map((item) => (
-            <tr key={item.submissionId} className="submission-card">
+            <tr 
+              key={item.submissionId} 
+              className={`submission-card ${selectedCode?.submissionId === item.submissionId ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
+            >
               <th className="py-2 px-4 text-center">
                 <input
                   type="radio"
                   name={name}
                   id={`code-${item.submissionId}`}
                   onChange={() => onCodeSelect(item)}
+                  checked={selectedCode?.submissionId === item.submissionId} // selectedCode와 일치하면 checked
                 />
               </th>
               <th className="py-2 px-4 text-center overflow-hidden text-ellipsis whitespace-nowrap">

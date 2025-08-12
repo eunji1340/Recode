@@ -14,6 +14,7 @@ interface User {
   bojId: string;
   nickname: string;
   userTier: number;
+  image?: string;
 }
 
 export interface NoteDetailResponseDTO {
@@ -32,8 +33,8 @@ export interface NoteDetailResponseDTO {
   failLanguage: string;
   isPublic: boolean;
   isdeleted: boolean;
-  createdAt: number;
-  updatedAt: number;
+  createdAt: string;
+  updatedAt: string;
   viewCount: number;
   likeCount: number;
   commentCount: number;
