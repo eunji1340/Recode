@@ -1,7 +1,7 @@
 import CodeList from '../components/code/CodeList';
 import CodeEditor from '../components/code/CodeEditor';
 import CodePreview from '../components/code/CodePreview';
-import type { SubmissionItem} from '../types';
+import type { SubmissionItem } from '../types';
 import type { NoteDetailResponseDTO } from '../types/NoteDetail';
 import { useEffect, useState } from 'react';
 import mockSubmissionApiResponse from '../data/MockSubmissionData';
@@ -23,29 +23,45 @@ export default function NoteGeneratePage() {
   const isEditing = !!noteToEdit;
 
   // 문제 정보는 수정/생성 모드에 따라 다르게 가져옵니다.
-  const problemId = isEditing ? noteToEdit.problem.problemId : parseInt(id ?? '0', 10);
-  const problemName = isEditing ? noteToEdit.problem.problemName : location.state?.problemName;
-  const problemTier = isEditing ? noteToEdit.problem.problemTier : location.state?.problemTier;
+  const problemId = isEditing
+    ? noteToEdit.problem.problemId
+    : parseInt(id ?? '0', 10);
+  const problemName = isEditing
+    ? noteToEdit.problem.problemName
+    : location.state?.problemName;
+  const problemTier = isEditing
+    ? noteToEdit.problem.problemTier
+    : location.state?.problemTier;
 
   // 상태 초기값을 수정 모드인지에 따라 설정합니다.
   const [successCode, setSuccessCode] = useState<SubmissionItem | null>(
     isEditing
-      ? ({ code: noteToEdit.successCode, language: noteToEdit.successLanguage } as SubmissionItem)
+      ? ({
+          code: noteToEdit.successCode,
+          language: noteToEdit.successLanguage,
+        } as SubmissionItem)
       : null,
   );
   const [failCode, setFailCode] = useState<SubmissionItem | null>(
     isEditing
-      ? ({ code: noteToEdit.failCode, language: noteToEdit.failLanguage } as SubmissionItem)
+      ? ({
+          code: noteToEdit.failCode,
+          language: noteToEdit.failLanguage,
+        } as SubmissionItem)
       : null,
   );
-  const [title, setTitle] = useState(isEditing ? noteToEdit.noteTitle : '새 노트 제목');
+  const [title, setTitle] = useState(
+    isEditing ? noteToEdit.noteTitle : '새 노트 제목',
+  );
   const [noteContent, setNoteContent] = useState(
     isEditing
       ? noteToEdit.content
       : '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.',
   );
   const [isGenerating, setIsGenerating] = useState(false);
-  const [visibility, setVisibility] = useState(isEditing ? noteToEdit.isPublic : true);
+  const [visibility, setVisibility] = useState(
+    isEditing ? noteToEdit.isPublic : true,
+  );
 
   // TODO: 문제 가져오기는 추후에 대체
   const successList = mockSubmissionApiResponse.data.pass.detail;
@@ -107,16 +123,27 @@ export default function NoteGeneratePage() {
         if (!noteToEdit) return; // 노트 데이터가 없으면 종료
         const noteId = noteToEdit.noteId;
         const noteUpdateRequest = {
-          noteTitle: title,
-          content: noteContent,
-          isPublic: visibility,
-          problemId: problemId, // 문제 ID는 변경되지 않으므로 그대로 전달
-          successCode: successCode?.code,
-          successLanguage: successCode?.language,
-          failCode: failCode?.code,
-          failLanguage: failCode?.language,
-          // 기타 필요한 필드들...
+          problemId: noteToEdit.problem.problemId,
+          problemName: noteToEdit.problem.problemName,
+          problemTier: noteToEdit.problem.problemTier,
+          noteTitle: title ?? noteToEdit.noteTitle,
+          content: noteContent ?? noteToEdit.content,
+
+          successCode: successCode?.code ?? noteToEdit.successCode,
+          successCodeStart: noteToEdit.successCodeStart ?? 0,
+          successCodeEnd: noteToEdit.successCodeEnd ?? 0,
+          successLanguage: successCode?.language ?? noteToEdit.successLanguage,
+
+          failCode: failCode?.code ?? noteToEdit.failCode,
+          failCodeStart: noteToEdit.failCodeStart ?? 0,
+          failCodeEnd: noteToEdit.failCodeEnd ?? 0,
+          failLanguage: failCode?.language ?? noteToEdit.failLanguage,
+
+          isPublic: visibility ?? noteToEdit.isPublic,
+          isLiked: noteToEdit.liked,
+          isFollowing: noteToEdit.following,
         };
+
         const resp = await api.put(`/notes/${noteId}`, noteUpdateRequest);
         console.log('노트 수정 완료', resp.data);
         alert('노트가 성공적으로 수정되었습니다.');
