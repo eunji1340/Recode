@@ -18,6 +18,7 @@ import type {
 import CommentIcon from '../components/common/CommentIcon';
 import Comment from '../components/note/Comment';
 import { useUserStore } from '../stores/userStore';
+import ProtectedOverlay from '../components/common/ProtectedOverlay';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +36,12 @@ export default function NoteDetailPage() {
   
   const { userId } = useUserStore();
   const loginUserId = parseInt(userId ?? '0', 10);
+
+  //   로그인 여부 확인
+  const isLoggedIn = useUserStore((state) => state.isAuthenticated);
+  if (!isLoggedIn) {
+    return <ProtectedOverlay />;
+  }
 
   if (!id) {
     return <div>Invalid note ID</div>;

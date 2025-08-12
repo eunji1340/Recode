@@ -18,17 +18,22 @@ function badgeClassByCount(c: number) {
   return 'bg-gray-200 text-gray-600';
 }
 
-const wdays = ['일','월','화','수','목','금','토'];
+const wdays = ['일', '월', '화', '수', '목', '금', '토'];
 
-export default function StreakSection({ todayStreak, maxStreak, week, onOpenCalendar }: Props) {
+export default function StreakSection({
+  todayStreak,
+  maxStreak,
+  week,
+  onOpenCalendar,
+}: Props) {
   return (
     <div className="p-6 bg-white rounded-2xl shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold">스트릭</h3>
         <div className="text-sm text-gray-500">
-          최다 기록 {maxStreak}일, 현재 연속{" "}
+          최다 기록 {maxStreak}일, 현재 연속{' '}
           <span className="font-bold">
-            {todayStreak}일차 {todayStreak > 0 && "🔥"}
+            {todayStreak}일차 {todayStreak > 0 && '🔥'}
           </span>
         </div>
       </div>
@@ -40,7 +45,10 @@ export default function StreakSection({ todayStreak, maxStreak, week, onOpenCale
       >
         <div className="grid grid-cols-7 gap-3">
           {week.map((w, i) => (
-            <div key={toKey(w.date)} className="flex flex-col items-center gap-2">
+            <div
+              key={toKey(w.date)}
+              className="flex flex-col items-center gap-2"
+            >
               <div className="text-sm text-gray-500">{wdays[i]}</div>
               <div
                 className={`w-14 h-14 rounded-xl flex items-center justify-center ${badgeClassByCount(w.count)}`}

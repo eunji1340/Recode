@@ -3,6 +3,8 @@ import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axiosInstance';
 import Problem from '../components/note/Problem';
+import { useUserStore } from '../stores/userStore';
+import ProtectedOverlay from '../components/common/ProtectedOverlay';
 
 interface ProblemType {
   id: number;
@@ -15,6 +17,12 @@ export default function ProblemSelectPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [problems, setProblems] = useState<ProblemType[]>([]);
   const [searched, setSearched] = useState(false);
+
+  //   로그인 여부 확인
+  const isLoggedIn = useUserStore((state) => state.isAuthenticated);
+  if (!isLoggedIn) {
+    return <ProtectedOverlay />;
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

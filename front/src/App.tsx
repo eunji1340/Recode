@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { matchPath, useLocation } from 'react-router-dom';
 
 import Header from './components/header';
 import AppRouter from './router';
@@ -7,13 +7,15 @@ import useSidebarStore from './stores/useSidebarStore';
 
 function App() {
   const location = useLocation();
-  const hideHeaderRoutes = new Set([
+  const hideHeaderRoutes = [
     '/users/login',
     '/users/register',
     '/about',
-    '/note/generate',
-  ]);
-  const shouldHideHeader = hideHeaderRoutes.has(location.pathname);
+    '/note/generate/:id',
+  ];
+  const shouldHideHeader = hideHeaderRoutes.some((route) => {
+    return matchPath(route, location.pathname);
+  });
 
   const { collapsed } = useSidebarStore();
 

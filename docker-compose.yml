@@ -4,15 +4,32 @@
 version: "3.8"
 
 services:
-  frontend:
-    container_name: front-dev
-    # fe 개발용 dockerfile
-    build:
-      context: ./front
-      dockerfile: Dockerfile.dev
+  backend:
+    # 이미지 빌드용 Dockerfile 경로 추가
+    build: ./back
+    image: recode-back
+    container_name: recode-back
+    env_file:
+      - ./back.env
     ports:
-      - "5173:5173" # vite 기본 포트
-    volumes:
-      # hot reload 위함
-      - ./front:/app # 로컬의 root 디렉토리(.)를 컨테이너의 /app 디렉토리와 동기화
-      # node_modules를 컨테이너 내부에 설치
+      - "8080:8080"
+    networks:
+      - app-network
+
+  frontend:
+    # 이미지 빌드용 Dockerfile 경로 추가
+    build: ./front
+    image: recode-front
+    container_name: recode-front
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    environment:
+      - VITE_REST_API_URL=http://backend:8080
+    depends_on:
+      - backend
+
+networks:
+  app-network:
+    driver: bridge
