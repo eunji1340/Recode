@@ -55,12 +55,13 @@ public class ExternalSubmissionApiClient {
 
                     List<WebElement> tds = row.findElements(By.tagName("td"));
                     String language = safeGetText(tds, 6);
+                    String codeLength = safeGetText(tds, 7);
                     String submittedAt = safeGetText(tds, 9);
 
                     SubmissionDetailDto dto = new SubmissionDetailDto(
                             Long.parseLong(solutionId),
                             language,
-                            "알 수 없음",
+                            codeLength,
                             submittedAt,
                             parseOrNull(runtime),
                             parseOrNull(memory),
