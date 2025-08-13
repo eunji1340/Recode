@@ -239,16 +239,19 @@ public class FeedService {
         }
         Page<Note> notesPage;
 
-        // 조건 분기
-        if (tag != null && !tag.isBlank() && search != null && !search.isBlank()) {
-            notesPage = noteRepository.searchNotesOfUsersByTagAndKeyword(followingUsers, tag, search, pageable);
-        } else if (tag != null && !tag.isBlank()) {
-            notesPage = noteRepository.searchNotesOfUsersByTag(followingUsers, tag, pageable);
-        } else if (search != null && !search.isBlank()) {
-            notesPage = noteRepository.searchNotesOfUsersByKeyword(followingUsers, search, pageable);
+        String tagQ = (tag == null) ? null : tag.trim();
+        String searchQ = (search == null) ? null : search.trim();
+
+        if (tagQ != null && !tagQ.isBlank() && searchQ != null && !searchQ.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByTagAndKeyword(followingUsers, tagQ, searchQ, pageable);
+        } else if (tagQ != null && !tagQ.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByTag(followingUsers, tagQ, pageable);
+        } else if (searchQ != null && !searchQ.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByKeyword(followingUsers, searchQ, pageable);
         } else {
             notesPage = noteRepository.findByUserInAndIsPublicTrueAndIsDeletedFalse(followingUsers, pageable);
         }
+
 
         // DTO 변환은 그대로 유지
         List<FeedResponseDto> dtoList = notesPage.stream()

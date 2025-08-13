@@ -67,51 +67,53 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 """)
     Page<Note> searchNotesByTagAndKeyword(@Param("tag") String tag, @Param("search") String search, Pageable pageable);
 
-    // 태그 + 검색어 + 작성자
+    // 1) 태그 + 검색어 (팔로잉만)
     @Query("""
 SELECT DISTINCT n FROM Note n
 JOIN n.tags t
 WHERE n.isPublic = true AND n.isDeleted = false
-AND LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
-AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%')) AND (
-    LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
-    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
-    CAST(n.problemId AS string) LIKE %:search% OR
-    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
-)
+  AND n.user IN :users
+  AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
+  AND (
+    LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%'))
+ OR LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%'))
+ OR CAST(n.problemId AS string) LIKE CONCAT('%', :search, '%')
+ OR LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+  )
 """)
     Page<Note> searchNotesOfUsersByTagAndKeyword(@Param("users") List<User> users,
                                                  @Param("tag") String tag,
                                                  @Param("search") String search,
                                                  Pageable pageable);
-
-    // 검색어만 + 작성자
+    // 3) 검색어만 (팔로잉만)
     @Query("""
 SELECT n FROM Note n
 WHERE n.isPublic = true AND n.isDeleted = false
-AND LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%')) AND (
-    LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
-    LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
-    CAST(n.problemId AS string) LIKE %:search% OR
-    LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
-)
+  AND n.user IN :users
+  AND (
+    LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%'))
+ OR LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%'))
+ OR CAST(n.problemId AS string) LIKE CONCAT('%', :search, '%')
+ OR LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+  )
 """)
-    Page<Note> searchNotesOfUsersByKeyword(@Param("users") List<User> users,
+    Page<Note>searchNotesOfUsersByKeyword(@Param("users") List<User> users,
                                            @Param("search") String search,
                                            Pageable pageable);
 
-    // 태그만 + 작성자
+    // 2) 태그만 (팔로잉만)
     @Query("""
 SELECT DISTINCT n FROM Note n
 JOIN n.tags t
 WHERE n.isPublic = true AND n.isDeleted = false
-AND LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%')) AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
+  AND n.user IN :users
+  AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
 """)
     Page<Note> searchNotesOfUsersByTag(@Param("users") List<User> users,
                                        @Param("tag") String tag,
                                        Pageable pageable);
 
-    // 아무 조건 없음 (기존)
+    // 4) 기본 피드 (팔로잉만)
     Page<Note> findByUserInAndIsPublicTrueAndIsDeletedFalse(List<User> users, Pageable pageable);
 
     List<Note> findByUser_UserId(Long userId);
