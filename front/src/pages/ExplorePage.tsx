@@ -77,6 +77,18 @@ export default function ExplorePage() {
     setResetKey((v) => v + 1);
   }, []);
 
+  // 컴포넌트 마운트 시 초기 데이터 로드 보장
+  useEffect(() => {
+    // 페이지 첫 로드 시 resetKey 초기화를 통해 데이터 로드 트리거
+    const timer = setTimeout(() => {
+      if (resetKey === 0) {
+        setResetKey(1);
+      }
+    }, 50); // 약간의 지연으로 DOM 렌더링 완료 대기
+    
+    return () => clearTimeout(timer);
+  }, [resetKey]);
+
   // 에러 상태 렌더링
   if (error) {
     return (
@@ -153,8 +165,14 @@ export default function ExplorePage() {
                   ))}
                 </div>
 
-                {/* 무한 스크롤 트리거 */}
-                <div ref={observerRef} className="h-1" />
+                {/* 무한 스크롤 트리거 - 조건부 렌더링 개선 */}
+                {feeds.length > 0 && (
+                  <div 
+                    ref={observerRef} 
+                    className="h-1"
+                    style={{ minHeight: '1px' }} // 확실한 높이 보장
+                  />
+                )}
 
                 {/* 추가 로딩 */}
                 {isLoading && feeds.length > 0 && (

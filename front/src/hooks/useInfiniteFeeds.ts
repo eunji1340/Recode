@@ -125,6 +125,10 @@ export function useInfiniteFeeds<T>(
 
       // ref 값으로 체크하여 클로저 문제 해결
       if (stateRef.current.isLoading || stateRef.current.isLastPage) {
+        console.log('로딩 중이거나 마지막 페이지:', {
+          isLoading: stateRef.current.isLoading,
+          isLastPage: stateRef.current.isLastPage
+        });
         return;
       }
 
@@ -143,9 +147,18 @@ export function useInfiniteFeeds<T>(
   const setupObserver = useCallback(() => {
     if (!enabled) return;
 
+    console.log('Observer 설정 중...');
+
     // 기존 observer 정리
     if (observerInstance.current) {
       observerInstance.current.disconnect();
+      observerInstance.current = null;
+    }
+
+    // DOM 요소가 있는지 확인
+    if (!observerRef.current) {
+      console.log('Observer 타겟 요소가 없습니다.');
+      return;
     }
 
     // 새 observer 생성
@@ -154,11 +167,31 @@ export function useInfiniteFeeds<T>(
       threshold: 0.1,
     });
 
-    // 타겟 요소가 있으면 관찰 시작
-    if (observerRef.current) {
-      observerInstance.current.observe(observerRef.current);
-    }
+    // 타겟 요소 관찰 시작
+    observerInstance.current.observe(observerRef.current);
+    console.log('Observer 설정 완료');
   }, [enabled, handleIntersection]);
+
+  /**
+   * Observer 재설정을 위한 효과
+   * DOM이 업데이트된 후 Observer를 다시 설정
+   */
+  useEffect(() => {
+    if (!enabled || !stateRef.current.isInitialized) return;
+
+    // 약간의 지연을 두고 Observer 설정 (DOM 렌더링 대기)
+    const timeoutId = setTimeout(() => {
+      setupObserver();
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (observerInstance.current) {
+        observerInstance.current.disconnect();
+        observerInstance.current = null;
+      }
+    };
+  }, [setupObserver, dataList.length]); // dataList.length 추가로 데이터 변경 시마다 Observer 재설정
 
   /**
    * 초기화 및 검색 조건 변경 시 처리
@@ -184,6 +217,7 @@ export function useInfiniteFeeds<T>(
     // Observer 정리
     if (observerInstance.current) {
       observerInstance.current.disconnect();
+      observerInstance.current = null;
     }
 
     // 상태 리셋
@@ -197,29 +231,9 @@ export function useInfiniteFeeds<T>(
       isInitialized: false,
     };
 
-    // 첫 페이지 로드 후 Observer 설정
-    const initializeData = async () => {
-      await loadPage(0, true);
-      setupObserver();
-    };
-
-    initializeData();
-  }, [enabled, JSON.stringify(searchParams), resetKey]);
-
-  /**
-   * Observer 설정 (의존성 변경 시)
-   */
-  useEffect(() => {
-    if (!enabled || !stateRef.current.isInitialized) return;
-
-    setupObserver();
-
-    return () => {
-      if (observerInstance.current) {
-        observerInstance.current.disconnect();
-      }
-    };
-  }, [setupObserver]);
+    // 첫 페이지 로드
+    loadPage(0, true);
+  }, [enabled, JSON.stringify(searchParams), resetKey, loadPage]);
 
   /**
    * 팔로우 상태 업데이트
@@ -246,6 +260,7 @@ export function useInfiniteFeeds<T>(
     // Observer 정리
     if (observerInstance.current) {
       observerInstance.current.disconnect();
+      observerInstance.current = null;
     }
 
     // 상태 리셋
@@ -260,14 +275,9 @@ export function useInfiniteFeeds<T>(
       isInitialized: false,
     };
 
-    // 첫 페이지 로드 후 Observer 설정
-    const resetData = async () => {
-      await loadPage(0, true);
-      setupObserver();
-    };
-
-    resetData();
-  }, [enabled, loadPage, setupObserver]);
+    // 첫 페이지 로드
+    loadPage(0, true);
+  }, [enabled, loadPage]);
 
   /**
    * 재시도 함수

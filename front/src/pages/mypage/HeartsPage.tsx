@@ -101,7 +101,7 @@ export default function HeartsPage() {
   }
 
   return (
-    <main className="flex-1 bg-[#F8F9FA] py-5 px-10">
+    <main className="flex-1 bg-[#F8F9FA] py-2 px-10">
       <div className="max-w-[1200px] mx-auto">
         {isLoading && feeds.length === 0 ? (
           <div className="text-center py-20">
