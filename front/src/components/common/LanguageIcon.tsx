@@ -9,7 +9,7 @@ interface LanguageIconProps {
  * BOJ 언어명 → devicon 아이콘 key 변환
  */
 const languageMap: Record<string, string> = {
-  'Python3': 'python',
+  'Python 3': 'python',
   'PyPy3': 'python',
   'C++': 'cplusplus',
   'C++98': 'cplusplus',
@@ -20,9 +20,9 @@ const languageMap: Record<string, string> = {
   'C++23': 'cplusplus',
   'C++26': 'cplusplus',
   'C#': 'csharp',
-  'Java8': 'java',
-  'Java11': 'java',
-  'Java15': 'java',
+  'Java 8': 'java',
+  'Java 11': 'java',
+  'Java 15': 'java',
   'Kotlin (JVM)': 'kotlin',
   'node.js': 'nodejs',
   'Go': 'go',
