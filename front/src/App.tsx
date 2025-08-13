@@ -1,5 +1,4 @@
 import { matchPath, useLocation } from 'react-router-dom';
-
 import Header from './components/header';
 import AppRouter from './router';
 import clsx from 'clsx';
@@ -10,7 +9,7 @@ function App() {
   const hideHeaderRoutes = [
     '/users/login',
     '/users/register',
-    '/landing', // '/about'에서 '/landing'으로 변경
+    '/landing',
     '/note/generate/:id',
   ];
   const shouldHideHeader = hideHeaderRoutes.some((route) => {
@@ -19,12 +18,19 @@ function App() {
 
   const { collapsed } = useSidebarStore();
 
-  const marginClass = shouldHideHeader ? 'ml-0' : collapsed ? 'ml-20' : 'ml-64';
-
   return (
     <div className="flex min-h-screen bg-[#F8F9FA]">
-      {!shouldHideHeader && <Header />}
-      <div className={clsx('transition-all duration-300 flex-1', marginClass)}>
+      {!shouldHideHeader && (
+        <div className={clsx('transition-all duration-300', {
+          // 헤더(사이드바)의 너비를 직접 설정
+          'w-64': !collapsed,
+          'w-20': collapsed,
+        })}>
+          <Header />
+        </div>
+      )}
+      {/* 메인 콘텐츠 영역은 남은 공간을 모두 차지하도록 flex-1 적용 */}
+      <div className="flex-1 overflow-auto">
         <AppRouter />
       </div>
     </div>
