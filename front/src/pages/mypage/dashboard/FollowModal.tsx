@@ -8,6 +8,7 @@ export interface FollowDetail {
   bojId: string;
   nickname: string;
   userTier: number;
+  image?: string;
   isFollowing?: boolean;
   onToggleFollow?: (userId: number) => void;
 }
