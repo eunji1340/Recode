@@ -36,7 +36,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     Page<Note> findAllByIsPublicTrueAndIsDeletedFalse(Pageable pageable);
 
     // 태그만
-    Page<Note> findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(String tagName, Pageable pageable);
+    Page<Note> findByTags_TagNameContainingIgnoreCaseAndIsPublicTrueAndIsDeletedFalse(
+            String tagName, Pageable pageable);
 
     // 검색어만 (noteTitle or noteId)
     @Query("""
@@ -57,7 +58,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     SELECT DISTINCT n FROM Note n
     JOIN n.tags t
     WHERE n.isPublic = true AND n.isDeleted = false AND
-    t.tagName = :tag AND (
+        LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%')) AND (
         LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
         LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
         CAST(n.problemId AS string) LIKE %:search% OR
@@ -71,8 +72,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 SELECT DISTINCT n FROM Note n
 JOIN n.tags t
 WHERE n.isPublic = true AND n.isDeleted = false
-AND n.user IN :users
-AND t.tagName = :tag AND (
+AND LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%'))
+AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%')) AND (
     LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
     LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
     CAST(n.problemId AS string) LIKE %:search% OR
@@ -88,7 +89,7 @@ AND t.tagName = :tag AND (
     @Query("""
 SELECT n FROM Note n
 WHERE n.isPublic = true AND n.isDeleted = false
-AND n.user IN :users AND (
+AND LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%')) AND (
     LOWER(n.noteTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR
     LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
     CAST(n.problemId AS string) LIKE %:search% OR
@@ -104,7 +105,7 @@ AND n.user IN :users AND (
 SELECT DISTINCT n FROM Note n
 JOIN n.tags t
 WHERE n.isPublic = true AND n.isDeleted = false
-AND n.user IN :users AND t.tagName = :tag
+AND LOWER(n.user.nickname) LIKE LOWER(CONCAT('%', :search, '%')) AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
 """)
     Page<Note> searchNotesOfUsersByTag(@Param("users") List<User> users,
                                        @Param("tag") String tag,
@@ -137,7 +138,7 @@ SELECT DISTINCT n FROM Note n
 JOIN n.tags t
 WHERE n.isPublic = true AND n.isDeleted = false
   AND n.user.userId = :userId
-  AND t.tagName = :tag
+  AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
 """)
     Page<Note> findByUserAndTag(@Param("userId") Long userId,
                                 @Param("tag") String tag,
@@ -165,7 +166,7 @@ SELECT DISTINCT n FROM Note n
 JOIN n.tags t
 WHERE n.isPublic = true AND n.isDeleted = false
   AND n.user.userId = :userId
-  AND t.tagName = :tag
+  AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
   AND (
     LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
     LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR
@@ -195,7 +196,7 @@ WHERE n.isPublic = true AND n.isDeleted = false
     WHERE n.user.userId = :userId
       AND n.isDeleted = false
       AND (n.isPublic = true OR :viewerId = :userId)
-      AND t.tagName = :tag
+      AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
     """)
     Page<Note> findByUserAndTagIncludePrivate(@Param("viewerId") Long viewerId,
                                               @Param("userId") Long userId,
@@ -227,7 +228,7 @@ WHERE n.isPublic = true AND n.isDeleted = false
     WHERE n.user.userId = :userId
       AND n.isDeleted = false
       AND (n.isPublic = true OR :viewerId = :userId)
-      AND t.tagName = :tag
+      AND LOWER(t.tagName) LIKE LOWER(CONCAT('%', :tag, '%'))
       AND (
         LOWER(n.noteTitle)   LIKE LOWER(CONCAT('%', :search, '%')) OR
         LOWER(n.problemName) LIKE LOWER(CONCAT('%', :search, '%')) OR

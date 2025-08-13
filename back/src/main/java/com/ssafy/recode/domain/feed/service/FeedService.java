@@ -131,7 +131,7 @@ public class FeedService {
         if (hasTag && hasSearch) {
             notes = noteRepository.searchNotesByTagAndKeyword(tag, search, pageable);
         } else if (hasTag) {
-            notes = noteRepository.findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
+            notes = noteRepository.findByTags_TagNameContainingIgnoreCaseAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
         } else if (hasSearch) {
             notes = noteRepository.searchNotesOnly(search, pageable);
         } else {
