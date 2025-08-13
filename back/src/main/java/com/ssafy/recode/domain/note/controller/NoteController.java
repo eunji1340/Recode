@@ -64,8 +64,9 @@ public class NoteController {
 
     @Operation(summary = "노트 삭제", description = "노트를 논리적으로 삭제합니다.")
     @DeleteMapping("/{noteId}")
-    public ResponseEntity<Map<String, Object>> deleteNote(@PathVariable Long noteId){
-        noteService.deleteNote(noteId);
+    public ResponseEntity<Map<String, Object>> deleteNote(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                          @PathVariable Long noteId){
+        noteService.deleteNote(userDetails.getUser(), noteId);
 
         Map<String, Object> response = new HashMap<>();
         response.put("data", NoteDeleteResponseDto.builder().noteId(noteId).build());

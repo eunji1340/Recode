@@ -4,6 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.auth.JwtTokenProvider;
+import com.ssafy.recode.domain.feed.repository.CommentRepository;
+import com.ssafy.recode.domain.feed.repository.LikeRepository;
+import com.ssafy.recode.domain.follow.repository.FollowRepository;
+import com.ssafy.recode.domain.note.repository.NoteRepository;
+import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
 import com.ssafy.recode.domain.user.dto.request.LoginRequestDto;
 import com.ssafy.recode.domain.user.dto.request.UserRequestDto;
 import com.ssafy.recode.domain.user.dto.response.TokenPair;
@@ -48,7 +53,10 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     final Logger log = LoggerFactory.getLogger(UserService.class);
-
+    private final NoteRepository noteRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     /** 1. 회원가입 */
     public UserResponseDto register(UserRequestDto dto) {
@@ -240,6 +248,10 @@ public class UserService {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("존재하지 않는 유저입니다.");
         }
+        followRepository.deleteFollowsByUserId(userId);
+        commentRepository.deleteCommentsByUserId(userId);
+        likeRepository.deleteLikesByUserId(userId);
+        noteRepository.deleteNotesByUserId(userId);
         userRepository.deleteById(userId);
     }
 

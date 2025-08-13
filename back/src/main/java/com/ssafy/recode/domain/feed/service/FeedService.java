@@ -70,14 +70,7 @@ public class FeedService {
     /** 좋아요 삭제 */
     @Transactional
     public void removeLike(User user, Long noteId) {
-        Note note = noteRepository.findById(noteId)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
-
-        Like like = likeRepository.findByUserAndNote(user, note)
-                .orElseThrow(() -> new RuntimeException("Like not found"));
-
-        System.out.println("[삭제 요청] likeId: " + like.getLikeId());
-        likeRepository.delete(like);
+        likeRepository.deleteByUserAndNoteId(user, noteId);
     }
 
 
@@ -126,12 +119,10 @@ public class FeedService {
 
     /** 댓글 삭제 */
     public void deleteComment(Long userId, Long commentId) throws AccessDeniedException {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-        if (!comment.getUser().getUserId().equals(userId)) {
-            throw new AccessDeniedException("권한 없음");
+        int deletedCount = commentRepository.deleteByIdAndUserId(commentId, userId);
+        if (deletedCount == 0) {
+            throw new AccessDeniedException("권한 없음 또는 댓글 없음");
         }
-        commentRepository.delete(comment);
     }
 
     public Page<FeedResponseDto> getAllFeeds(User user, String tag, String search, Pageable pageable) {
@@ -357,6 +348,7 @@ public class FeedService {
                     return UserCommentDto.builder()
                             .noteId(n.getNoteId())
                             .noteTitle(n.getNoteTitle())
+                            .successLanguage(n.getSuccessLanguage())
                             .commentWriter(c.getUser().getBojId())
                             .content(c.getContent())
                             .isPublic(n.getIsPublic())
@@ -409,6 +401,7 @@ public class FeedService {
                     return UserCommentDto.builder()
                             .noteId(n.getNoteId())
                             .noteTitle(n.getNoteTitle())
+                            .successLanguage(n.getSuccessLanguage())
                             .content(null)
                             .isPublic(n.getIsPublic())
                             .createdAt(n.getCreatedAt() != null ? n.getCreatedAt().toString() : null)

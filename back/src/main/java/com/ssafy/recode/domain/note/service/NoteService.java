@@ -148,10 +148,11 @@ public class NoteService {
 
     /** 노트 삭제 **/
     @Transactional
-    public void deleteNote(Long noteId) {
-        Note note = findNoteById(noteId);
-        note.markAsDeleted();
-        noteRepository.save(note);
+    public void deleteNote(User user, Long noteId) {
+        commentRepository.deleteByNoteId(noteId);
+        likeRepository.deleteByNoteId(noteId);
+        noteRepository.deleteById(noteId);
+
     }
 
     /** 노트 조회 공통 로직 **/

@@ -13,6 +13,7 @@ public class UserCommentDto {
     private String noteTitle;
     private String commentWriter;
     private String content;
+    private String successLanguage;
 
     private Boolean isPublic;
     private String createdAt;

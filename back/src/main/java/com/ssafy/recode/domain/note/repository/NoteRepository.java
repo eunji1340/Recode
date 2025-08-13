@@ -5,6 +5,7 @@ import com.ssafy.recode.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,11 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     Page<Note> findByUserIn(List<User> users, Pageable pageable);
     Page<Note> findByUserInAndIsPublicTrue(List<User> users, Pageable pageable);
     List<Note> findAllByNoteIdIn(Collection<Long> noteIds);
+
+    @Modifying
+    @Query("DELETE FROM Note n WHERE n.user.userId = :userId")
+    void deleteNotesByUserId(@Param("userId") Long userId);
+
     // 전체 조회
     Page<Note> findAllByIsPublicTrueAndIsDeletedFalse(Pageable pageable);
 
