@@ -118,7 +118,7 @@ export default function HeartsPage() {
                 onButtonClick={() => (window.location.href = '/')}
               />
             ) : (
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex flex-wrap justify-center gap-3">
                 {feeds.map((feed) => (
                   <FeedCard
                     key={feed.noteId}

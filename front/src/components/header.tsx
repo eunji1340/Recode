@@ -28,7 +28,8 @@ export default function Header() {
   const location = useLocation();
   const ranCheckRef = useRef(false);
 
-  const { isAuthenticated, userId, nickname, clearToken, checkAuth } = useUserStore();
+  const { isAuthenticated, userId, nickname, clearToken, checkAuth } =
+    useUserStore();
 
   const [userProfile, setUserProfile] = useState<MyInfo | null>(null);
 
@@ -52,7 +53,7 @@ export default function Header() {
     if (isAuthScreen) return;
     if (ranCheckRef.current) return;
     ranCheckRef.current = true;
-    
+
     const isAuth = checkAuth();
     if (isAuth) {
       fetchMyInfoWithImage();
@@ -134,27 +135,32 @@ export default function Header() {
         />
       </nav>
 
+      {/* --- 하단 유저 영역 --- */}
       <nav className="flex flex-col gap-4 mt-auto mb-4 w-full border-t border-white/20 pt-4">
         {isAuthenticated ? (
           <>
-            <div
+            <button
+              type="button"
+              onClick={() => goProtected(`/users/${userId}`)}
+              title={nickname || 'User'} // collapsed일 때 툴팁으로 닉네임 표시
               className={clsx(
-                'flex items-center px-6 py-3 cursor-pointer',
-                !collapsed && 'pl-6'
+                'flex items-center py-3 cursor-pointer w-full',
+                collapsed ? 'justify-center' : 'px-6',
               )}
-              onClick={() => goProtected(`/users/${userId}/setting`)}
             >
-              {/* UserImage 컴포넌트 사용 */}
-              <UserImage image={userProfile?.image} size={32} />
-              <span
-                className={clsx(
-                  'ml-4 transition-all duration-300 whitespace-nowrap',
-                  collapsed ? 'opacity-0' : 'opacity-100',
-                )}
-              >
-                {nickname || 'User'}
-              </span>
-            </div>
+              {/* 이미지: 항상 표시되도록 고정 크기 + 축소 방지 */}
+              <div className="shrink-0">
+                <UserImage image={userProfile?.image} size={36} />
+              </div>
+
+              {/* 닉네임: 접혔을 땐 숨김 */}
+              {!collapsed && (
+                <span className="ml-4 whitespace-nowrap transition-opacity duration-300">
+                  {nickname || 'User'}
+                </span>
+              )}
+            </button>
+
             <HeaderItem
               icon={<LogOut size={24} />}
               label="로그아웃"
@@ -185,7 +191,13 @@ interface HeaderItemProps {
   isActive: boolean;
 }
 
-function HeaderItem({ icon, label, collapsed, onClick, isActive }: HeaderItemProps) {
+function HeaderItem({
+  icon,
+  label,
+  collapsed,
+  onClick,
+  isActive,
+}: HeaderItemProps) {
   return (
     <div
       onClick={onClick}

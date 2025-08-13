@@ -121,7 +121,7 @@ export default function MyCommentsPage() {
     <main className="flex-1 bg-[#F8F9FA] py-2 px-10">
       <div className="max-w-[1200px] mx-auto">
         {/* 댓글 목록 */}
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-3">
           {comments.map((comment) => (
             <CommentCard
               key={`${comment.noteId}-${comment.createdAt}`}

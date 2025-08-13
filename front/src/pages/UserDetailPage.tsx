@@ -195,7 +195,7 @@ export default function UserDetailPage() {
             description="이 사용자가 작성한 오답노트가 없습니다."
           />
         ) : (
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center items-start gap-3">
             {feeds.map((feed) => (
               <FeedCard
                 key={feed.noteId}
@@ -203,7 +203,8 @@ export default function UserDetailPage() {
                 onToggleFollow={handleFeedCardFollowToggle}
               />
             ))}
-            <div ref={observerRef} className="h-1" />
+            <div ref={observerRef} className="w-full h-10" />
+
             {feedsLoading && feeds.length > 0 && (
               <div className="w-full text-center py-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF8400] mx-auto"></div>
