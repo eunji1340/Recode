@@ -14,11 +14,13 @@ import type {
 } from '../types/note';
 import { useUserStore } from '../stores/userStore';
 import ProtectedOverlay from '../components/common/ProtectedOverlay';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function NoteGeneratePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [isfetching, setIsFetching] = useState(false);
 
   // 수정 모드인지 확인하고, 노트 데이터를 가져옵니다.
   const noteToEdit: NoteDetailResponseDTO | null = location.state?.note;
@@ -58,7 +60,7 @@ export default function NoteGeneratePage() {
   const [noteContent, setNoteContent] = useState(
     isEditing
       ? noteToEdit.content
-      : '여기에 본문을 입력하세요. **굵은 글씨**와 *기울임체*를 사용할 수 있습니다.',
+      : '노트 내용을 입력하세요. 마크다운 문법을 사용할 수 있습니다.',
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [visibility, setVisibility] = useState(
@@ -94,21 +96,54 @@ export default function NoteGeneratePage() {
       return true;
     } catch (err) {
       console.log('쿠키 저장 실패:', err);
-      alert('쿠키 저장에 실패했습니다. 다시 시도해주세요.');
+
+      //   TODO: alert => modal로 변경
       return false;
     }
+  };
+
+  //   백에서 받은 데이터 가공 처리
+  const processData = (list: SubmissionItem[]): SubmissionItem[] => {
+    if (!Array.isArray(list)) return []; // 배열이 아니면 빈 배열 반환
+
+    return list.map((item) => {
+      // language 필드가 존재하고 문자열인 경우에만 처리
+      const processedLanguage =
+        item.language && typeof item.language === 'string'
+          ? item.language.split(' / ')[0]
+          : item.language;
+
+      return {
+        ...item,
+        language: processedLanguage,
+      };
+    });
   };
 
   //   사용자 문제 가져오기
   const getSubmissionList = async () => {
     console.log(`Requesting submissions for problemId: ${problemId}`);
+    setIsFetching(true);
     try {
       const getList = await api.get(`/problems/${problemId}/submissions`);
-      const list = getList.data;
-      setSuccessList(list.data.pass.detail);
-      setFailList(list.data.fail.detail);
-      console.log('제출 목록 로드 성공:', list);
-      alert('제출 목록을 성공적으로 불러왔습니다.');
+      const resp = getList.data;
+      console.log(resp);
+      const successList = resp.data.pass.detail;
+      const failList = resp.data.fail.detail;
+
+      if (
+        (!successList || successList.length === 0) &&
+        (!failList || failList.length === 0)
+      ) {
+        alert('해당 문제에 대한 제출 내역이 없습니다.');
+        setSuccessList([]);
+        setFailList([]);
+      } else {
+        console.log(successList);
+        setSuccessList(processData(successList));
+        setFailList(processData(failList));
+        alert('제출 목록을 성공적으로 불러왔습니다.');
+      }
     } catch (err: any) {
       console.error('제출 목록 로드 실패:', err);
       if (err.response?.status === 403) {
@@ -122,6 +157,8 @@ export default function NoteGeneratePage() {
           '제출 목록을 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요.';
         alert(errorMessage);
       }
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -172,11 +209,17 @@ export default function NoteGeneratePage() {
   };
 
   const handleGenerateNote = async () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
     setIsGenerating(true);
     try {
       const aiNoteContent = await AIgenerate();
       console.log(aiNoteContent);
       setNoteContent(aiNoteContent);
+
+      // 위로 올리기
     } catch (error) {
       console.error('AI 노트 생성 실패:', error);
       alert('AI 노트 생성 실패. 다시 시도하세요');
@@ -305,22 +348,40 @@ export default function NoteGeneratePage() {
       <div className="flex flex-row p-4">
         <div className="code-container basis-2/3">
           {/* 제출내역 list */}
-          <div className="code-list flex">
-            <div className="success-code basis-1/2">
-              <CodeList
-                list={successList}
-                name="success-code-selection"
-                onCodeSelect={handleSuccessCodeChange}
-                selectedCode={successCode}
-              ></CodeList>
+          <div className="code-list flex space-x-4">
+            <div className="success-code basis-1/2 border rounded-lg p-2">
+              <h2 className="font-bold text-center mb-2">성공 내역</h2>
+              {isfetching ? (
+                <LoadingSpinner msg="성공 내역 불러오는 중..." />
+              ) : successList.length > 0 ? (
+                <CodeList
+                  list={successList}
+                  name="success-code-selection"
+                  onCodeSelect={handleSuccessCodeChange}
+                  selectedCode={successCode}
+                />
+              ) : (
+                <div className="text-center text-gray-500 py-4">
+                  쿠키 입력 후 확인 버튼을 눌러주세요.
+                </div>
+              )}
             </div>
-            <div className="fail-code basis-1/2">
-              <CodeList
-                list={failList}
-                name="fail-code-selection"
-                onCodeSelect={handleFailCodeChange}
-                selectedCode={failCode}
-              ></CodeList>
+            <div className="fail-code basis-1/2 border rounded-lg p-2">
+              <h2 className="font-bold text-center mb-2">실패 내역</h2>
+              {isfetching ? (
+                <LoadingSpinner msg="실패 내역 불러오는 중..." />
+              ) : failList.length > 0 ? (
+                <CodeList
+                  list={failList}
+                  name="fail-code-selection"
+                  onCodeSelect={handleFailCodeChange}
+                  selectedCode={failCode}
+                />
+              ) : (
+                <div className="text-center text-gray-500 py-4">
+                  쿠키 입력 후 확인 버튼을 눌러주세요.
+                </div>
+              )}
             </div>
           </div>
 
@@ -359,7 +420,7 @@ export default function NoteGeneratePage() {
           </div>
           <button
             onClick={handleGenerateNote}
-            disabled={isGenerating}
+            disabled={isGenerating || !successCode || !failCode}
             className="create-btn mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-400"
           >
             {isGenerating ? 'AI 노트 생성 중...' : 'AI 노트 생성'}
@@ -368,23 +429,31 @@ export default function NoteGeneratePage() {
 
         {/* Note Editor Section */}
         <div className="editor-container basis-1/3 flex flex-col p-4">
-          <div className="flex items-center mb-4">
-            <label htmlFor="note-title" className="font-bold mr-2">
-              노트 제목:
-            </label>
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-1">
+              <label htmlFor="note-title" className="font-bold">
+                노트 제목:
+              </label>
+              <div className="text-sm text-gray-500">{title.length} / 20자</div>
+            </div>
             <input
               id="note-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="flex-1 p-2 border rounded-md"
+              maxLength={20}
+              className="w-full p-2 border rounded-md"
             />
           </div>
           <div className="flex-1">
-            <CodeEditor
-              content={noteContent}
-              onContentChange={setNoteContent}
-            ></CodeEditor>
+            {isGenerating ? (
+              <LoadingSpinner msg="AI 노트 생성중..."></LoadingSpinner>
+            ) : (
+              <CodeEditor
+                content={noteContent}
+                onContentChange={setNoteContent}
+              ></CodeEditor>
+            )}
           </div>
           <div className="mt-4">
             <fieldset>
@@ -419,7 +488,8 @@ export default function NoteGeneratePage() {
           </div>
           <button
             onClick={handleSave}
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            disabled={!successCode || !failCode}
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-300"
           >
             {isEditing ? '수정하기' : '저장하기'}
           </button>

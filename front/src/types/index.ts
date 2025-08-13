@@ -35,10 +35,10 @@ export interface CommentData {
 export interface SubmissionItem {
   submissionId: number;
   language: string;
-  codeLength: string;
+  codeLength: string | null;
   submittedAt: string;
-  runtime: number;
-  memory: number;
+  runtime: number | null;
+  memory: number | null;
   code: string;
   resultText: string;
 }
