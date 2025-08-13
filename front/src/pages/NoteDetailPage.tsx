@@ -341,23 +341,25 @@ export default function NoteDetailPage() {
             </div>
 
             {/* 수정/삭제 버튼 */}
-            {isMyNote && (
-              <div className="flex gap-4 mt-4 justify-end">
-                <button
-                  onClick={handleEditClick}
-                  className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-                >
-                  수정
-                </button>
-                <button
-                  onClick={handleDeleteClick}
-                  className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
-                >
-                  삭제
-                </button>
-              </div>
-            )}
-          </div>
+            {isMyNote && (
+              <div className="flex gap-4 mt-4 justify-end">
+                <Button
+                  onClick={handleEditClick}
+                  variant="edit"
+                  size="md"
+                >
+                  수정
+                </Button>
+                <Button
+                  onClick={handleDeleteClick}
+                  variant="danger"
+                  size="md"
+                >
+                  삭제
+                </Button>
+              </div>
+            )}
+          </div>
 
           <hr className="my-3 border-t-2 border-gray-200" />
 

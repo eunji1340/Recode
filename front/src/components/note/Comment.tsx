@@ -96,7 +96,7 @@ export default function Comment({
       {/* Edit/Delete buttons */}
       {isMyComment && !isEditing && (
         <div className="flex items-start gap-2">
-          <Button variant="filled" size="sm" onClick={handleEdit}>
+          <Button variant="edit" size="sm" onClick={handleEdit}>
             수정
           </Button>
           <Button variant="danger" size="sm" onClick={handleDeleteComment}>

@@ -5,8 +5,8 @@ import React from 'react';
  * variant: filled | outline | danger
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'filled' | 'outline' | 'danger';
-  size?: 'sm' | 'md';
+  variant?: 'filled' | 'outline' | 'danger' | 'edit'; 
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export default function Button({
@@ -20,6 +20,7 @@ export default function Button({
   const sizes = {
     sm: 'h-9 px-3 text-sm',
     md: 'h-10 px-4 text-base',
+    lg: 'h-12 px-6 text-lg',
   }[size];
 
   const variants = {
@@ -28,6 +29,8 @@ export default function Button({
       'border border-[#13233D] text-[#13233D] bg-white hover:bg-[#F8F9FA]',
     danger:
       'bg-red-500 text-white hover:bg-red-600',
+    edit:
+      'bg-blue-600 text-white hover:bg-blue-700',
   }[variant];
 
   return <button className={`${base} ${sizes} ${variants} ${className}`} {...rest} />;
