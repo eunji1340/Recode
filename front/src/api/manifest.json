@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Recode",
+  "description": "함께 공유하는 알고리즘 오답노트",
+  "version": "1.0",
+  "permissions": ["cookies", "storage", "tabs"],
+  "host_permissions": [
+    "https://www.acmicpc.net/*",
+    // TODO: 수정
+    "http://localhost:8080/*"
+  ],
+  "background": {
+    "service_worker": "background/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.acmicpc.net/*"],
+      "js": ["scripts/recode.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

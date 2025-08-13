@@ -14,6 +14,7 @@ import type {
 } from '../types/note';
 import { useUserStore } from '../stores/userStore';
 import ProtectedOverlay from '../components/common/ProtectedOverlay';
+import Cookies from '../api/Cookies';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function NoteGeneratePage() {
@@ -70,8 +71,6 @@ export default function NoteGeneratePage() {
   const [successList, setSuccessList] = useState<SubmissionItem[]>([]);
   const [failList, setFailList] = useState<SubmissionItem[]>([]);
 
-  const [bojCookie, setBojCookie] = useState('');
-
   //   로그인 여부 확인
   const { userId } = useUserStore();
   const loginUserId = parseInt(userId ?? '0', 10);
@@ -80,27 +79,6 @@ export default function NoteGeneratePage() {
   if (!isLoggedIn) {
     return <ProtectedOverlay />;
   }
-
-  //   chrome extension 미설치 가정, 사용자 cookie 직접 입력
-
-  const getUserCookie = async () => {
-    if (!bojCookie) {
-      alert('쿠키 값을 입력해주세요.');
-      return false;
-    }
-    try {
-      await api.post(`/users/${loginUserId}/boj-cookies`, {
-        cookieValue: bojCookie,
-      });
-      console.log('쿠키 저장 성공');
-      return true;
-    } catch (err) {
-      console.log('쿠키 저장 실패:', err);
-
-      //   TODO: alert => modal로 변경
-      return false;
-    }
-  };
 
   //   백에서 받은 데이터 가공 처리
   const processData = (list: SubmissionItem[]): SubmissionItem[] => {
@@ -122,6 +100,7 @@ export default function NoteGeneratePage() {
 
   //   사용자 문제 가져오기
   const getSubmissionList = async () => {
+    alert(`${problemId}번 문제 제출 내역을 불러옵니다`);
     console.log(`Requesting submissions for problemId: ${problemId}`);
     setIsFetching(true);
     try {
@@ -159,18 +138,6 @@ export default function NoteGeneratePage() {
       }
     } finally {
       setIsFetching(false);
-    }
-  };
-
-  const handleSubmitCookieAndFetchList = async () => {
-    console.log(`Attempting to save cookie for userId: ${loginUserId}`);
-    const cookieSaved = await getUserCookie();
-    if (cookieSaved) {
-      // 서버가 쿠키를 처리할 시간을 주기 위해 약간의 딜레이를 추가합니다.
-      alert('쿠키 저장에 성공했습니다. 잠시 후 제출 목록을 불러옵니다.');
-      setTimeout(() => {
-        getSubmissionList();
-      }, 1500); // 1.5초 딜레이
     }
   };
 
@@ -330,20 +297,12 @@ export default function NoteGeneratePage() {
 
       {/* body */}
       <div className="p-4 flex items-center">
-        <span className="font-semibold mr-2">백준 로그인 유저 쿠키 입력</span>
-        <input
-          type="text"
-          value={bojCookie}
-          onChange={(e) => setBojCookie(e.target.value)}
-          placeholder="OnlineJudge 쿠키 값을 입력하세요"
-          className="border rounded px-2 py-1 mr-2 w-80"
-        />
-        <button
-          onClick={handleSubmitCookieAndFetchList}
-          className="px-4 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
-        >
-          확인
-        </button>
+        {/* 테스트용 버튼 */}
+        <div>
+          <Cookies></Cookies>
+        </div>
+        {/* 불러오기 */}
+        <button onClick={getSubmissionList}>제출 내역 불러오기</button>
       </div>
       <div className="flex flex-row p-4">
         <div className="code-container basis-2/3">
