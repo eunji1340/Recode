@@ -98,7 +98,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
       </div>
 
       {/* 태그 검색 */}
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+      <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
         <div className="relative flex-1">
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#13233D]">
             <FiHash />
