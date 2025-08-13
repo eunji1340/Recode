@@ -29,10 +29,11 @@ public class ExternalSubmissionApiClient {
 
         WebDriver driver = new ChromeDriver();
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
+         ChromeOptions options = new ChromeOptions();
+         options.addArguments("--headless=new");
+         options.addArguments("--no-sandbox");
+         options.addArguments("--disable-dev-shm-usage");
+
 
         List<SubmissionDetailDto> submissionList = new ArrayList<>();
         List<SubmissionDetailDto> passList = new ArrayList<>();
