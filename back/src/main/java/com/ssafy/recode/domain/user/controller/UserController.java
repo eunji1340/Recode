@@ -1,5 +1,6 @@
 package com.ssafy.recode.domain.user.controller;
 
+import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.domain.user.CookieUtil;
 import com.ssafy.recode.domain.user.dto.request.*;
 import com.ssafy.recode.domain.user.dto.response.*;
@@ -10,8 +11,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -196,12 +199,21 @@ public class UserController {
 
     /** 14. 백준 쿠키 저장 **/
     @Operation(summary = "백준 쿠키 저장", description = "백준에서 세션 쿠키를 추출하여 저장합니다.")
-    @PreAuthorize("#userId == principal.id")
     @PostMapping("/{userId}/boj-cookies")
-    public ResponseEntity<?> saveBojCookies(@PathVariable Long userId, @RequestBody CookieRequestDto cookieRequestDto ) {
+    public ResponseEntity<?> saveBojCookies(
+            @PathVariable Long userId,
+            @RequestBody CookieRequestDto cookieRequestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long authenticatedUserId = userDetails.getUser().getUserId();
+        if (!authenticatedUserId.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("접근 권한이 없습니다.");
+        }
+
         userService.saveBojCookieValue(userId, cookieRequestDto.getCookieValue());
         return ResponseEntity.ok("백준 쿠키가 성공적으로 저장되었습니다.");
     }
+
 
     /** 15. 이메일 변경 **/
     @Operation(summary = "이메일 변경", description = "특정 사용자의 이메일을 변경합니다.")
