@@ -119,10 +119,7 @@ public class FeedService {
 
     /** 댓글 삭제 */
     public void deleteComment(Long userId, Long commentId) throws AccessDeniedException {
-        int deletedCount = commentRepository.deleteByIdAndUserId(commentId, userId);
-        if (deletedCount == 0) {
-            throw new AccessDeniedException("권한 없음 또는 댓글 없음");
-        }
+        commentRepository.deleteById(commentId);
     }
 
     public Page<FeedResponseDto> getAllFeeds(User user, String tag, String search, Pageable pageable) {
