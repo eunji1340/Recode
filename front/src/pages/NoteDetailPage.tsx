@@ -19,6 +19,9 @@ import CommentIcon from '../components/common/CommentIcon';
 import Comment from '../components/note/Comment';
 import { useUserStore } from '../stores/userStore';
 import ProtectedOverlay from '../components/common/ProtectedOverlay';
+import UserImage from '../components/user/UserImage';
+import LanguageIcon from '../components/common/LanguageIcon';
+import Button from '../components/common/Button';
 
 export default function NoteDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -185,196 +188,225 @@ export default function NoteDetailPage() {
       <div className="w-full bg-white rounded-xl shadow px-5 py-4 space-y-2 text-[#0B0829]">
         {/* 노트 정보 */}
         <div className="note-container">
-          <div className="container flex flex-row justify-between">
-            <div className="text-2xl font-bold">
-              <div>{note.noteTitle}</div>
-              <div className="text-sm font-bold flex gap-1">
-                <div>작성일: {date} </div>
-                <div>{note.isPublic ? '전체 공개' : '비공개'}</div>
+          {/* 헤더 */}
+          <div className="container flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            {/* 노트 제목 및 정보 */}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-4">
+                <h1 className="text-3xl font-extrabold leading-tight">
+                  {note.noteTitle}
+                </h1>
+                {/* 공개/비공개 상태를 뱃지로 표시 */}
+                {note.isPublic ? (
+                  <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
+                    전체 공개
+                  </span>
+                ) : (
+                  <span className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded-full">
+                    비공개
+                  </span>
+                )}
+              </div>
+              <div className="text-sm text-gray-500 font-medium">
+                작성일: {new Date(note.createdAt).toLocaleDateString('ko-KR')}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              {image ? (
-                <img
-                  src={image}
-                  alt="profile"
-                  className="w-8 h-8 rounded-full object-cover"
+
+            {/* 작성자 정보 및 팔로우 버튼 */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <UserImage image={image} size={40} />
+                <div className="text-lg font-semibold">
+                  {note.user.nickname}
+                </div>
+              </div>
+              {!isMyNote && (
+                <FollowButton
+                  following={isFollowing}
+                  onToggle={handleToggleFollow}
                 />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-[#A0BACC] flex items-center justify-center text-white font-bold">
-                  {note.user.nickname[0]}
-                </div>
-              )}
-              <div className="text-base font-semibold">
-                {note.user.nickname}
-              </div>
-              {!isMyNote ? (
-                <div>
-                  <FollowButton
-                    following={isFollowing}
-                    onToggle={handleToggleFollow}
-                  />
-                </div>
-              ) : (
-                <div></div>
               )}
             </div>
           </div>
-          <hr className="my-3 border-t-2 border-gray-300" />
-          <div className="text-xl font-bold">
-            <ProblemTitle
-              problemId={note.problem.problemId}
-              problemName={note.problem.problemName}
-              problemTier={note.problem.problemTier}
-              fontSize="text-xl"
-            ></ProblemTitle>
-          </div>
-          <div>
-            <div className="text-lg font-bold my-3">코드</div>
-            <hr className="my-3 border-t-2 border-gray-300" />
-            <div className="flex flex-row justify-around gap-4">
-              <div className="w-1/2">
-                <div className="text-sm font-bold">성공 코드</div>
-                <div
-                  className={`relative transition-all duration-300 ease-in-out overflow-hidden ${
-                    isSuccessCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
-                  }`}
-                >
-                  <pre>
-                    <CodePreview
-                      code={note.successCode}
-                      language={note.successLanguage}
-                    ></CodePreview>
-                  </pre>
+
+          {/* 문제 정보 */}
+          <div className="bg-[#F8F9FA] rounded-xl shadow p-6 my-6">
+            {/* 문제 제목 및 언어 */}
+            <div className="flex justify-between items-center mb-3">
+              <ProblemTitle
+                problemId={note.problem.problemId}
+                problemName={note.problem.problemName}
+                problemTier={note.problem.problemTier}
+                fontSize="text-lg"
+              />
+              <LanguageIcon language={note.successLanguage} />
+            </div>
+
+            {/* 코드 섹션 */}
+            <div className="flex flex-col md:flex-row gap-6 mb-3">
+              {/* 성공 코드 */}
+              <div className="w-full md:w-1/2">
+                <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">
+                  성공 코드
+                </p>
+                <div className="bg-gray-800 text-gray-200 rounded-lg overflow-hidden relative">
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                      isSuccessCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
+                    }`}
+                  >
+                    <pre className="p-4">
+                      <CodePreview
+                        code={note.successCode}
+                        language={note.successLanguage}
+                      />
+                    </pre>
+                  </div>
                   {!isSuccessCodeExpanded && (
-                    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-gray-800 to-transparent"></div>
                   )}
                 </div>
                 <button
                   onClick={() =>
                     setIsSuccessCodeExpanded(!isSuccessCodeExpanded)
                   }
-                  className="text-sm text-blue-500 hover:underline mt-1"
+                  className="text-sm text-blue-500 hover:underline mt-2"
                 >
                   {isSuccessCodeExpanded ? '접기' : '더 보기'}
                 </button>
               </div>
-              <div className="w-1/2">
-                <div className="text-sm font-bold">실패 코드</div>
-                <div
-                  className={`relative transition-all duration-300 ease-in-out overflow-hidden ${
-                    isFailCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
-                  }`}
-                >
-                  <pre>
-                    <CodePreview
-                      code={note.failCode}
-                      language={note.failLanguage}
-                    ></CodePreview>
-                  </pre>
+
+              {/* 실패 코드 */}
+              <div className="w-full md:w-1/2">
+                <p className="mb-2 text-[13px] text-zinc-500 font-semibold font-sans">
+                  실패 코드
+                </p>
+                <div className="bg-gray-800 text-gray-200 rounded-lg overflow-hidden relative">
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                      isFailCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
+                    }`}
+                  >
+                    <pre className="p-4">
+                      <CodePreview
+                        code={note.failCode}
+                        language={note.failLanguage}
+                      />
+                    </pre>
+                  </div>
                   {!isFailCodeExpanded && (
-                    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-gray-800 to-transparent"></div>
                   )}
                 </div>
                 <button
                   onClick={() => setIsFailCodeExpanded(!isFailCodeExpanded)}
-                  className="text-sm text-blue-500 hover:underline mt-1"
+                  className="text-sm text-blue-500 hover:underline mt-2"
                 >
                   {isFailCodeExpanded ? '접기' : '더 보기'}
                 </button>
               </div>
             </div>
-            <div className="content">
-              <div className="text-lg font-bold my-3">본문</div>
-              <hr className="my-3 border-t-2 border-gray-300" />
-              <div className="prose max-w-none p-4">
-                <Markdown remarkPlugins={[remarkGfm]}>{note.content}</Markdown>
-              </div>
-            </div>
             <div>
-              <hr className="my-3 border-t-2 border-gray-300" />
-              <div className="flex flex-row justify-between">
-                <div className="tags flex gap-1">
-                  {note.tags.map((tag) => (
-                    <Tag key={tag.tagId} tagName={tag.tagName}></Tag>
-                  ))}
-                </div>
-                <div className="likes-and-comments flex flex-row gap-2">
-                  <div>
-                    <HeartIcon
-                      liked={note.liked}
-                      likeCount={note.likeCount}
-                      onClick={handleLikeToggle}
-                    ></HeartIcon>
-                  </div>
-                  <div>
-                    <CommentIcon
-                      count={comments?.details ? comments.details.length : 0}
-                    ></CommentIcon>
-                  </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div className="prose max-w-none text-base leading-relaxed">
+                  <Markdown remarkPlugins={[remarkGfm]}>
+                    {note.content}
+                  </Markdown>
                 </div>
               </div>
-              {isMyNote ? (
-                <div className="flex gap-2 mt-4">
-                  <button
-                    onClick={handleEditClick}
-                    className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={handleDeleteClick}
-                    className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                  >
-                    삭제
-                  </button>
-                </div>
-              ) : (
-                <div></div>
-              )}
             </div>
           </div>
-          <hr className="my-3 border-t-2 border-gray-300" />
-          {/* 댓글 */}
-          <div className="comment-container mt-6">
-            <div className="w-full mb-4">
-              <div className="text-sm">{commentText.length}자 / 100자</div>
-              <textarea
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-150 ease-in-out resize-none"
-                name="comment-create"
-                id="comment-create"
-                rows={3}
-                placeholder="댓글을 입력하세요..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                maxLength={100}
-              ></textarea>
-              <div className="flex justify-end mt-2">
-                <button
-                  className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
-                  onClick={handleWriteComment}
-                >
-                  댓글 등록
-                </button>
+
+          {/* footer */}
+          <div>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              {/* 태그 목록 */}
+              <div className="flex flex-wrap gap-2">
+                {note.tags.map((tag) => (
+                  <Tag key={tag.tagId} tagName={tag.tagName} />
+                ))}
+              </div>
+
+              {/* 좋아요 및 댓글 아이콘 */}
+              <div className="flex items-center gap-4">
+                <HeartIcon
+                  liked={note.liked}
+                  likeCount={note.likeCount}
+                  onClick={handleLikeToggle}
+                />
+                <CommentIcon
+                  count={comments?.details ? comments.details.length : 0}
+                />
               </div>
             </div>
-            <div className="text-lg font-bold my-3">댓글</div>
-            <div>
-              {comments && comments.details.length > 0 ? (
-                comments.details.map((item: CommentResponseDTO) => (
-                  <Comment
-                    user={item.user}
-                    commentId={item.commentId}
-                    content={item.content}
-                    createdAt={item.createdAt}
-                    noteId={note.noteId}
-                    key={item.commentId}
-                    onCommentChange={fetchComments}
-                  ></Comment>
-                ))
-              ) : (
-                <div>작성된 댓글이 없습니다.</div>
-              )}
+
+            {/* 수정/삭제 버튼 */}
+            {isMyNote && (
+              <div className="flex gap-4 mt-4 justify-end">
+                <button
+                  onClick={handleEditClick}
+                  className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                >
+                  수정
+                </button>
+                <button
+                  onClick={handleDeleteClick}
+                  className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
+                >
+                  삭제
+                </button>
+              </div>
+            )}
+          </div>
+
+          <hr className="my-3 border-t-2 border-gray-200" />
+
+          {/* 댓글 섹션 */}
+          <div>
+            <h2 className="text-xl font-bold mb-4">댓글</h2>
+            <div className="bg-gray-100 p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+              <div className="w-full">
+                <textarea
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-150 ease-in-out resize-none text-sm"
+                  name="comment-create"
+                  rows={3}
+                  placeholder="댓글을 입력하세요..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  maxLength={100}
+                ></textarea>
+                <div className="flex justify-between items-center">
+                  <div className="text-xs text-gray-500">
+                    {commentText.length} / 100자
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={handleWriteComment}
+                  >
+                    댓글 등록
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {comments && comments.details.length > 0 ? (
+                  comments.details.map((item: CommentResponseDTO) => (
+                    <Comment
+                      user={item.user}
+                      commentId={item.commentId}
+                      content={item.content}
+                      createdAt={item.createdAt}
+                      noteId={note.noteId}
+                      key={item.commentId}
+                      onCommentChange={fetchComments}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center text-gray-500 py-4">
+                    작성된 댓글이 없습니다.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

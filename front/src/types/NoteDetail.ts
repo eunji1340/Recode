@@ -14,7 +14,7 @@ interface User {
   bojId: string;
   nickname: string;
   userTier: number;
-  image?: string;
+  image: string;
 }
 
 export interface NoteDetailResponseDTO {
