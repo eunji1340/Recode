@@ -215,7 +215,7 @@ export default function NoteDetailPage() {
             {/* 작성자 정보 및 팔로우 버튼 */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <UserImage image={image} size={40} />
+                <UserImage image={note.user.image} size={40} />
                 <div className="text-lg font-semibold">
                   {note.user.nickname}
                 </div>
