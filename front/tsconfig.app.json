@@ -25,7 +25,10 @@
     "noUnusedParameters": false,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    // 빌드에러방지
+    "types": ["chrome"]
   },
   "include": ["src"]
 }

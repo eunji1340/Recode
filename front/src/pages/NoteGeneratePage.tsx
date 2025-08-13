@@ -4,7 +4,6 @@ import CodePreview from '../components/code/CodePreview';
 import type { SubmissionItem } from '../types';
 import type { NoteDetailResponseDTO } from '../types/NoteDetail';
 import { useEffect, useState } from 'react';
-// import mockSubmissionApiResponse from '../data/MockSubmissionData';
 import api from '../api/axiosInstance';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import ProblemTitle from '../components/feed/ProblemTitle';
@@ -298,11 +297,13 @@ export default function NoteGeneratePage() {
       {/* body */}
       <div className="p-4 flex items-center">
         {/* 테스트용 버튼 */}
-        <div>
-          <Cookies></Cookies>
-        </div>
         {/* 불러오기 */}
-        <button onClick={getSubmissionList}>제출 내역 불러오기</button>
+        <button
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
+          onClick={getSubmissionList}
+        >
+          제출 내역 불러오기
+        </button>
       </div>
       <div className="flex flex-row p-4">
         <div className="code-container basis-2/3">
@@ -321,7 +322,7 @@ export default function NoteGeneratePage() {
                 />
               ) : (
                 <div className="text-center text-gray-500 py-4">
-                  쿠키 입력 후 확인 버튼을 눌러주세요.
+                  제출 내역 불러오기 버튼을 클릭하세요.
                 </div>
               )}
             </div>
@@ -338,7 +339,7 @@ export default function NoteGeneratePage() {
                 />
               ) : (
                 <div className="text-center text-gray-500 py-4">
-                  쿠키 입력 후 확인 버튼을 눌러주세요.
+                  제출 내역 불러오기 버튼을 클릭하세요.
                 </div>
               )}
             </div>
