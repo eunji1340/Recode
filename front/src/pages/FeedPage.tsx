@@ -1,4 +1,3 @@
-// src/pages/FeedPage.tsx
 import React, { useState, useMemo, useCallback } from 'react';
 import SearchBox from '../components/search/SearchBox';
 import MainFeedCard from '../components/feed/MainFeed';
