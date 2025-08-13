@@ -22,16 +22,16 @@ export default function CodeList({
   selectedCode,
 }: CodeListProps) {
   return (
-    <div className="container w-full">
+    <div className="container w-full overflow-x-auto">
       <table className="w-full table-fixed border-collapse">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="w-[15%] py-2 px-4 text-center">선택</th>
-            <th className="w-[25%] py-2 px-4 text-center">결과</th>
+            <th className="w-[5%] py-2 px-4 text-center"></th>
+            <th className="w-[15%] py-2 px-4 text-center">결과</th>
             <th className="w-[20%] py-2 px-4 text-center">언어</th>
-            <th className="w-[15%] py-2 px-4 text-center">길이</th>
-            <th className="w-[15%] py-2 px-4 text-center">메모리</th>
-            <th className="w-[10%] py-2 px-4 text-center">실행시간</th>
+            <th className="w-[20%] py-2 px-4 text-center">길이</th>
+            <th className="w-[20%] py-2 px-4 text-center">메모리</th>
+            <th className="w-[20%] py-2 px-4 text-center">시간</th>
           </tr>
         </thead>
         <tbody>
@@ -46,20 +46,20 @@ export default function CodeList({
                   name={name}
                   id={`code-${item.submissionId}`}
                   onChange={() => onCodeSelect(item)}
-                  checked={selectedCode?.submissionId === item.submissionId} // selectedCode와 일치하면 checked
+                  checked={selectedCode?.submissionId === item.submissionId}
                 />
               </td>
-              <td className="py-2 px-4 text-center overflow-hidden text-ellipsis whitespace-nowrap">
+              <td className="py-2 px-4 text-center text-sm">
                 {item.resultText}
               </td>
-              <td className="py-2 px-4 text-center">{item.language}</td>
-              <td className="py-2 px-4 text-center">
+              <td className="py-2 px-4 text-center text-sm">{item.language}</td>
+              <td className="py-2 px-4 text-center text-sm">
                 {item.codeLength !== null ? `${item.codeLength}B` : '-'}
               </td>
-              <td className="py-2 px-4 text-center">
+              <td className="py-2 px-4 text-center text-sm">
                 {item.memory !== null ? `${item.memory}KB` : '-'}
               </td>
-              <td className="py-2 px-4 text-center">
+              <td className="py-2 px-4 text-center text-sm">
                 {item.runtime !== null ? `${item.runtime}ms` : '-'}
               </td>
             </tr>

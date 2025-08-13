@@ -89,7 +89,6 @@ export default function NoteGeneratePage() {
         item.language && typeof item.language === 'string'
           ? item.language.split(' / ')[0]
           : item.language;
-
       return {
         ...item,
         language: processedLanguage,
@@ -99,7 +98,6 @@ export default function NoteGeneratePage() {
 
   //   사용자 문제 가져오기
   const getSubmissionList = async () => {
-    alert(`${problemId}번 문제 제출 내역을 불러옵니다`);
     console.log(`Requesting submissions for problemId: ${problemId}`);
     setIsFetching(true);
     try {
@@ -260,7 +258,7 @@ export default function NoteGeneratePage() {
   };
 
   return (
-    <div className="note-generate-page">
+    <div className="note-generate-page flex flex-col h-screen">
       <div className="header bg-primary p-4 text-white font-bold text-xl flex items-center gap-2">
         <a
           href="#"
@@ -305,8 +303,8 @@ export default function NoteGeneratePage() {
           제출 내역 불러오기
         </button>
       </div>
-      <div className="flex flex-row p-4">
-        <div className="code-container basis-2/3">
+      <div className="flex flex-row p-4 flex-grow overflow-hidden">
+        <div className="code-container basis-2/3 overflow-y-auto pr-2">
           {/* 제출내역 list */}
           <div className="code-list flex space-x-4">
             <div className="success-code basis-1/2 border rounded-lg p-2">
@@ -347,9 +345,9 @@ export default function NoteGeneratePage() {
 
           {/* Code preview */}
           <div className="code-preview flex mt-4 space-x-4">
-            <div className="success-code basis-1/2">
+            <div className="success-code basis-1/2 min-w-0">
               <h2 className="font-bold mb-2">성공코드</h2>
-              <div className="border rounded-lg p-2 min-h-[200px] overflow-auto bg-gray-50">
+              <div className="border rounded-lg p-2 min-h-[200px] overflow-auto bg-gray-50 ">
                 {successCode ? (
                   <CodePreview
                     code={successCode.code}
@@ -362,7 +360,7 @@ export default function NoteGeneratePage() {
                 )}
               </div>
             </div>
-            <div className="fail-code basis-1/2">
+            <div className="fail-code basis-1/2 min-w-0">
               <h2 className="font-bold mb-2">실패코드</h2>
               <div className="border rounded-lg p-2 min-h-[200px] overflow-auto bg-gray-50">
                 {failCode ? (
@@ -378,17 +376,10 @@ export default function NoteGeneratePage() {
               </div>
             </div>
           </div>
-          <button
-            onClick={handleGenerateNote}
-            disabled={isGenerating || !successCode || !failCode}
-            className="create-btn mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-400"
-          >
-            {isGenerating ? 'AI 노트 생성 중...' : 'AI 노트 생성'}
-          </button>
         </div>
 
         {/* Note Editor Section */}
-        <div className="editor-container basis-1/3 flex flex-col p-4">
+        <div className="editor-container basis-1/3 flex flex-col p-4 overflow-y-auto pl-2">
           <div className="mb-4">
             <div className="flex justify-between items-center mb-1">
               <label htmlFor="note-title" className="font-bold">
@@ -415,41 +406,51 @@ export default function NoteGeneratePage() {
               ></CodeEditor>
             )}
           </div>
-          <div className="mt-4">
-            <fieldset>
-              <legend className="font-bold mb-2">공개 범위 설정</legend>
-              <div className="flex items-center gap-4">
-                <div>
-                  <input
-                    type="radio"
-                    id="private"
-                    name="visibility"
-                    value="private"
-                    checked={visibility === false}
-                    onChange={() => setVisibility(false)}
-                    className="mr-1"
-                  />
-                  <label htmlFor="private">나만 공개</label>
-                </div>
-                <div>
-                  <input
-                    type="radio"
-                    id="public"
-                    name="visibility"
-                    value="public"
-                    checked={visibility === true}
-                    onChange={() => setVisibility(true)}
-                    className="mr-1"
-                  />
-                  <label htmlFor="public">전체 공개</label>
-                </div>
+        </div>
+      </div>
+      {/* Bottom Button Container */}
+      <div className="flex items-center justify-between p-4 border-t">
+        <button
+          onClick={handleGenerateNote}
+          disabled={isGenerating || !successCode || !failCode}
+          className="create-btn px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-400"
+        >
+          {isGenerating ? 'AI 노트 생성 중...' : 'AI 노트 생성'}
+        </button>
+        <div className="flex items-center gap-4">
+          <fieldset>
+            <legend className="font-bold mb-2 sr-only">공개 범위 설정</legend>
+            <div className="flex items-center gap-4">
+              <div>
+                <input
+                  type="radio"
+                  id="private"
+                  name="visibility"
+                  value="private"
+                  checked={visibility === false}
+                  onChange={() => setVisibility(false)}
+                  className="mr-1"
+                />
+                <label htmlFor="private">나만 공개</label>
               </div>
-            </fieldset>
-          </div>
+              <div>
+                <input
+                  type="radio"
+                  id="public"
+                  name="visibility"
+                  value="public"
+                  checked={visibility === true}
+                  onChange={() => setVisibility(true)}
+                  className="mr-1"
+                />
+                <label htmlFor="public">전체 공개</label>
+              </div>
+            </div>
+          </fieldset>
           <button
             onClick={handleSave}
             disabled={!successCode || !failCode}
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-300"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-300"
           >
             {isEditing ? '수정하기' : '저장하기'}
           </button>
