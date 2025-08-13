@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import FeedCard from '../../components/feed/FeedCard';
 import EmptyState from '../../components/feed/EmptyFeedState';
 import { useInfiniteFeeds } from '../../hooks/useInfiniteFeeds';
@@ -6,26 +6,21 @@ import { fetchLikedFeeds, addFollow, removeFollow } from '../../api/feed';
 import { useUserStore } from '../../stores/userStore';
 import type { ExploreFeedCardData } from '../../types/feed';
 
-/**
- * 사용자가 좋아요한 피드 목록 페이지
- * - 검색/태그/정렬 제거 버전
- * - 무한스크롤 + 팔로우 토글만 유지
- */
 export default function HeartsPage() {
   const { userId } = useUserStore();
 
   /** 검색·태그 제거 → 훅에 전달할 파라미터는 빈 객체 */
   const searchParams = useMemo(() => ({}), []);
 
-  /** userId가 없으면 빈 결과를 반환하고, 있으면 userId 포함해 호출 */
-  const fetchLikedFeedsWithUserId = useMemo(
-    () => (params: any) => {
+  // fetchFn을 아예 useCallback으로 감싸서 참조 유지
+  const fetchLikedFeedsWithUserId = useCallback(
+    (params: any) => {
       if (!userId) {
         return Promise.resolve({ items: [], last: true });
       }
       return fetchLikedFeeds({ ...params, userId: Number(userId) });
     },
-    [userId]
+    [userId],
   );
 
   const {
@@ -38,11 +33,16 @@ export default function HeartsPage() {
   } = useInfiniteFeeds<ExploreFeedCardData>(
     fetchLikedFeedsWithUserId,
     searchParams,
-    15
+    15,
+    0,
+    Boolean(userId),
   );
 
   /** 팔로우 토글 */
-  const handleToggleFollow = async (targetUserId: number, newState: boolean) => {
+  const handleToggleFollow = async (
+    targetUserId: number,
+    newState: boolean,
+  ) => {
     try {
       if (newState) {
         await addFollow(targetUserId);

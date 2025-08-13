@@ -212,7 +212,7 @@ export default function ProfileSummary({
       {/* Body */}
       <div className="flex items-center gap-6">
         {/* Profile Image */}
-        <UserImage image={me.image} size={100} />
+        <UserImage image={me.image} size={100} className="flex-shrink-0"/>
 
         {/* Information */}
         <div className="flex flex-col ml-10">

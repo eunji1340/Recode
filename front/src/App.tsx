@@ -10,7 +10,7 @@ function App() {
   const hideHeaderRoutes = [
     '/users/login',
     '/users/register',
-    '/about',
+    '/landing', // '/about'에서 '/landing'으로 변경
     '/note/generate/:id',
   ];
   const shouldHideHeader = hideHeaderRoutes.some((route) => {

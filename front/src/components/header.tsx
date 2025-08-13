@@ -142,7 +142,7 @@ export default function Header() {
                 'flex items-center px-6 py-3 cursor-pointer',
                 !collapsed && 'pl-6'
               )}
-              onClick={() => goProtected(`/users/${userId}`)}
+              onClick={() => goProtected(`/users/${userId}/setting`)}
             >
               {/* UserImage 컴포넌트 사용 */}
               <UserImage image={userProfile?.image} size={32} />

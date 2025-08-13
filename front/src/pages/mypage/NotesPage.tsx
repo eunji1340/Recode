@@ -16,16 +16,25 @@ export default function MyNotesPage() {
   // 입력 상태 (SearchBox에서 관리)
   const [keyword, setKeyword] = useState('');
   const [tag, setTag] = useState('');
-  
+
   // 실제 검색 파라미터 (검색 실행 시에만 업데이트)
   const [searchQuery, setSearchQuery] = useState('');
   const [tagQuery, setTagQuery] = useState('');
-  
+
   const [resetKey, setResetKey] = useState(0);
 
   const { userId } = useUserStore();
 
-  // API 요청 파라미터
+  const fetchUserFeedsWithUserId = useCallback(
+    (params: any) => {
+      if (!userId) {
+        return Promise.resolve({ items: [], last: true });
+      }
+      return fetchUserFeeds({ ...params, userId: Number(userId) });
+    },
+    [userId], // userId 변경 시만 새로 생성
+  );
+
   const searchParams = useMemo(
     () => ({
       search: searchQuery,
@@ -34,20 +43,6 @@ export default function MyNotesPage() {
     [searchQuery, tagQuery],
   );
 
-  /**
-   * userId가 없으면 호출을 막고 빈 결과 반환
-   */
-  const fetchUserFeedsWithUserId = useMemo(
-    () => (params: any) => {
-      if (!userId) {
-        return Promise.resolve({ items: [], last: true });
-      }
-      return fetchUserFeeds({ ...params, userId: Number(userId) });
-    },
-    [userId],
-  );
-
-  // 무한스크롤 훅
   const {
     dataList: feeds,
     isLoading,
@@ -59,6 +54,7 @@ export default function MyNotesPage() {
     searchParams,
     15,
     resetKey,
+    Boolean(userId),
   );
 
   /** 검색 실행 - SearchBox의 onSearch 콜백 */
@@ -150,18 +146,18 @@ export default function MyNotesPage() {
               <EmptyState
                 title={
                   searchQuery || tagQuery
-                    ? "검색 조건에 맞는 오답노트가 없어요"
-                    : "아직 작성한 오답노트가 없어요"
+                    ? '검색 조건에 맞는 오답노트가 없어요'
+                    : '아직 작성한 오답노트가 없어요'
                 }
                 description={
                   searchQuery || tagQuery
-                    ? "다른 키워드로 검색해보세요."
-                    : "문제를 풀고 첫 번째 오답노트를 작성해보세요!"
+                    ? '다른 키워드로 검색해보세요.'
+                    : '문제를 풀고 첫 번째 오답노트를 작성해보세요!'
                 }
                 buttonText={
                   searchQuery || tagQuery
-                    ? "검색 초기화"
-                    : "첫 오답노트 작성하기"
+                    ? '검색 초기화'
+                    : '첫 오답노트 작성하기'
                 }
                 onButtonClick={
                   searchQuery || tagQuery

@@ -174,7 +174,10 @@ export default function Dashboard() {
           todayStreak={todayStreak}
           maxStreak={maxStreak}
           week={week}
-          onOpenCalendar={() => setCalendarOpen(true)}
+          onOpenCalendar={() => {
+            setCalendarOpen(true);
+            setCalendarMonth(startOfMonth(new Date())); // 캘린더를 열 때마다 현재 달로 재설정
+          }}
           />
 
       <StreakCalendarModal

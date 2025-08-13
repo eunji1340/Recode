@@ -3,19 +3,17 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 type InfiniteParams = { page: number; size: number } & Record<string, any>;
 
 /**
- * 무한 스크롤 기반 피드 로드 훅
- *
- * @param fetchFn       데이터 패칭 함수
- * @param searchParams  검색/필터 파라미터
- * @param pageSize      페이지 당 아이템 수
- * @param resetKey      강제 첫 페이지 재로드 트리거
+ * 무한 스크롤 기반 피드 로드 훅 (중복 호출 방지 버전)
  */
 export function useInfiniteFeeds<T>(
   fetchFn: (params: InfiniteParams) => Promise<{ items: T[]; last: boolean }>,
   searchParams: Record<string, any>,
   pageSize = 10,
-  resetKey = 0
+  resetKey = 0,
+  enabled = true, // API 호출 여부 제어
 ) {
+  const shouldFetch = enabled;
+
   const [dataList, setDataList] = useState<T[]>([]);
   const [page, setPage] = useState(0);
   const [isLastPage, setIsLastPage] = useState(false);
@@ -25,10 +23,10 @@ export function useInfiniteFeeds<T>(
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
 
-  /** 특정 페이지 로드 */
+  /** 페이지 로드 */
   const loadPage = useCallback(
     async (targetPage: number) => {
-      // 로딩 중이거나 마지막 페이지면 더 불러오지 않음 (단, 0페이지는 예외)
+      if (!shouldFetch) return; // 로그인 등 조건 미충족
       if (isLoading || (isLastPage && targetPage !== 0)) return;
 
       setIsLoading(true);
@@ -41,13 +39,22 @@ export function useInfiniteFeeds<T>(
           ...searchParams,
         });
 
+        // 데이터 없음 + 첫 페이지 → 옵저버 중단
+        if (targetPage === 0 && res.items.length === 0) {
+          setDataList([]);
+          setIsLastPage(true);
+          return;
+        }
+
         if (targetPage === 0) {
           setDataList(res.items);
         } else {
           setDataList((prev) => {
-            const existingIds = new Set((prev as any[]).map((item) => item.noteId));
+            const existingIds = new Set(
+              (prev as any[]).map((item) => item.noteId),
+            );
             const newItems = res.items.filter(
-              (item: any) => !existingIds.has(item.noteId)
+              (item: any) => !existingIds.has(item.noteId),
             );
             return [...prev, ...newItems];
           });
@@ -57,16 +64,19 @@ export function useInfiniteFeeds<T>(
         setPage(targetPage + 1);
       } catch (e) {
         console.error('피드 로딩 실패:', e);
-        setError(e instanceof Error ? e.message : '데이터를 불러오는데 실패했습니다.');
+        setError(
+          e instanceof Error ? e.message : '데이터를 불러오는데 실패했습니다.',
+        );
       } finally {
         setIsLoading(false);
       }
     },
-    [fetchFn, pageSize, searchParams, isLoading, isLastPage]
+    [fetchFn, pageSize, searchParams, isLoading, isLastPage, shouldFetch],
   );
 
   /** 옵저버 연결 */
   const attachObserver = useCallback(() => {
+    if (!shouldFetch) return;
     if (observerInstance.current) {
       observerInstance.current.disconnect();
     }
@@ -80,40 +90,43 @@ export function useInfiniteFeeds<T>(
     if (observerRef.current) {
       observerInstance.current.observe(observerRef.current);
     }
-  }, [page, loadPage, isLoading, isLastPage]);
+  }, [page, loadPage, isLoading, isLastPage, shouldFetch]);
 
-  /** 검색 조건이나 resetKey 변경 시 첫 페이지부터 재로드 */
+  /** 검색 조건이나 resetKey 변경 시 첫 페이지 재로드 */
   useEffect(() => {
+    if (!shouldFetch) return; // 조건 불충족이면 완전 skip
+
     if (observerInstance.current) observerInstance.current.disconnect();
     setPage(0);
     setIsLastPage(false);
     setDataList([]);
 
-    // 첫 페이지 로드 후 옵저버 연결
     loadPage(0).then(() => {
       attachObserver();
     });
-  }, [JSON.stringify(searchParams), resetKey]);
+  }, [JSON.stringify(searchParams), resetKey, shouldFetch]);
 
-  /** 최초 마운트 시 옵저버 연결 */
+  /** 마운트 시 옵저버 연결 */
   useEffect(() => {
+    if (!shouldFetch) return;
     attachObserver();
     return () => {
       if (observerInstance.current) observerInstance.current.disconnect();
     };
-  }, [attachObserver]);
+  }, [attachObserver, shouldFetch]);
 
-  /** 특정 유저 팔로우 상태 업데이트 */
+  /** 팔로우 상태 업데이트 */
   const updateFollowState = (targetUserId: number, following: boolean) => {
     setDataList((prev) =>
       prev.map((item: any) =>
-        item.user?.userId === targetUserId ? { ...item, following } : item
-      )
+        item.user?.userId === targetUserId ? { ...item, following } : item,
+      ),
     );
   };
 
   /** 외부에서 호출할 수 있는 reset/retry */
   const reset = () => {
+    if (!shouldFetch) return;
     setPage(0);
     setIsLastPage(false);
     setDataList([]);
@@ -121,6 +134,7 @@ export function useInfiniteFeeds<T>(
   };
 
   const retry = () => {
+    if (!shouldFetch) return;
     setError(null);
     loadPage(0);
   };

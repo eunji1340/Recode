@@ -34,10 +34,12 @@ export default function MyCommentsPage() {
     retry,
   } = useInfiniteFeeds<CommentFeedCardData>(
     fetchCommentsWithUserId,
-    {}, // 댓글 페이지는 검색/정렬 파라미터 불필요
+    {},
     15,
+    0,
+    Boolean(userId),
   );
-
+  
   // 로그인하지 않은 경우
   if (!userId) {
     return (

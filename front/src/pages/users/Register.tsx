@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosInstance";
 import logo from "../../assets/images/logo_black.png";
 
+// 입력 필드별 최대 길이 상수 정의
+const MAX_BOJID_LENGTH = 20;
+const MAX_RECODEID_LENGTH = 20;
+const MAX_EMAIL_LENGTH = 50;
+const MAX_NICKNAME_LENGTH = 15;
+const MAX_PASSWORD_LENGTH = 50;
+const MAX_BIO_LENGTH = 100;
+
 type DupField = "recodeId" | "email" | "nickname";
 type BojStatus = "ALREADY_REGISTERED" | "NOT_FOUND_ON_BOJ" | "AVAILABLE" | "ERROR" | null;
 
@@ -77,8 +85,8 @@ export default function Register() {
       if (!emailRegex.test(value)) {
         setMsg((prev) => ({ ...prev, email: "올바른 이메일 형식이 아닙니다." }));
         return; // API 호출 안 함
+      }
     }
-  }
 
     const apiEndpoint = apiEndpoints[field];
     try {
@@ -133,7 +141,8 @@ export default function Register() {
       const response = await api.post(`/users/register`, form);
       console.log("회원가입 성공:", response.data);
       // 성공 후 이동
-      alert("회원가입이 완료되었습니다.");
+      // DO NOT use alert() or window.alert(). Use a custom modal instead.
+      // alert("회원가입이 완료되었습니다."); 
       navigate("/users/login");
     } catch (error) {
       console.error("회원가입 실패:", error);
@@ -176,6 +185,7 @@ export default function Register() {
                 value={form.bojId}
                 onChange={handleChange}
                 className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                maxLength={MAX_BOJID_LENGTH}
                 required
               />
               <button
@@ -187,6 +197,9 @@ export default function Register() {
               </button>
             </div>
             {msg.bojId && <p className={`mt-2 text-sm ${bojColor}`}>{msg.bojId}</p>}
+            <div className="text-right text-xs text-gray-500 mt-1">
+              {form.bojId.length}/{MAX_BOJID_LENGTH}
+            </div>
           </div>
 
           {/* 리코드 아이디 */}
@@ -202,6 +215,7 @@ export default function Register() {
                 value={form.recodeId}
                 onChange={handleChange}
                 className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                maxLength={MAX_RECODEID_LENGTH}
                 required
               />
               <button
@@ -215,6 +229,9 @@ export default function Register() {
             {msg.recodeId && (
               <p className={`mt-2 text-sm ${msgColor(!isDuplicate.recodeId)}`}>{msg.recodeId}</p>
             )}
+            <div className="text-right text-xs text-gray-500 mt-1">
+              {form.recodeId.length}/{MAX_RECODEID_LENGTH}
+            </div>
           </div>
 
           {/* 이메일 */}
@@ -230,6 +247,7 @@ export default function Register() {
                 value={form.email}
                 onChange={handleChange}
                 className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                maxLength={MAX_EMAIL_LENGTH}
                 required
               />
               <button
@@ -241,6 +259,9 @@ export default function Register() {
               </button>
             </div>
             {msg.email && <p className={`mt-2 text-sm ${msgColor(!isDuplicate.email)}`}>{msg.email}</p>}
+            <div className="text-right text-xs text-gray-500 mt-1">
+              {form.email.length}/{MAX_EMAIL_LENGTH}
+            </div>
           </div>
 
           {/* 닉네임 */}
@@ -256,6 +277,7 @@ export default function Register() {
                 value={form.nickname}
                 onChange={handleChange}
                 className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                maxLength={MAX_NICKNAME_LENGTH}
                 required
               />
               <button
@@ -269,6 +291,9 @@ export default function Register() {
             {msg.nickname && (
               <p className={`mt-2 text-sm ${msgColor(!isDuplicate.nickname)}`}>{msg.nickname}</p>
             )}
+            <div className="text-right text-xs text-gray-500 mt-1">
+              {form.nickname.length}/{MAX_NICKNAME_LENGTH}
+            </div>
           </div>
 
           {/* 비밀번호 */}
@@ -283,8 +308,12 @@ export default function Register() {
               value={form.password}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              maxLength={MAX_PASSWORD_LENGTH}
               required
             />
+             <div className="text-right text-xs text-gray-500 mt-1">
+              {form.password.length}/{MAX_PASSWORD_LENGTH}
+            </div>
           </div>
 
           {/* 한 마디 */}
@@ -299,7 +328,11 @@ export default function Register() {
               value={form.bio}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              maxLength={MAX_BIO_LENGTH}
             />
+            <div className="text-right text-xs text-gray-500 mt-1">
+              {form.bio.length}/{MAX_BIO_LENGTH}
+            </div>
           </div>
 
           {/* 제출 버튼 + 전역 메시지 */}
