@@ -15,7 +15,7 @@ interface ProfileSummaryProps {
 
 // 길이 제한 상수
 const MAX_NICKNAME_LENGTH = 15;
-const MAX_BIO_LENGTH = 100;
+const MAX_BIO_LENGTH = 50;
 
 export default function ProfileSummary({
   me,
