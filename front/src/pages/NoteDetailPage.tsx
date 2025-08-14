@@ -241,7 +241,6 @@ export default function NoteDetailPage() {
               />
               <LanguageIcon language={note.successLanguage} />
             </div>
-
             {/* 코드 섹션 */}
             <div className="flex flex-col md:flex-row gap-6 mb-3">
               {/* 성공 코드 */}
@@ -252,7 +251,7 @@ export default function NoteDetailPage() {
                 <div className="bg-gray-800 text-gray-200 rounded-lg overflow-hidden relative">
                   <div
                     className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                      isSuccessCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
+                      isSuccessCodeExpanded ? 'max-h-none' : 'max-h-40'
                     }`}
                   >
                     <pre className="p-4">
@@ -284,7 +283,7 @@ export default function NoteDetailPage() {
                 <div className="bg-gray-800 text-gray-200 rounded-lg overflow-hidden relative">
                   <div
                     className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                      isFailCodeExpanded ? 'max-h-[1000px]' : 'max-h-40'
+                      isFailCodeExpanded ? 'max-h-none' : 'max-h-40'
                     }`}
                   >
                     <pre className="p-4">
@@ -339,27 +338,23 @@ export default function NoteDetailPage() {
                 />
               </div>
             </div>
-
-            {/* 수정/삭제 버튼 */}
-            {isMyNote && (
-              <div className="flex gap-4 mt-4 justify-end">
-                <Button
-                  onClick={handleEditClick}
-                  variant="edit"
-                  size="md"
-                >
-                  수정
-                </Button>
-                <Button
-                  onClick={handleDeleteClick}
-                  variant="danger"
-                  size="md"
-                >
-                  삭제
-                </Button>
-              </div>
-            )}
-          </div>
+            {isMyNote && (
+              <div className="flex gap-3 mt-4 justify-end">
+                <button
+                  onClick={handleEditClick}
+                  className="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 min-w-[70px]"
+                >
+                  수정
+                </button>
+                <button
+                  onClick={handleDeleteClick}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200 min-w-[70px]"
+                >
+                  삭제
+                </button>
+              </div>
+            )}
+          </div>
 
           <hr className="my-3 border-t-2 border-gray-200" />
 
