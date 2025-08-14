@@ -9,7 +9,7 @@ const MAX_RECODEID_LENGTH = 20;
 const MAX_EMAIL_LENGTH = 50;
 const MAX_NICKNAME_LENGTH = 15;
 const MAX_PASSWORD_LENGTH = 50;
-const MAX_BIO_LENGTH = 100;
+const MAX_BIO_LENGTH = 50;
 
 type DupField = "recodeId" | "email" | "nickname";
 type BojStatus = "ALREADY_REGISTERED" | "NOT_FOUND_ON_BOJ" | "AVAILABLE" | "ERROR" | null;
