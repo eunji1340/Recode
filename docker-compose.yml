@@ -1,12 +1,10 @@
-# @format
-
-# monorepo-root/docker-compose.yml
 version: "3.8"
 
 services:
   backend:
     # 이미지 빌드용 Dockerfile 경로 추가
     build: ./back
+    shm_size: "2g"
     image: recode-back
     container_name: recode-back
     env_file:
