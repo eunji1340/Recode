@@ -49,19 +49,31 @@ export default function Header() {
     }
   };
 
+  // 초기 인증 체크 (한 번만 실행)
   useEffect(() => {
     if (isAuthScreen) return;
     if (ranCheckRef.current) return;
     ranCheckRef.current = true;
 
     const isAuth = checkAuth();
-    if (isAuth) {
+    if (isAuth && userId) {
       fetchMyInfoWithImage();
     }
   }, [isAuthScreen, checkAuth]);
 
+  // 닉네임 변경 감지해서 사용자 정보 업데이트
+  useEffect(() => {
+    if (isAuthScreen || !isAuthenticated || !userId) return;
+
+    // userProfile의 nickname과 store의 nickname이 다르면 업데이트
+    if (userProfile && userProfile.nickname !== nickname) {
+      fetchMyInfoWithImage();
+    }
+  }, [nickname, isAuthenticated, userId, isAuthScreen, userProfile]);
+
   const handleLogout = () => {
     clearToken();
+    setUserProfile(null); // 로그아웃 시 프로필 초기화
     navigate('/users/login');
   };
 
@@ -141,8 +153,8 @@ export default function Header() {
           <>
             <button
               type="button"
-              onClick={() => goProtected(`/users/${userId}`)}
-              title={nickname || 'User'} // collapsed일 때 툴팁으로 닉네임 표시
+              onClick={() => goProtected(`/users/${userId}/setting`)}
+              title={userProfile?.nickname || nickname || 'User'} // collapsed일 때 툴팁으로 닉네임 표시
               className={clsx(
                 'flex items-center py-3 cursor-pointer w-full',
                 collapsed ? 'justify-center' : 'px-6',
@@ -156,7 +168,7 @@ export default function Header() {
               {/* 닉네임: 접혔을 땐 숨김 */}
               {!collapsed && (
                 <span className="ml-4 whitespace-nowrap transition-opacity duration-300">
-                  {nickname || 'User'}
+                  {userProfile?.nickname || nickname || 'User'}
                 </span>
               )}
             </button>
