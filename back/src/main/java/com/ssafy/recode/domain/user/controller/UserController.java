@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,13 +50,51 @@ public class UserController {
     }
 
     /** 3. 백준 ID 유효성 확인 */
+
     @Operation(summary = "백준 ID 유효성 확인", description = "입력한 백준 ID가 유효한지와 중복 여부를 확인합니다.")
     @PostMapping("/bojId_check")
-    public ResponseEntity<ApiSingleResponse<Boolean>> validateBojId(@RequestBody BojIdCheckRequest bojId) {
-        int tier = userService.fetchBojTier(bojId.getBojId());
-        boolean existsInDb = userService.existsByBojId(bojId.getBojId());
-        boolean isValid = tier >= 0 && !existsInDb;
-        return ResponseEntity.ok(ApiSingleResponse.from(isValid));
+    public ResponseEntity<ApiSingleResponse<BojIdCheckResponse>> validateBojId(@RequestBody BojIdCheckRequest request) {
+        final String bojId = request.getBojId().trim();
+
+        // 1) DB 중복 먼저 체크
+        boolean existsInDb = userService.existsByBojId(bojId);
+        if (existsInDb) {
+            BojIdCheckResponse body = BojIdCheckResponse.builder()
+                    .status(BojIdCheckStatus.ALREADY_REGISTERED)
+                    .message("이미 회원가입된 아이디입니다.")
+                    .build();
+            return ResponseEntity.ok(ApiSingleResponse.from(body));
+        }
+
+        // 2) 백준 존재 여부(티어) 확인
+        int tier;
+        try {
+            tier = userService.fetchBojTier(bojId);
+        } catch (Exception  e) {
+            // 외부 호출 실패와 '없는 아이디'를 구분하고 싶다면 별도 코드로 반환 가능
+            BojIdCheckResponse body = BojIdCheckResponse.builder()
+                    .status(BojIdCheckStatus.NOT_FOUND_ON_BOJ)
+                    .message("백준 조회에 실패했거나 아이디가 존재하지 않습니다.")
+                    .build();
+            return ResponseEntity.ok(ApiSingleResponse.from(body));
+            // 또는 ResponseEntity.status(HttpStatus.BAD_GATEWAY) 로 에러 구분
+        }
+
+        if (tier < 0) {
+            BojIdCheckResponse body = BojIdCheckResponse.builder()
+                    .status(BojIdCheckStatus.NOT_FOUND_ON_BOJ)
+                    .message("백준에 없는 아이디입니다.")
+                    .build();
+            return ResponseEntity.ok(ApiSingleResponse.from(body));
+        }
+
+        // 3) 가입 가능
+        BojIdCheckResponse body = BojIdCheckResponse.builder()
+                .status(BojIdCheckStatus.AVAILABLE)
+                .message("회원 가입 가능한 아이디입니다.")
+                .build();
+
+        return ResponseEntity.ok(ApiSingleResponse.from(body));
     }
 
     /** 4. Recode ID 중복 확인 */
@@ -81,7 +120,7 @@ public class UserController {
 
     /** 7. 닉네임 변경 */
     @Operation(summary = "닉네임 변경", description = "특정 사용자의 닉네임을 변경합니다.")
-    @PatchMapping("/{userId}/nickname")
+    @PutMapping("/{userId}/nickname")
     public ResponseEntity<Void> updateNickname(@PathVariable Long userId,
                                                @RequestBody NicknameUpdateRequest dto) {
         userService.updateNickname(userId, dto.getNickname());
@@ -90,7 +129,7 @@ public class UserController {
 
     /** 8. 비밀번호 변경 */
     @Operation(summary = "비밀번호 변경", description = "특정 사용자의 비밀번호를 변경합니다.")
-    @PatchMapping("/{userId}/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<Void> updatePassword(@PathVariable Long userId,
                                                @RequestBody UpdatePasswordRequest dto) {
         userService.updatePassword(userId, dto.getCurrPassword(), dto.getNewPassword());
@@ -153,5 +192,32 @@ public class UserController {
 //        CookieUtil.deleteCookie(response, "refreshToken"); // 배포 시 코드
         CookieUtil.deleteTestCookie(response, "refreshToken");
         return ResponseEntity.ok(ApiSingleResponse.from("성공적으로 로그아웃 되었습니다."));
+    }
+
+    /** 14. 백준 쿠키 저장 **/
+    @Operation(summary = "백준 쿠키 저장", description = "백준에서 세션 쿠키를 추출하여 저장합니다.")
+    @PreAuthorize("#userId == principal.id")
+    @PostMapping("/{userId}/boj-cookies")
+    public ResponseEntity<?> saveBojCookies(@PathVariable Long userId, @RequestBody CookieRequestDto cookieRequestDto ) {
+        userService.saveBojCookieValue(userId, cookieRequestDto.getCookieValue());
+        return ResponseEntity.ok("백준 쿠키가 성공적으로 저장되었습니다.");
+    }
+
+    /** 15. 이메일 변경 **/
+    @Operation(summary = "이메일 변경", description = "특정 사용자의 이메일을 변경합니다.")
+    @PutMapping("/{userId}/email")
+    public ResponseEntity<Void> updateEmail(@PathVariable Long userId,
+                                            @RequestBody EmailUpdateRequest dto) {
+        userService.updateEmail(userId, dto.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    /** 16. 한마디 변경 **/
+    @Operation(summary = "한마디 변경", description = "특정 사용자의 이메일을 변경합니다.")
+    @PutMapping("/{userId}/bio")
+    public ResponseEntity<Void> updateEmail(@PathVariable Long userId,
+                                            @RequestBody BioUpdateRequest dto) {
+        userService.updateBio(userId, dto.getBio());
+        return ResponseEntity.ok().build();
     }
 }

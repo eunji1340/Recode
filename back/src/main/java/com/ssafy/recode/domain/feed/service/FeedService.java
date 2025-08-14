@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 public class FeedService {
 
     private final UserRepository userRepository;
-//    private final FeedRepository feedRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
@@ -71,14 +70,7 @@ public class FeedService {
     /** 좋아요 삭제 */
     @Transactional
     public void removeLike(User user, Long noteId) {
-        Note note = noteRepository.findById(noteId)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
-
-        Like like = likeRepository.findByUserAndNote(user, note)
-                .orElseThrow(() -> new RuntimeException("Like not found"));
-
-        System.out.println("[삭제 요청] likeId: " + like.getLikeId());
-        likeRepository.delete(like);
+        likeRepository.deleteByUserAndNoteId(user, noteId);
     }
 
 
@@ -127,12 +119,7 @@ public class FeedService {
 
     /** 댓글 삭제 */
     public void deleteComment(Long userId, Long commentId) throws AccessDeniedException {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-        if (!comment.getUser().getUserId().equals(userId)) {
-            throw new AccessDeniedException("권한 없음");
-        }
-        commentRepository.delete(comment);
+        commentRepository.deleteById(commentId);
     }
 
     public Page<FeedResponseDto> getAllFeeds(User user, String tag, String search, Pageable pageable) {
@@ -144,7 +131,7 @@ public class FeedService {
         if (hasTag && hasSearch) {
             notes = noteRepository.searchNotesByTagAndKeyword(tag, search, pageable);
         } else if (hasTag) {
-            notes = noteRepository.findByTags_TagNameAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
+            notes = noteRepository.findByTags_TagNameContainingIgnoreCaseAndIsPublicTrueAndIsDeletedFalse(tag, pageable);
         } else if (hasSearch) {
             notes = noteRepository.searchNotesOnly(search, pageable);
         } else {
@@ -161,6 +148,7 @@ public class FeedService {
             return FeedResponseDto.builder()
                     .noteId(note.getNoteId())
                     .noteTitle(note.getNoteTitle())
+                    .successLanguage(note.getSuccessLanguage())
                     .isPublic(note.getIsPublic())
                     .isLiked(isLiked)
                     .isFollowing(isFollowing)
@@ -185,34 +173,42 @@ public class FeedService {
                 .orElseThrow(() -> BaseException.of(CommonErrorCode.USER_NOT_FOUND));
 
         Page<Note> notes;
-
+        boolean includePrivate = (viewer != null && Objects.equals(viewer.getUserId(), userId));
         boolean hasTag = tag != null && !tag.isBlank();
         boolean hasSearch = search != null && !search.isBlank();
 
         if (hasTag && hasSearch) {
-            // 특정 유저 + 태그 + 키워드
-            notes = noteRepository.searchUserNotesByTagAndKeyword(userId, tag, search, pageable);
+            notes = includePrivate
+                    ? noteRepository.searchUserNotesByTagAndKeywordIncludePrivate(viewer.getUserId(), userId, tag, search, pageable)
+                    : noteRepository.searchUserNotesByTagAndKeyword(userId, tag, search, pageable);
         } else if (hasTag) {
-            // 특정 유저 + 태그
-            notes = noteRepository.findByUserAndTag(userId, tag, pageable);
+            notes = includePrivate
+                    ? noteRepository.findByUserAndTagIncludePrivate(viewer.getUserId(), userId, tag, pageable)
+                    : noteRepository.findByUserAndTag(userId, tag, pageable);
         } else if (hasSearch) {
-            // 특정 유저 + 키워드
-            notes = noteRepository.searchUserNotesOnly(userId, search, pageable);
+            notes = includePrivate
+                    ? noteRepository.searchUserNotesOnlyIncludePrivate(viewer.getUserId(), userId, search, pageable)
+                    : noteRepository.searchUserNotesOnly(userId, search, pageable);
         } else {
-            // 특정 유저 전체 공개글
-            notes = noteRepository.findByUser_UserIdAndIsPublicTrueAndIsDeletedFalse(userId, pageable);
+            notes = includePrivate
+                    ? noteRepository.findByUserIncludePrivate(viewer.getUserId(), userId, pageable)
+                    : noteRepository.findByUser_UserIdAndIsPublicTrueAndIsDeletedFalse(userId, pageable);
         }
 
         return notes.map(note -> {
             int likeCount = likeRepository.countByNote_NoteId(note.getNoteId());
             int commentCount = commentRepository.countByFeed_NoteId(note.getNoteId());
-            boolean isLiked = likeRepository.existsByUserAndNote(viewer, note);
-            boolean isFollowing = followRepository.existsByFollowerAndFollowing(viewer, note.getUser());
+            boolean isLiked = (viewer != null) && likeRepository.existsByUserAndNote(viewer, note);
+            boolean isFollowing = (viewer != null)
+                    && !Objects.equals(viewer.getUserId(), note.getUser().getUserId())
+                    && followRepository.existsByFollowerAndFollowing(viewer, note.getUser());
+
             ProblemEntity problem = new ProblemEntity(note.getProblemId(), note.getProblemName(), note.getProblemTier());
 
             return FeedResponseDto.builder()
                     .noteId(note.getNoteId())
                     .noteTitle(note.getNoteTitle())
+                    .successLanguage(note.getSuccessLanguage())
                     .isPublic(note.getIsPublic())
                     .isLiked(isLiked)
                     .isFollowing(isFollowing)
@@ -243,16 +239,19 @@ public class FeedService {
         }
         Page<Note> notesPage;
 
-        // 조건 분기
-        if (tag != null && !tag.isBlank() && search != null && !search.isBlank()) {
-            notesPage = noteRepository.searchNotesOfUsersByTagAndKeyword(followingUsers, tag, search, pageable);
-        } else if (tag != null && !tag.isBlank()) {
-            notesPage = noteRepository.searchNotesOfUsersByTag(followingUsers, tag, pageable);
-        } else if (search != null && !search.isBlank()) {
-            notesPage = noteRepository.searchNotesOfUsersByKeyword(followingUsers, search, pageable);
+        String tagQ = (tag == null) ? null : tag.trim();
+        String searchQ = (search == null) ? null : search.trim();
+
+        if (tagQ != null && !tagQ.isBlank() && searchQ != null && !searchQ.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByTagAndKeyword(followingUsers, tagQ, searchQ, pageable);
+        } else if (tagQ != null && !tagQ.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByTag(followingUsers, tagQ, pageable);
+        } else if (searchQ != null && !searchQ.isBlank()) {
+            notesPage = noteRepository.searchNotesOfUsersByKeyword(followingUsers, searchQ, pageable);
         } else {
             notesPage = noteRepository.findByUserInAndIsPublicTrueAndIsDeletedFalse(followingUsers, pageable);
         }
+
 
         // DTO 변환은 그대로 유지
         List<FeedResponseDto> dtoList = notesPage.stream()
@@ -342,17 +341,14 @@ public class FeedService {
                     boolean isLiked = likedNoteIds.contains(n.getNoteId());
                     boolean isFollowing = followingUserIds.contains(n.getUser().getUserId());
 
-                    int likeCount = (n.getLikeCount() != null)
-                            ? n.getLikeCount()
-                            : likeRepository.countByNote_NoteId(n.getNoteId());
+                    int likeCount = likeRepository.countByNote_NoteId(n.getNoteId());
+                    int commentCount = commentRepository.countByFeed_NoteId(n.getNoteId());
 
-                    int commentCount = (n.getCommentCount() != null)
-                            ? n.getCommentCount()
-                            : commentRepository.countByFeed_NoteId(n.getNoteId());
 
                     return UserCommentDto.builder()
                             .noteId(n.getNoteId())
                             .noteTitle(n.getNoteTitle())
+                            .successLanguage(n.getSuccessLanguage())
                             .commentWriter(c.getUser().getBojId())
                             .content(c.getContent())
                             .isPublic(n.getIsPublic())
@@ -397,19 +393,15 @@ public class FeedService {
                 .map(Like::getNote)
                 .filter(Objects::nonNull)
                 .map(n -> {
-                    int likeCount = (n.getLikeCount() != null)
-                            ? n.getLikeCount()
-                            : likeRepository.countByNote_NoteId(n.getNoteId());
-
-                    int commentCount = (n.getCommentCount() != null)
-                            ? n.getCommentCount()
-                            : commentRepository.countByFeed_NoteId(n.getNoteId());
+                    int likeCount = likeRepository.countByNote_NoteId(n.getNoteId());
+                    int commentCount = commentRepository.countByFeed_NoteId(n.getNoteId());
 
                     boolean isFollowing = followingUserIds.contains(n.getUser().getUserId());
 
                     return UserCommentDto.builder()
                             .noteId(n.getNoteId())
                             .noteTitle(n.getNoteTitle())
+                            .successLanguage(n.getSuccessLanguage())
                             .content(null)
                             .isPublic(n.getIsPublic())
                             .createdAt(n.getCreatedAt() != null ? n.getCreatedAt().toString() : null)

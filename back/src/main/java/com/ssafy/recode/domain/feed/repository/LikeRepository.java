@@ -6,6 +6,7 @@ import com.ssafy.recode.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,4 +32,15 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     """)
     Set<Long> findLikedNoteIds(@Param("viewerId") Long viewerId,
                                @Param("noteIds") Collection<Long> noteIds);
+
+    @Modifying
+    @Query("DELETE FROM Like l WHERE l.user = :user AND l.note.noteId = :noteId")
+    void deleteByUserAndNoteId(@Param("user") User user, @Param("noteId") Long noteId);
+    @Modifying
+    @Query("DELETE FROM Like l WHERE l.note.noteId = :noteId")
+    void deleteByNoteId(@Param("noteId") Long noteId);
+
+    @Modifying
+    @Query("DELETE FROM Like l WHERE l.user.userId = :userId")
+    void deleteLikesByUserId(@Param("userId") Long userId);
 }

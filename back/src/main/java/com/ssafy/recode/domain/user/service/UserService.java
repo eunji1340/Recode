@@ -4,6 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.recode.auth.CustomUserDetails;
 import com.ssafy.recode.auth.JwtTokenProvider;
+import com.ssafy.recode.domain.feed.repository.CommentRepository;
+import com.ssafy.recode.domain.feed.repository.LikeRepository;
+import com.ssafy.recode.domain.follow.repository.FollowRepository;
+import com.ssafy.recode.domain.note.repository.NoteRepository;
+import com.ssafy.recode.domain.solvedac.service.SolvedacApiClient;
 import com.ssafy.recode.domain.user.dto.request.LoginRequestDto;
 import com.ssafy.recode.domain.user.dto.request.UserRequestDto;
 import com.ssafy.recode.domain.user.dto.response.TokenPair;
@@ -48,7 +53,10 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     final Logger log = LoggerFactory.getLogger(UserService.class);
-
+    private final NoteRepository noteRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     /** 1. 회원가입 */
     public UserResponseDto register(UserRequestDto dto) {
@@ -213,10 +221,10 @@ public class UserService {
     /** 8. 비밀번호 변경 */
     public void updatePassword(Long userId, String currPassword, String newPassword) {
         User user = findUserById(userId);
-        if (!user.getPassword().equals(currPassword)) {
+        if (!passwordEncoder.matches(currPassword, user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
-        user.updatePassword(newPassword);
+        user.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     /** 전체 회원 조회 */
@@ -228,6 +236,7 @@ public class UserService {
     }
 
     /** 특정 회원 조회 */
+    @Transactional(readOnly = true)
     public UserDetailDto getUserById(Long userId) {
         User user = findUserById(userId);
         return new UserDetailDto(user);
@@ -239,11 +248,16 @@ public class UserService {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("존재하지 않는 유저입니다.");
         }
+        followRepository.deleteFollowsByUserId(userId);
+        commentRepository.deleteCommentsByUserId(userId);
+        likeRepository.deleteLikesByUserId(userId);
+        noteRepository.deleteNotesByUserId(userId);
         userRepository.deleteById(userId);
     }
 
     /** 유저 조회 공통 로직 */
-    private User findUserById(Long userId) {
+    @Transactional(readOnly = true)
+    public User findUserById(Long userId) {
         return userRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 탈퇴한 유저입니다."));
     }
@@ -290,5 +304,34 @@ public class UserService {
 
         // 새로 발급된 토큰과 사용자 정보를 반환
         return new TokenPair(user, newAccessToken, newRefreshToken);
+    }
+
+    /** user_id로 boj_id 조회 */
+    public String getBaekjoonId(Long userId) {
+        User user = findUserById(userId);
+        return user.getBojId();
+    }
+
+    /** 사용자에게서 받은 쿠키를 User 엔티티에 저장 **/
+    @Transactional
+    public void saveBojCookieValue(Long userId, String cookieValue) {
+        User user = findUserById(userId);
+        user.setBojCookieValue(cookieValue);
+
+        String jsonString = "[{\"name\":\"OnlineJudge\",\"value\":\"" + cookieValue + "\",\"domain\":\".acmicpc.net\",\"path\":\"/\",\"secure\":true,\"httpOnly\":false}]";
+        user.setBojCookiesJson(jsonString);
+        userRepository.save(user);
+    }
+
+    /** 이메일 변경 */
+    public void updateEmail(Long userId, String newEmail) {
+        User user = findUserById(userId);
+        user.updateEmail(newEmail);
+    }
+
+    /** 한마디 변경 */
+    public void updateBio(Long userId, String newBio) {
+        User user = findUserById(userId);
+        user.updateBio(newBio);
     }
 }
