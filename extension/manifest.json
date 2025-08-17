@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Recode Extension",
+  "version": "1.0.0",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["activeTab", "scripting", "storage", "cookies", "tabs"],
+  "host_permissions": [
+    "https://www.acmicpc.net/*",
+    "http://localhost:5173/*",
+    "https://localhost:5173/*",
+    "http://localhost:8080/*",
+    "https://localhost:8080/*",
+    "http://i13a507.p.ssafy.io:8080/*",
+    "http://i13a507.p.ssafy.io/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
