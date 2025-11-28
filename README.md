@@ -1,5 +1,3 @@
-<img width="1313" height="861" alt="아키텍처" src="https://github.com/user-attachments/assets/00294882-9675-46b8-93bd-704bbc1eb6d8" /># Re:Code – AI 기반 알고리즘 오답노트 SNS
-
 ![Frontend](https://img.shields.io/badge/React-19-61DAFB?style=flat\&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat\&logo=typescript)
 ![SpringBoot](https://img.shields.io/badge/SpringBoot-3.5.3-6DB33F?style=flat\&logo=springboot)
