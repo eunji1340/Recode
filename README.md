@@ -1,24 +1,228 @@
-# A507
-## 프로젝트 소개 
-- 프로젝트명: Re:Code
-- AI기반으로 알고리즘 문제풀이의 오답노트를 생성하고 모아서 관리하는 SNS 서비스
-- Re:Code는 BOJ 문제 제출 기록을 연동해 AI가 코드를 분석하는 알고리즘 오답노트 SNS입니다. 
-- 개발 기간: 2025.07. - 2025.08.
+# Re:Code – AI 기반 알고리즘 오답노트 SNS
 
-## 주요 기능
-- Chrome Extension을 활용해 사용자의 BOJ 제출 기록을 불러옵니다.
-- 사용자의 제출 기록 내 성공 코드와 실패 코드에 기반해, 프롬프팅된 AI가 오답노트를 자동으로 생성해줍니다.
-- SNS 커뮤니티 형식을 차용하여, 코드 중심의 피드 콘텐츠를 제공합니다.
+![Frontend](https://img.shields.io/badge/React-19-61DAFB?style=flat\&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat\&logo=typescript)
+![SpringBoot](https://img.shields.io/badge/SpringBoot-3.5.3-6DB33F?style=flat\&logo=springboot)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat\&logo=mysql)
+![GPT](https://img.shields.io/badge/OpenAI-GPT--4.1-412991?style=flat\&logo=openai)
+![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-v1.0-4285F4?style=flat\&logo=googlechrome)
+![Docker](https://img.shields.io/badge/Docker-24.0-2496ED?style=flat\&logo=docker)
 
-### 기여자
-- 프론트엔드 
-  - 이아영 (팀장): 프론트엔드 배포, 브랜치 및 프로젝트 관리, 프론트엔드 구조 설정, chrome extension 연동, 노트 생성상세 페이지 개발
-  - 장은지: 메인탐색 페이지 개발, 검색 무한 스크롤, 피드 공통 로직 구현, 마이페이지 일부 기능 개발
-  - 한영균: JWT 기반 로그인 및 유지 연동, 회원가입/사이드바/대시보드 페이지 개발, 영상 포트폴리오 제작
+---
 
-- 백엔드 
-  - 김수연: 백엔드 구조 설정, ec2 데이터베이스 세팅, 회원피드 API 개발
-  - 박정현: 백엔드 배포, spring security 적용, 토큰 발급 및 검증, jwt토큰 인증 및 인가 구현
-  - 오유진: 오답노트 작성 기능 개발, selenium을 통한 웹 크롤링, ChatGPT API를 활용한 코드 분석 기능 개발
+# 1. 프로젝트 소개
+
+**Re:Code**는 BOJ 백준 제출 기록을 연동하여
+**AI가 실패·성공 코드를 비교 분석하고 오답노트를 자동 생성하는 알고리즘 학습 SNS 서비스**입니다.
+
+* 반복되는 오답 분석 시간을 줄이고
+* 수동 기록 없이 자동으로 회고하며
+* 타인의 오답노트와 코드 분석을 SNS처럼 공유/소통할 수 있습니다.
+
+📆 **개발 기간:** 2025.07 ~ 2025.08
+👥 **팀 구성:** Frontend 3 · Backend 3
+🏷 **프로젝트명:** A507 – Re:Code
+
+---
+
+# 2. 주요 기능
+
+## 🔌 2-1. Chrome Extension 기반 BOJ 제출 기록 연동
+
+* 백준 로그인 쿠키 자동 추출
+* 제출 목록 자동 수집
+* 성공/실패 코드, 제출 언어, 제출 시간 수집
+  ➡ UX 개선 / 수동 입력 오류 제거
+
+## 🤖 2-2. GPT API를 활용한 오답노트 자동 생성
+
+* 성공 코드 VS 실패 코드 구조 비교
+* 시간복잡도/로직 오류 분석
+* 개선 방향 / 리팩토링 포인트 자동 제시
+* 문제 요약·실패 원인 등을 자동 문서화
+
+## 📰 2-3. 알고리즘 기반 SNS 피드
+
+* 오답노트 피드 업로드
+* 좋아요 ❤️·댓글 💬·팔로우 ➕
+* 타인의 오답노트 열람 및 코드 비교
+
+## 👤 2-4. 마이페이지 & 활동 분석
+
+* 작성한 오답노트 관리
+* 좋아요한 글·댓글 기록 조회
+* 활동 통계(연속 작성일 Streak)
+* 팔로우/팔로잉 정보 확인
+
+---
+
+# 3. 시스템 아키텍처
+<img width="1313" height="861" alt="아키텍처" src="https://github.com/user-attachments/assets/bd1bb3dc-7382-4ef9-bb2d-9a827ef57379" />
 
 
+### 아키텍처 설명
+
+* AWS EC2 기반 Docker 컨테이너에서 FE/BE/DB 각각 독립 운영
+* Frontend는 Axios 기반 REST API로 Backend와 통신
+* Backend는 Spring Boot + JPA 기반으로 MySQL 연동
+* Chrome Extension이 백준 제출 기록 크롤링 후 Backend로 전송
+* GPT API가 코드 비교 분석 및 오답노트 자동 생성
+* Solved.ac API로 문제 난이도/태그/플레이어 정보 연동
+
+---
+
+# 4. 기술 스택
+
+## 🟦 Frontend
+
+* **React 19, Vite, TypeScript, Zustand, Tailwind CSS**
+* Axios 기반 API 클라이언트
+* IntersectionObserver 기반 무한 스크롤
+* 컴포넌트 구조화 / 공통 피드 렌더링 로직 개발
+
+## 🟩 Backend
+
+* Spring Boot 3.5.3, Spring Security + JWT
+* JPA/Hibernate, MySQL, Redis
+* GPT 연동 서비스 / 제출 기록 파서 / 사용자 인증
+
+## 🟧 Infra
+
+* Docker / Docker Compose
+* AWS EC2
+* Nginx Reverse Proxy
+
+## 🟪 Chrome Extension
+
+* 백준 제출 기록 자동 수집
+* 쿠키 기반 로그인 연동
+
+## 🟫 AI
+
+* OpenAI GPT API
+* 코드 비교·분석 프롬프트 엔지니어링
+
+---
+
+# 5. 프로젝트 구조 (FE)
+
+```
+src/
+ ┣ api/               # axiosInstance, feed/user/note API 모듈
+ ┣ hooks/             # useInfiniteFeeds, useFollow, useLike 등 공통 로직
+ ┣ components/        # UI, FeedCard, SearchBox, UserCard 등
+ ┣ pages/             # FeedPage, ExplorePage, MyPage, NoteDetailPage
+ ┣ stores/            # Zustand 전역 상태 관리
+ ┣ utils/             # date formatting, API 데이터 맵핑
+ ┣ assets/            # 폰트/이미지
+ ┗ router/            # 라우터 선언
+```
+
+---
+
+# 6. 화면 구성 미리보기
+
+### 🖥 메인 피드
+
+<img width="1411" height="775" alt="피드보기" src="https://github.com/user-attachments/assets/0778e89f-ef15-426a-8769-76bb44abbf31" />
+
+### 🔍 탐색 페이지
+
+<img width="1418" height="770" alt="탐색" src="https://github.com/user-attachments/assets/e107b04b-7c73-4200-9a25-43b895b5c46e" />
+<img width="1424" height="770" alt="노트상세" src="https://github.com/user-attachments/assets/61646881-4261-4f92-90f9-2ba3f843a189" />
+
+### 📝 AI 오답노트 생성
+
+<img width="1434" height="772" alt="노트생성_문제검색" src="https://github.com/user-attachments/assets/81d2fe83-5b0f-4cb9-9c11-3596d533b313" />
+<img width="2856" height="1533" alt="노트생성_AI생성" src="https://github.com/user-attachments/assets/e6b18354-e39a-4db9-b5e7-359b58b5f3bb" />
+
+### 👤 마이페이지
+
+<img width="1418" height="773" alt="마이페이지_대시보드" src="https://github.com/user-attachments/assets/3b7e0299-9009-40be-b470-8e9370df8440" />
+<img width="1418" height="770" alt="마이페이지_팔로워" src="https://github.com/user-attachments/assets/b68eba04-b526-476c-844f-824574438f80" />
+<img width="1429" height="774" alt="마이페이지_댓글" src="https://github.com/user-attachments/assets/9fcd3357-20a4-41c8-a608-b62658a5d400" />
+<img width="1430" height="768" alt="마이페이지_설정" src="https://github.com/user-attachments/assets/5ecb61d0-e535-48c6-b8b7-cb5908f25088" />
+
+---
+
+# 7. 팀 역할
+## 🟦 Frontend
+
+### **장은지 (FE)**
+
+* 메인 피드(FeedPage) / 탐색 페이지(ExplorePage) 개발 전담
+* 검색·정렬·무한 스크롤 통합 피드 공통 로직 구현
+* 마이페이지 Notes/Likes/Comments 탭 UI 개발
+
+### **이아영 (팀장, FE)**
+
+* FE 초기 구조 설계, 배포
+* Chrome Extension 연동
+* 노트 생성 / 상세 페이지 개발
+* 브랜치 전략 및 FE 코드 관리
+
+### **한영균 (FE)**
+
+* JWT 로그인 / 사용자 인증
+* 회원가입 / Sidebar / Dashboard 개발
+* 프로젝트 영상 포트폴리오 제작
+
+---
+
+## 🟩 Backend
+
+### 김수연
+
+* 백엔드 구조 설계
+* EC2 환경 DB 세팅
+* 회원·피드 API 개발
+
+### 박정현
+
+* Backend 배포
+* Spring Security + JWT 인증/인가
+* 토큰 발급·검증 로직 구현
+
+### 오유진
+
+* 오답노트 생성 기능 개발
+* Selenium 기반 제출 기록 크롤링
+* GPT API 코드 분석 처리
+
+---
+
+# 8. 실행 방법 (로컬)
+
+### 🔧 1) 프론트엔드 실행
+
+```
+cd frontend
+npm install
+npm run dev
+```
+
+### 🔧 2) 백엔드 실행
+
+```
+cd backend
+./gradlew build
+./gradlew bootRun
+```
+
+### 🔧 3) Chrome Extension 로드
+
+* `src/api/manifest.json`이 있는 폴더를 크롬 확장 프로그램 → 개발자 모드 → “압축해제된 확장 프로그램 로드”로 등록
+
+---
+
+# 9. 일정
+
+| 기간    | 내용                     |
+| ----- | ---------------------- |
+| 1주차   | 기획 · 요구사항 정의 · 아키텍처 설계 |
+| 2~3주차 | FE/BE 주요 기능 개발         |
+| 4~5주차 | 크롬 익스텐션 & GPT 연동       |
+| 6주차   | 통합 테스트 · 리팩토링          |
+| 7주차   | 배포 및 마무리               |
+
+---
