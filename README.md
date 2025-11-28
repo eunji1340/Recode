@@ -1,4 +1,4 @@
-# Re:Code – AI 기반 알고리즘 오답노트 SNS
+<img width="1313" height="861" alt="아키텍처" src="https://github.com/user-attachments/assets/00294882-9675-46b8-93bd-704bbc1eb6d8" /># Re:Code – AI 기반 알고리즘 오답노트 SNS
 
 ![Frontend](https://img.shields.io/badge/React-19-61DAFB?style=flat\&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat\&logo=typescript)
@@ -57,7 +57,7 @@
 ---
 
 # 3. 시스템 아키텍처
-<img width="1313" height="861" alt="아키텍처" src="https://github.com/user-attachments/assets/bd1bb3dc-7382-4ef9-bb2d-9a827ef57379" />
+<img width="1313" height="861" alt="아키텍처" src="https://github.com/user-attachments/assets/f81bd94f-dc60-4362-b0dc-6fedaa257593" />
 
 
 ### 아키텍처 설명
@@ -124,24 +124,27 @@ src/
 
 ### 🖥 메인 피드
 
-<img width="1411" height="775" alt="피드보기" src="https://github.com/user-attachments/assets/0778e89f-ef15-426a-8769-76bb44abbf31" />
+<img width="1411" height="775" alt="피드보기" src="https://github.com/user-attachments/assets/05e6a91b-9436-4137-8c15-9bba6f4c1b8a" />
 
 ### 🔍 탐색 페이지
 
-<img width="1418" height="770" alt="탐색" src="https://github.com/user-attachments/assets/e107b04b-7c73-4200-9a25-43b895b5c46e" />
-<img width="1424" height="770" alt="노트상세" src="https://github.com/user-attachments/assets/61646881-4261-4f92-90f9-2ba3f843a189" />
+<img width="1418" height="770" alt="탐색" src="https://github.com/user-attachments/assets/dd9126d4-d388-40c7-a100-e449c0722d30" />
+<img width="1424" height="770" alt="노트상세" src="https://github.com/user-attachments/assets/690d35fe-688d-47af-acc4-f00d09e65833" />
+
 
 ### 📝 AI 오답노트 생성
 
-<img width="1434" height="772" alt="노트생성_문제검색" src="https://github.com/user-attachments/assets/81d2fe83-5b0f-4cb9-9c11-3596d533b313" />
-<img width="2856" height="1533" alt="노트생성_AI생성" src="https://github.com/user-attachments/assets/e6b18354-e39a-4db9-b5e7-359b58b5f3bb" />
+<img width="1434" height="772" alt="노트생성_문제검색" src="https://github.com/user-attachments/assets/b53c5184-e836-4ad6-9a65-192baaae12d9" />
+<img width="2856" height="1533" alt="노트생성_AI생성" src="https://github.com/user-attachments/assets/9163ef8f-0147-450a-9224-2cbf8c609763" />
+
 
 ### 👤 마이페이지
 
-<img width="1418" height="773" alt="마이페이지_대시보드" src="https://github.com/user-attachments/assets/3b7e0299-9009-40be-b470-8e9370df8440" />
-<img width="1418" height="770" alt="마이페이지_팔로워" src="https://github.com/user-attachments/assets/b68eba04-b526-476c-844f-824574438f80" />
-<img width="1429" height="774" alt="마이페이지_댓글" src="https://github.com/user-attachments/assets/9fcd3357-20a4-41c8-a608-b62658a5d400" />
-<img width="1430" height="768" alt="마이페이지_설정" src="https://github.com/user-attachments/assets/5ecb61d0-e535-48c6-b8b7-cb5908f25088" />
+<img width="1418" height="773" alt="마이페이지_대시보드" src="https://github.com/user-attachments/assets/e0474219-ca1c-49a0-872e-1a7fdab42072" />
+<img width="1418" height="770" alt="마이페이지_팔로워" src="https://github.com/user-attachments/assets/16e1a4af-6c01-4996-bc49-f2b6ee5fe036" />
+<img width="1429" height="774" alt="마이페이지_댓글" src="https://github.com/user-attachments/assets/46671836-0fa8-4a79-8d8f-bd4abf3548c0" />
+<img width="1430" height="768" alt="마이페이지_설정" src="https://github.com/user-attachments/assets/4ae78bc2-6fb8-4789-97f8-2943b7987586" />
+
 
 ---
 
