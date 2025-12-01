@@ -1,5 +1,6 @@
 # Re:Code
-<img width="228" height="75" alt="로고" src="https://github.com/user-attachments/assets/bf3432bb-9988-4e37-8029-310350178b90" />
+<img width="160" alt="logo_black" src="https://github.com/user-attachments/assets/421c80dc-8301-4ef1-971c-b1c7b2de2bbb" />
+
 
 백준 제출 기록을 연동하여
 AI가 실패·성공 코드를 비교 분석하고
